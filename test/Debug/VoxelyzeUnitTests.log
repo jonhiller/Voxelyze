@@ -1,0 +1,38 @@
+﻿Build started 11/6/2014 7:52:19 PM.
+     1>Project "C:\Code\VoxCad\Voxelyze\test\VoxelyzeUnitTests.vcxproj" on node 3 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\VoxelyzeUnitTests.lastbuildstate".
+       InitializeBuildStatus:
+         Touching "Debug\VoxelyzeUnitTests.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\NEW\Voxelyze.cpp ..\NEW\VX_Collision.cpp ..\NEW\VX_Link.cpp ..\NEW\VX_Material.cpp ..\NEW\VX_MaterialLink.cpp ..\NEW\VX_MaterialVoxel.cpp ..\NEW\VX_Voxel.cpp VoxelyzeUnitTests.cpp
+         VoxelyzeUnitTests.cpp
+     1>c:\code\voxcad\voxelyze\include\vx_voxel.h(93): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>c:\code\voxcad\voxelyze\include\vx_voxel.h(97): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\code\voxcad\voxelyze\test\tvx_voxel.h(5): error C2664: 'CVX_Voxel::CVX_Voxel(const CVX_Voxel &)' : cannot convert parameter 1 from 'CVX_MaterialVoxel *' to 'const CVX_Voxel &'
+                 Reason: cannot convert from 'CVX_MaterialVoxel *' to 'const CVX_Voxel'
+                 No constructor could take the source type, or constructor overload resolution was ambiguous
+     1>c:\code\voxcad\voxelyze\test\tvx_voxel.h(19): error C2664: 'CVX_Voxel::CVX_Voxel(const CVX_Voxel &)' : cannot convert parameter 1 from 'CVX_MaterialVoxel *' to 'const CVX_Voxel &'
+                 Reason: cannot convert from 'CVX_MaterialVoxel *' to 'const CVX_Voxel'
+                 No constructor could take the source type, or constructor overload resolution was ambiguous
+     1>c:\code\voxcad\voxelyze\include\array3d.h(15): fatal error C1083: Cannot open include file: 'XML_Rip.h': No such file or directory
+         VX_Voxel.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_Voxel.cpp': No such file or directory
+         VX_MaterialVoxel.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_MaterialVoxel.cpp': No such file or directory
+         VX_MaterialLink.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_MaterialLink.cpp': No such file or directory
+         VX_Material.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_Material.cpp': No such file or directory
+         VX_Link.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_Link.cpp': No such file or directory
+         VX_Collision.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\VX_Collision.cpp': No such file or directory
+         Voxelyze.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\NEW\Voxelyze.cpp': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Code\VoxCad\Voxelyze\test\VoxelyzeUnitTests.vcxproj" (rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.89
