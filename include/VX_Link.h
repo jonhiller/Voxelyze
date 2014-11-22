@@ -82,6 +82,9 @@ class CVX_Link {
 	void updateRestLength(); //!< Updates the rest length of this voxel. Call this every timestep where the nominal size of either voxel may have changed, due to actuation or thermal expansion.
 	void updateTransverseInfo(); //!< Updates information about this voxel pertaining to volumetric deformations. Call this every timestep if the poisson's ratio of the link material is non-zero.
 
+
+
+
 private:
 
 	CVX_Voxel* pVNeg, *pVPos; //voxels in the negative
@@ -101,7 +104,16 @@ private:
 	bool isLocalVelocityValid() const {return boolStates & LOCAL_VELOCITY_VALID ? true : false;} //
 	void setBoolState(linkFlags flag, bool set=true) {set ? boolStates |= (int)flag : boolStates &= ~(int)flag;}
 
+	//linkAxis axis() {return ax;}
 	linkAxis axis;
+
+	//beam parameters
+	float a1() const;
+	float a2() const;
+	float b1() const;
+	float b2() const;
+	float b3() const;
+
 
 	CVX_MaterialLink* mat;
 	float strainRatio; //ration of Epos to Eneg (EPos/Eneg)
@@ -126,6 +138,7 @@ private:
 
 //	friend class CVX_Voxel;
 	friend class CVoxelyze;
+	friend class CVX_LinearSolver;
 	friend class CVXS_SimGLView; //TEMPORARY
 };
 

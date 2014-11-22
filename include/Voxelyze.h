@@ -24,8 +24,6 @@
 class CVX_Material;
 class CVX_MaterialVoxel;
 class CVX_MaterialLink;
-//class CVX_Voxel;
-//class CVX_Link;
 class CVX_Collision;
 
 
@@ -41,6 +39,8 @@ public:
 	CVoxelyze& operator=(const CVoxelyze& VIn); //equal operator
 
 	void clear(); //deallocates and returns everything to defaults except voxel size.
+
+	bool doLinearSolve(/*SOLVER thisSolver, float stepPercentage = 1.0f*/); //linearizes at current point and solves
 
 	bool doTimeStep(float dt = -1.0f); //timestep. -1.0f = calculate the recommended timestep
 	float recommendedTimeStep() const; //returns recommended time step

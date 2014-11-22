@@ -2,7 +2,7 @@
 
 TEST(CVX_Voxel, DefaultValues){
 	CVX_MaterialVoxel mat;
-	CVX_Voxel vox(&mat);
+	CVX_Voxel vox(&mat, 0, 0, 0);
 	EXPECT_FALSE(vox.isFixed(X_TRANSLATE));
 	EXPECT_FALSE(vox.isFixed(Y_TRANSLATE));
 	EXPECT_FALSE(vox.isFixed(Z_TRANSLATE));
@@ -16,7 +16,7 @@ TEST(CVX_Voxel, DefaultValues){
 TEST(CVX_Voxel, setFixed)
 {
 	CVX_MaterialVoxel mat;
-	CVX_Voxel vox(&mat);
+	CVX_Voxel vox(&mat, 0, 0, 0);
 
 	vox.setFixedAll();
 	EXPECT_TRUE(vox.isFixedAll());

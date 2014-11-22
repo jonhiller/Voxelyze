@@ -266,3 +266,10 @@ float CVX_Link::axialStiffness() const {
 	if (mat->isConstantArea()) return mat->_a1;
 	else return (float)(mat->_eHat*currentTransverseArea/((strain+1)*currentRestLength)); // _a1;
 } 
+
+float CVX_Link::a1() const {return mat->_a1;}
+float CVX_Link::a2() const {return mat->_a2;}
+float CVX_Link::b1() const {return mat->_b1;}
+float CVX_Link::b2() const {return mat->_b2;}
+float CVX_Link::b3() const {return mat->_b3;}
+

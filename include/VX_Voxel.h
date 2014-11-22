@@ -79,6 +79,7 @@ public:
 	void reset(); 
 
 	CVX_Link* link(linkDirection direction) const {return links[direction];}
+	int linkCount() const {int retVal =0; for (int i=0; i<6; i++) if (links[i]) retVal++; return retVal;}
 	CVX_Voxel* adjacentVoxel(linkDirection direction) const; //!<Returns a pointer to the voxel in the specified direction if one exists, or NULL otherwise. @param[in] direction Positive or negative X, Y, or Z direction according to the linkDirection enum.
 	short indexX() {return ix;}
 	short indexY() {return iy;}
@@ -90,7 +91,7 @@ public:
 
 	//physical location
 	Vec3D<double> position() const {return pos;} //!< Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate system (LCS).
-	Vec3D<float> displacement() const {float s=mat->nominalSize(); return (Vec3D<float>)pos - Vec3D<float>(ix*s, iy*s, iz*s);} //!< Returns the 3D displacement of this voxel from its original location in meters (GCS)/
+	Vec3D<double> displacement() const {return (pos - originalPosition());} //!< Returns the 3D displacement of this voxel from its original location in meters (GCS)/
 	Vec3D<float> size() const {return cornerOffset(PPP)-cornerOffset(NNN);} //!< Returns the current deformed size of this voxel in the local voxel coordinates system (LCS). If asymmetric forces are acting on this voxel, the voxel may not be centered on position(). Use cornerNegative() and cornerPositive() to determine this information.
 	Vec3D<float> cornerPosition(voxelCorner corner) const; //!< Returns the deformed location of the voxel corner in the specified corner in the global coordinate system (GCS). Essentially cornerOffset() with the voxel's current global position/rotation applied.
 	Vec3D<float> cornerOffset(voxelCorner corner) const; //!< Returns the deformed location of the voxel corner in the specified corner in the local voxel coordinate system (LCS). Used to draw the deformed voxel in the correct position relative to the position().
@@ -101,9 +102,9 @@ public:
 	double baseSize(linkAxis axis) const {return mat->size()[axis]*(1+temp*mat->alphaCTE);} //!<Returns the nominal size of this voxel in the specified axis accounting for any specified temperature and external actuation. Specifically, returns the zero-stress dimension of the voxel if all forces/moments were removed.
 	double baseSizeAverage() const {Vec3D<double> bSize=baseSize(); return (bSize.x+bSize.y+bSize.z)/3.0f;} //!<Returns the average nominal size of the voxel in a zero-stress (no force) state. (X+Y+Z/3)
 
-	Quat3D<> orientation() const {return orient;} //!< Returns the orientation of this voxel in quaternion form (GCS). This orientation defines the relative orientation of the local coordinate system (LCS). The unit quaternion represents the original orientation of this voxel.
+	Quat3D<double> orientation() const {return orient;} //!< Returns the orientation of this voxel in quaternion form (GCS). This orientation defines the relative orientation of the local coordinate system (LCS). The unit quaternion represents the original orientation of this voxel.
 	float orientationAngle() const {return (float)orient.Angle();} //!< Use with orientationAxis() to get the orientation of this voxel in angle/axis form. Returns the angle in radians.
-	Vec3D<> orientationAxis() const {return orient.Axis();} //!< Use with orientationAngle() to get the orientation of this voxel in angle/axis form. Returns a unit vector in the global coordinate system (GCS).
+	Vec3D<double> orientationAxis() const {return orient.Axis();} //!< Use with orientationAngle() to get the orientation of this voxel in angle/axis form. Returns a unit vector in the global coordinate system (GCS).
 
 	float displacementMagnitude() const {return (float)displacement().Length();}
 	Vec3D<double> velocity() const {return linMom*mat->_massInverse;} //!< Returns the 3D velocity of this voxel in m/s (GCS)
@@ -177,6 +178,8 @@ private:
 
 	CVX_MaterialVoxel* mat;
 	short ix, iy, iz;
+	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);}
+
 	void replaceMaterial(CVX_MaterialVoxel* newMaterial); //!<Replaces the material properties of this voxel (but not links) to this new CVX_Material. May cause unexpected behavior if certain material properties are changed mid-simulation. @param [in] newMaterial The new material properties for this voxel.
 
 	void addLinkInfo(linkDirection direction, CVX_Link* link); //adds the information about a link connected to this voxel in the specified direction
@@ -231,6 +234,7 @@ private:
 	//friend class CVX_Collision;
 
 	friend class CVXS_SimGLView; //TEMPORARY
+	friend class CVX_LinearSolver;
 
 };
 

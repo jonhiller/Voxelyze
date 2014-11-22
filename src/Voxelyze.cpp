@@ -14,6 +14,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_MaterialVoxel.h"
 #include "VX_Voxel.h"
 #include "VX_Link.h"
+#include "VX_LinearSolver.h"
 #include <assert.h>
 
 //#define USE_OMP
@@ -40,6 +41,17 @@ CVoxelyze::CVoxelyze(double voxelSize)
 CVoxelyze::~CVoxelyze(void)
 {
 	clear();
+}
+
+bool CVoxelyze::doLinearSolve() //linearizes at current point and solves
+{
+	CVX_LinearSolver solver(this);
+	solver.solve();
+
+//	composeK();
+//	addForces();
+//	addFixed();
+	return true;
 }
 
 bool CVoxelyze::doTimeStep(float dt)

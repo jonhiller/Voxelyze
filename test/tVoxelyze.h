@@ -743,7 +743,7 @@ TEST(CVoxelyze, poissonsLarge) //2x2x9
 
 	EXPECT_NEAR(5e-4, (float)(Sim.voxel(4,0,0)->position().x-0.004), 1e-7);
 
-	Vec3D<float> curSize = 2*Sim.voxel(4,0,0)->cornerPositive(); //to avoid edges
+	Vec3D<float> curSize = 2*Sim.voxel(4,0,0)->cornerPosition(CVX_Voxel::PPP); //to avoid edges
 	Vec3D<float> curStrain = curSize - Vec3D<float>(0.001f, 0.001f, 0.001f);
 	curStrain /= 0.001f; 
 	EXPECT_NEAR(1.306e-1, curStrain.x, 1e-3);
