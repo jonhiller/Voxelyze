@@ -26,10 +26,12 @@ CVX_Voxel::CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, sh
 	ix = indexX;
 	iy = indexY;
 	iz = indexZ;
+	ext=NULL;
 
 //	pos = linMom = angMom = Vec3D<>(0,0,0);
 //	orient = Quat3D<>();
-	dofFixed = boolStates = 0;
+	//dofFixed = 
+	boolStates = 0;
 	setFloorStaticFriction(true);
 	temp = 0.0f;
 //	gravAccel = 0.0f;
@@ -42,6 +44,7 @@ CVX_Voxel::CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, sh
 	colWatch=NULL;
 	nearby=NULL;
 
+
 }
 
 CVX_Voxel::~CVX_Voxel(void)
@@ -49,22 +52,26 @@ CVX_Voxel::~CVX_Voxel(void)
 	if (lastColWatchPosition) delete lastColWatchPosition;
 	if (colWatch) delete colWatch;
 	if (nearby) delete nearby;
+	if (ext) delete ext;
 }
 
 void CVX_Voxel::reset()
 {
-	double myNominalSize = mat->nominalSize();
-	if (!isFixed(X_TRANSLATE)) pos.x = ix*myNominalSize;
-	if (!isFixed(Y_TRANSLATE)) pos.y = iy*myNominalSize;
-	if (!isFixed(Z_TRANSLATE)) pos.z = iz*myNominalSize;
-	if (!isFixed(X_ROTATE)) orient.x = 0;
-	if (!isFixed(Y_ROTATE)) orient.y = 0;
-	if (!isFixed(Z_ROTATE)) orient.z = 0;
-	
-	if (orient.x == 0 && orient.y == 0 && orient.z == 0) orient.w = 1.0;
-	else orient.Normalize(); //no angular displacement
+//	double myNominalSize = mat->nominalSize();
+	pos = mat->nominalSize()*Vec3D<double>(ix, iy, iz);
+	orient = Quat3D<double>();
 
-	assert(!(orient.w != orient.w));
+//	if (!isFixed(X_TRANSLATE)) pos.x = ix*myNominalSize;
+//	if (!isFixed(Y_TRANSLATE)) pos.y = iy*myNominalSize;
+//	if (!isFixed(Z_TRANSLATE)) pos.z = iz*myNominalSize;
+//	if (!isFixed(X_ROTATE)) orient.x = 0;
+//	if (!isFixed(Y_ROTATE)) orient.y = 0;
+//	if (!isFixed(Z_ROTATE)) orient.z = 0;
+	
+//	if (orient.x == 0 && orient.y == 0 && orient.z == 0) orient.w = 1.0;
+//	else orient.Normalize(); //no angular displacement
+
+//	assert(!(orient.w != orient.w));
 
 	haltMotion(); //zeros linMom and angMom
 	setFloorStaticFriction(true);
@@ -144,58 +151,58 @@ void CVX_Voxel::setTemperature(float temperature)
 	}
 } 
 
-
-Vec3D<float> CVX_Voxel::externalForce()
-{
-	Vec3D<float> returnForce(extForce);
-	if (isFixed(X_TRANSLATE) || isFixed(Y_TRANSLATE) || isFixed(Z_TRANSLATE)){
-		Vec3D<float> thisForce = (Vec3D<float>) -force();
-		if (isFixed(X_TRANSLATE)) returnForce.x = thisForce.x;
-		if (isFixed(Y_TRANSLATE)) returnForce.y = thisForce.y;
-		if (isFixed(Z_TRANSLATE)) returnForce.z = thisForce.z;
-	}
-	return returnForce;
-}
-
-Vec3D<float> CVX_Voxel::externalMoment()
-{
-	Vec3D<float> returnMoment(extMoment);
-	if (isFixed(X_ROTATE) || isFixed(Y_ROTATE) || isFixed(Z_ROTATE)){
-		Vec3D<float> thisMoment = (Vec3D<float>) -moment();
-		if (isFixed(X_ROTATE)) returnMoment.x = thisMoment.x;
-		if (isFixed(Y_ROTATE)) returnMoment.y = thisMoment.y;
-		if (isFixed(Z_ROTATE)) returnMoment.z = thisMoment.z;
-	}
-	return returnMoment;
-}
-
-
-void CVX_Voxel::setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate)
-{
-	dofFixed = dof(xTranslate, yTranslate, zTranslate, xRotate, yRotate, zRotate);
-}
-
-void CVX_Voxel::setFixed(dofComponent dof, float displacement)
-{
-	dofSet(dofFixed, dof, true);
-	if (displacement != 0.0f){
-		if (dof & X_TRANSLATE) pos.x+=displacement;
-		if (dof & Y_TRANSLATE) pos.y+=displacement;
-		if (dof & Z_TRANSLATE) pos.z+=displacement;
-		if (dof & X_ROTATE) orient = Quat3D<>(displacement, Vec3D<>(1,0,0))*orient;
-		if (dof & Y_ROTATE)	orient = Quat3D<>(displacement, Vec3D<>(0,1,0))*orient;
-		if (dof & Z_ROTATE) orient = Quat3D<>(displacement, Vec3D<>(0,0,1))*orient;
-	}
-
-}
-
-void CVX_Voxel::setFixedAll(const Vec3D<>& translation, const Vec3D<>& rotation)
-{
-	dofSetAll(dofFixed, true);
-	pos += translation;
-	Quat3D<> rot(rotation);
-	orient = rot*orient;
-}
+//
+//Vec3D<float> CVX_Voxel::externalForce()
+//{
+//	Vec3D<float> returnForce(extForce);
+//	if (isFixed(X_TRANSLATE) || isFixed(Y_TRANSLATE) || isFixed(Z_TRANSLATE)){
+//		Vec3D<float> thisForce = (Vec3D<float>) -force();
+//		if (isFixed(X_TRANSLATE)) returnForce.x = thisForce.x;
+//		if (isFixed(Y_TRANSLATE)) returnForce.y = thisForce.y;
+//		if (isFixed(Z_TRANSLATE)) returnForce.z = thisForce.z;
+//	}
+//	return returnForce;
+//}
+//
+//Vec3D<float> CVX_Voxel::externalMoment()
+//{
+//	Vec3D<float> returnMoment(extMoment);
+//	if (isFixed(X_ROTATE) || isFixed(Y_ROTATE) || isFixed(Z_ROTATE)){
+//		Vec3D<float> thisMoment = (Vec3D<float>) -moment();
+//		if (isFixed(X_ROTATE)) returnMoment.x = thisMoment.x;
+//		if (isFixed(Y_ROTATE)) returnMoment.y = thisMoment.y;
+//		if (isFixed(Z_ROTATE)) returnMoment.z = thisMoment.z;
+//	}
+//	return returnMoment;
+//}
+//
+//
+//void CVX_Voxel::setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate)
+//{
+//	dofFixed = dof(xTranslate, yTranslate, zTranslate, xRotate, yRotate, zRotate);
+//}
+//
+//void CVX_Voxel::setFixed(dofComponent dof, float displacement)
+//{
+//	dofSet(dofFixed, dof, true);
+//	if (displacement != 0.0f){
+//		if (dof & X_TRANSLATE) pos.x+=displacement;
+//		if (dof & Y_TRANSLATE) pos.y+=displacement;
+//		if (dof & Z_TRANSLATE) pos.z+=displacement;
+//		if (dof & X_ROTATE) orient = Quat3D<>(displacement, Vec3D<>(1,0,0))*orient;
+//		if (dof & Y_ROTATE)	orient = Quat3D<>(displacement, Vec3D<>(0,1,0))*orient;
+//		if (dof & Z_ROTATE) orient = Quat3D<>(displacement, Vec3D<>(0,0,1))*orient;
+//	}
+//
+//}
+//
+//void CVX_Voxel::setFixedAll(const Vec3D<>& translation, const Vec3D<>& rotation)
+//{
+//	dofSetAll(dofFixed, true);
+//	pos += translation;
+//	Quat3D<> rot(rotation);
+//	orient = rot*orient;
+//}
 
 Vec3D<float> CVX_Voxel::cornerPosition(voxelCorner corner) const
 {
@@ -251,7 +258,10 @@ void CVX_Voxel::timeStep(float dt)
 	previousDt = dt;
 	if (dt == 0.0f) return;
 
-	if (dofIsAllSet(dofFixed)){ //if this voxel is fixed, no need to change its location
+	if (ext && ext->isFixedAll()){
+//	if (dofIsAllSet(dofFixed)){ //if this voxel is fixed, no need to change its location
+		pos = originalPosition() + ext->translation();
+		orient = ext->rotationQuat();
 		haltMotion();
 		return;
 	}
@@ -267,9 +277,9 @@ void CVX_Voxel::timeStep(float dt)
 	assert(!(curForce.x != curForce.x) || !(curForce.y != curForce.y) || !(curForce.z != curForce.z)); //assert non QNAN
 	linMom += curForce*dt;
 
-	if (dofIsSet(dofFixed, X_TRANSLATE)){linMom.x=0;}
-	if (dofIsSet(dofFixed, Y_TRANSLATE)){linMom.y=0;}
-	if (dofIsSet(dofFixed, Z_TRANSLATE)){linMom.z=0;}
+	//if (dofIsSet(dofFixed, X_TRANSLATE)){linMom.x=0;}
+	//if (dofIsSet(dofFixed, Y_TRANSLATE)){linMom.y=0;}
+	//if (dofIsSet(dofFixed, Z_TRANSLATE)){linMom.z=0;}
 
 	Vec3D<double> translate(linMom*(dt*mat->_massInverse)); //movement of the voxel this timestep
 
@@ -294,11 +304,23 @@ void CVX_Voxel::timeStep(float dt)
 	Vec3D<> curMoment = moment();
 	angMom += curMoment*dt;
 
-	if (dofIsSet(dofFixed, X_ROTATE)){angMom.x=0;}
-	if (dofIsSet(dofFixed, Y_ROTATE)){angMom.y=0;}
-	if (dofIsSet(dofFixed, Z_ROTATE)){angMom.z=0;}
+//	if (dofIsSet(dofFixed, X_ROTATE)){angMom.x=0;}
+//	if (dofIsSet(dofFixed, Y_ROTATE)){angMom.y=0;}
+//	if (dofIsSet(dofFixed, Z_ROTATE)){angMom.z=0;}
 
 	orient = Quat3D<>(angularVelocity()*dt)*orient; //update the orientation
+
+	if (ext){
+		double size = mat->nominalSize();
+		if (ext->isFixed(X_TRANSLATE)) {pos.x = ix*size + ext->translation().x; linMom.x=0;}
+		if (ext->isFixed(Y_TRANSLATE)) {pos.y = iy*size + ext->translation().y; linMom.y=0;}
+		if (ext->isFixed(Z_TRANSLATE)) {pos.z = iz*size + ext->translation().z; linMom.z=0;}
+		if (ext->isFixed(X_ROTATE) || ext->isFixed(Y_ROTATE) || ext->isFixed(Z_ROTATE)){ //if any rotation fixed, all are fixed
+			orient = ext->rotationQuat();
+			angMom = Vec3D<double>();
+		}
+	}
+
 
 	poissonsStrainInvalid = true;
 }
@@ -314,7 +336,8 @@ Vec3D<double> CVX_Voxel::force()
 	assert(!(totalForce.x != totalForce.x) || !(totalForce.y != totalForce.y) || !(totalForce.z != totalForce.z)); //assert non QNAN
 
 	//other forces
-	totalForce += extForce; //external forces
+	if (externalExists()) totalForce += external()->force(); //external forces
+	//totalForce += extForce; //external forces
 	totalForce -= velocity()*mat->globalDampingTranslateC(); //global damping f-cv
 	totalForce.z += mat->gravityForce(); //gravity, according to f=mg
 
@@ -337,7 +360,8 @@ Vec3D<double> CVX_Voxel::moment()
 	totalMoment = orient.RotateVec3D(totalMoment);
 	
 	//other moments
-	totalMoment += extMoment; //external moments
+	if (externalExists()) totalMoment += external()->moment(); //external moments
+	//totalMoment += extMoment; //external moments
 	totalMoment -= angularVelocity()*mat->globalDampingRotateC(); //global damping
 	return totalMoment;
 }
@@ -396,7 +420,8 @@ Vec3D<float> CVX_Voxel::strain(bool poissonsStrain) const
 	for (int i=0; i<3; i++){ //cycle through axes
 		if (numBondAxis[i]==2) intStrRet[i] *= 0.5f; //average
 		if (poissonsStrain){
-			tension[i] = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && dofIsSet(dofFixed, (dofComponent)(1<<i)) && extForce[i] != 0)); //if both sides pulling, or just one side and a fixed or forced voxel...
+			tension[i] = ((numBondAxis[i]==2) || (ext && (numBondAxis[i]==1 && ext->isFixed((dofComponent)(1<<i)) && ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
+//			tension[i] = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && dofIsSet(dofFixed, (dofComponent)(1<<i)) && extForce[i] != 0)); //if both sides pulling, or just one side and a fixed or forced voxel...
 		}
 
 	}

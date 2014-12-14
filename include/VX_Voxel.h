@@ -14,6 +14,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 //class CVX_Link;
 #include "Vec3D.h"
 #include "VX_Link.h"
+#include "VX_External.h"
 //#include "VX_Enums.h"
 #include "VX_MaterialVoxel.h" //needed for inline of some "get" functions
 #include "VX_Collision.h"
@@ -21,21 +22,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 
 
-typedef unsigned char dofObject;  //Bits: 0 0 Tz, Ty, Tz, Z, Y, X. 0 if free, 1 if fixed
-enum dofComponent {
-	X_TRANSLATE=1<<0,
-	Y_TRANSLATE=1<<1,
-	Z_TRANSLATE=1<<2,
-	X_ROTATE=1<<3,
-	Y_ROTATE=1<<4,
-	Z_ROTATE=1<<5
-};
-inline void dofSet(dofObject& obj, dofComponent dof, bool set) {set ? obj|=dof : obj&=~dof;}
-inline void dofSetAll(dofObject& obj, bool set) {set ? obj|=0x3F : obj&=~0x3F;}
-inline bool dofIsSet(dofObject obj, dofComponent dof){return (dof&obj)?true:false;}
-inline bool dofIsAllSet(dofObject obj){return (obj&0x3F)==0x3F;}
-inline bool dofIsNoneSet(dofObject obj){return !(obj&0x3F);}
-inline dofObject dof(bool tx, bool ty, bool tz, bool rx, bool ry, bool rz) {dofObject ret=0; dofSet(ret, X_TRANSLATE, tx); dofSet(ret, Y_TRANSLATE, ty); dofSet(ret, Z_TRANSLATE, tz); dofSet(ret, X_ROTATE, rx); dofSet(ret, Y_ROTATE, ry); dofSet(ret, Z_ROTATE, rz); return ret;}
 
 
 
@@ -86,6 +72,10 @@ public:
 	short indexZ() {return iz;}
 
 	CVX_MaterialVoxel* material() {return mat;} //!<Returns the linked material object containing the physical properties of this voxel.
+	
+	bool externalExists() {return (bool)ext;}
+	CVX_External* external() {if (!ext) ext = new CVX_External(); return ext;} //creates empty one if it doesn't exist
+
 
 	void timeStep(float dt); //!< Advances this voxel's state according to all forces and moments acting on it. Large timesteps will cause instability. Use CVoxelyze::recommendedTimeStep() to get the recommended largest stable timestep. @param[in] dt Timestep (in second) to advance.
 
@@ -128,22 +118,22 @@ public:
 //	void addThermalEnergy(float energy); //adds a fixed amount of energy
 //	void fixTemperature(float temperature); //fixes temperature at the 
 
-	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return the latest setExternalForce(). If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
-	void setExternalForce(const float xForce, const float yForce, const float zForce) {extForce = Vec3D<float>(xForce, yForce, zForce);} //!< Applies forces to this voxel in the global coordinate system. Has no effect in any fixed degrees of freedom. @param xForce Force in the X direction in newtons.  @param yForce Force in the Y direction in newtons.  @param zForce Force in the Z direction in newtons. 
-	void setExternalForce(const Vec3D<float>& force) {extForce = force;} //!< Convenience function for setExternalForce(float, float, float).
-	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return the latest setExternalMoment(). If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
-	void setExternalMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment = Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
-	void setExternalMoment(const Vec3D<float>& moment) {extMoment = moment;} //!< Convenience function for setExternalMoment(float, float, float).
+//	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return the latest setExternalForce(). If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
+//	void setExternalForce(const float xForce, const float yForce, const float zForce) {extForce = Vec3D<float>(xForce, yForce, zForce);} //!< Applies forces to this voxel in the global coordinate system. Has no effect in any fixed degrees of freedom. @param xForce Force in the X direction in newtons.  @param yForce Force in the Y direction in newtons.  @param zForce Force in the Z direction in newtons. 
+//	void setExternalForce(const Vec3D<float>& force) {extForce = force;} //!< Convenience function for setExternalForce(float, float, float).
+//	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return the latest setExternalMoment(). If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
+//	void setExternalMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment = Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
+//	void setExternalMoment(const Vec3D<float>& moment) {extMoment = moment;} //!< Convenience function for setExternalMoment(float, float, float).
 
 	void haltMotion(){linMom = angMom = Vec3D<>(0,0,0);} //!< Halts all momentum of this block. Unless fixed the voxel will continue to move in subsequent timesteps.
 
-	void setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate); //!< Set the specified true degrees of freedom as fixed for this voxel. (GCS) @param[in] xTranslate Translation in the X direction  @param[in] yTranslate Translation in the Y direction @param[in] zTranslate Translation in the Z direction @param[in] xRotate Rotation about the X axis @param[in] yRotate Rotation about the Y axis @param[in] zRotate Rotation about the Z axis
-	void setFixed(dofComponent dof, float displacement=0.0f); //!< Sets the specified degree of freedom to fixed and applies the prescribed displacement. @param[in] dof Degree of freedom to fix according to the dofComponent enum. @param[in] displacement The prescribed displacement in meters for translational degrees of freedom and radians for rotational degrees of freedom.
-	void setFixedAll(const Vec3D<>& translation = Vec3D<>(0,0,0), const Vec3D<>& rotation = Vec3D<>(0,0,0)); //!<Fixes all 6 degrees of freedom for this voxel. @param [in] translation Translation in meters to prescribe (GCS). @param[in] rotation Rotation in radians to prescribe. Applied in the order of X, Y, Z rotation in the global coordinate system.
-	void setUnfixed(dofComponent dof) {dofSet(dofFixed, dof, false);} //!< Sets the specified degree of freedom to unfixed @param[in] dof Degree of freedom to fix according to the dofComponent enum.
-	void setUnfixedAll() {dofSetAll(dofFixed, false);} //!< Unfixes all 6 degrees of freedom for this voxel.
-	bool isFixed(dofComponent dof) const {return dofIsSet(dofFixed, dof);}  //!< Returns true if the specified degree of freedom is fixed for this voxel. @param[in] dof Degree of freedom to query according to the dofComponent enum.
-	bool isFixedAll() const {return dofIsAllSet(dofFixed);} //!< Returns true if all 6 degrees of freedom are fixed for this voxel.
+//	void setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate); //!< Set the specified true degrees of freedom as fixed for this voxel. (GCS) @param[in] xTranslate Translation in the X direction  @param[in] yTranslate Translation in the Y direction @param[in] zTranslate Translation in the Z direction @param[in] xRotate Rotation about the X axis @param[in] yRotate Rotation about the Y axis @param[in] zRotate Rotation about the Z axis
+//	void setFixed(dofComponent dof, float displacement=0.0f); //!< Sets the specified degree of freedom to fixed and applies the prescribed displacement. @param[in] dof Degree of freedom to fix according to the dofComponent enum. @param[in] displacement The prescribed displacement in meters for translational degrees of freedom and radians for rotational degrees of freedom.
+//	void setFixedAll(const Vec3D<>& translation = Vec3D<>(0,0,0), const Vec3D<>& rotation = Vec3D<>(0,0,0)); //!<Fixes all 6 degrees of freedom for this voxel. @param [in] translation Translation in meters to prescribe (GCS). @param[in] rotation Rotation in radians to prescribe. Applied in the order of X, Y, Z rotation in the global coordinate system.
+//	void setUnfixed(dofComponent dof) {dofSet(dofFixed, dof, false);} //!< Sets the specified degree of freedom to unfixed @param[in] dof Degree of freedom to fix according to the dofComponent enum.
+//	void setUnfixedAll() {dofSetAll(dofFixed, false);} //!< Unfixes all 6 degrees of freedom for this voxel.
+//	bool isFixed(dofComponent dof) const {return dofIsSet(dofFixed, dof);}  //!< Returns true if the specified degree of freedom is fixed for this voxel. @param[in] dof Degree of freedom to query according to the dofComponent enum.
+//	bool isFixedAll() const {return dofIsAllSet(dofFixed);} //!< Returns true if all 6 degrees of freedom are fixed for this voxel.
 
 	//float gravity() const {return gravAccel;}
 	//void setGravityAccel(float gravityAcceleration) {gravAccel = gravityAcceleration;}
@@ -178,6 +168,7 @@ private:
 
 	CVX_MaterialVoxel* mat;
 	short ix, iy, iz;
+	CVX_External* ext;
 	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);}
 
 	void replaceMaterial(CVX_MaterialVoxel* newMaterial); //!<Replaces the material properties of this voxel (but not links) to this new CVX_Material. May cause unexpected behavior if certain material properties are changed mid-simulation. @param [in] newMaterial The new material properties for this voxel.
@@ -197,10 +188,10 @@ private:
 	voxState boolStates;				//single int to store many boolean state values as bit flags according to 
 	void setFloorStaticFriction(bool active) {active? boolStates |= FLOOR_STATIC_FRICTION : boolStates &= ~FLOOR_STATIC_FRICTION;}
 
-	dofObject dofFixed;
+	//dofObject dofFixed;
 	
 	//potential inputs affecting this local voxel
-	Vec3D<float> extForce, extMoment; //External force, moment applied to this voxel (N, N-m) if relevant DOF are unfixed
+	//Vec3D<float> extForce, extMoment; //External force, moment applied to this voxel (N, N-m) if relevant DOF are unfixed
 
 	float temp; //0 is no expansion
 

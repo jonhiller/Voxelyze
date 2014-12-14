@@ -12,12 +12,21 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <assert.h>
 
 
-CVX_MaterialVoxel::CVX_MaterialVoxel(double nominalSize, float youngsModulus, float density) : CVX_Material(youngsModulus, density)
+CVX_MaterialVoxel::CVX_MaterialVoxel(float youngsModulus, float density, double nominalSize) : CVX_Material(youngsModulus, density)
+{
+	initialize(nominalSize);
+}
+
+CVX_MaterialVoxel::CVX_MaterialVoxel(rapidjson::Value& mat, double nominalSize) : CVX_Material(mat)
+{
+	initialize(nominalSize);
+}
+
+void CVX_MaterialVoxel::initialize(double nominalSize)
 {
 	nomSize = nominalSize;
 	gravMult = 0.0f;
 	updateDerived();
-
 }
 
 //CVX_MaterialVoxel::~CVX_MaterialVoxel(void)

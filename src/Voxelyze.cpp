@@ -15,25 +15,23 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_Voxel.h"
 #include "VX_Link.h"
 #include "VX_LinearSolver.h"
+#include <unordered_map>
+#include <fstream>
+#include <sstream>
 #include <assert.h>
+
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/document.h"
+
 
 //#define USE_OMP
 
 CVoxelyze::CVoxelyze(double voxelSize)
 {
+	clear();
 	voxSize = voxelSize <= 0 ? DEFAULT_VOXEL_SIZE : voxelSize;
-	currentTime=0.0f;
-	ambientTemp = 0.0f;
-	grav = 0.0f;
-	floor = false;
-	collisions = false;
 
-	collisionsStale = true;
-	nearbyStale = true;
-
-
-	boundingRadius = 0.75f;
-	watchDistance = 1.0f;
 
 //	envTemp = 0.0f;
 }
@@ -41,6 +39,201 @@ CVoxelyze::CVoxelyze(double voxelSize)
 CVoxelyze::~CVoxelyze(void)
 {
 	clear();
+}
+
+bool CVoxelyze::loadJSON(const char* jsonFilePath)
+{
+	std::ifstream t(jsonFilePath);
+	if (t){
+		std::stringstream buffer;
+		buffer << t.rdbuf();
+
+		rapidjson::Document doc;
+		doc.Parse(buffer.str().c_str());
+		readJSON(doc);
+
+		t.close();
+		return true;
+	}
+	return false;
+	//else error!
+}
+
+bool CVoxelyze::saveJSON(const char* jsonFilePath)
+{
+	std::ofstream t(jsonFilePath);
+	if (t){
+		rapidjson::StringBuffer s;
+		rapidjson::PrettyWriter<rapidjson::StringBuffer> w(s);
+		writeJSON(w);
+		
+		//std::stringstream buffer;
+		t << s.GetString();
+		t.close();
+		return true;
+	}
+	return false;
+	//else error!
+}
+
+bool CVoxelyze::readJSON(rapidjson::Value& vxl)
+{
+	clear();
+
+	if (!vxl.IsObject()) {return false;}
+	
+	if (!vxl.HasMember("voxelSize") || !vxl["voxelSize"].IsDouble()) {return false;}
+	voxSize = vxl["voxelSize"].GetDouble();
+
+	if(!vxl.HasMember("materials") || !vxl["materials"].IsArray()) {return false;}
+//	std::vector<CVX_Material*> matList;
+	rapidjson::Value& m = vxl["materials"];
+//	for (int i=0; i<m.Size(); i++) matList.push_back(addMaterial(m[i]));
+	for (int i=0; i<m.Size(); i++) {
+		//if (m[i].HasMember("youngsModulus") && m[i]["youngsModulus"].IsDouble()){
+		//	float val = m[i]["youngsModulus"].GetDouble();
+		//}
+		addMaterial(m[i]);
+	}
+
+
+	//parse externals?
+	//allocate space
+	if (vxl.HasMember("voxels") && vxl["voxels"].IsArray() && vxl["voxels"].Size()%4 == 0){
+		rapidjson::Value& v = vxl["voxels"];
+
+		//get min.max
+		int minX=INT_MAX, maxX=INT_MIN, minY=INT_MAX, maxY=INT_MIN, minZ=INT_MAX, maxZ=INT_MIN;
+		for (int i=0; i<v.Size()/4; i++){
+			int x = v[4*i].GetInt(), y=v[4*i+1].GetInt(), z=v[4*i+2].GetInt();
+			if (x<minX) minX=x;
+			if (x>maxX) maxX=x;
+			if (y<minY) minY=y;
+			if (y>maxY) maxY=y;
+			if (z<minZ) minZ=z;
+			if (z>maxZ) maxZ=z;
+		}
+
+		voxels.resize(maxX-minX, maxY-minY, maxZ-minZ, minX, minY, minZ);
+		voxelsList.reserve(v.Size()/4);
+		for (int i=0; i<3; i++) links[i].resize(maxX-minX+1, maxY-minY+1, maxZ-minZ+1, minX-1, minY-1, minZ-1);
+
+		//add 'em!
+		for (int i=0; i<v.Size()/4; i++) addVoxel(voxelMats[v[i*4+3].GetInt()], v[4*i].GetInt(), v[4*i+1].GetInt(), v[4*i+2].GetInt());
+//		for (int i=0; i<v.Size()/4; i++) addVoxel((CVX_MaterialVoxel*)matList[v[i*4+3].GetInt()], v[4*i].GetInt(), v[4*i+1].GetInt(), v[4*i+2].GetInt());
+		//quicker link add?
+	}
+
+	if (vxl.HasMember("externals") && vxl["externals"].IsArray()){
+		for (int i=0; i<vxl["externals"].Size(); i++){
+			rapidjson::Value& ext = vxl["externals"][i];
+			if (!(ext.HasMember("voxelIndices") && ext["voxelIndices"].IsArray())) continue; //invalid external
+
+			bool dof[6] = {false};
+			double disp[6] = {0};
+			Vec3D<float> force, moment;
+
+			if (ext.HasMember("fixed") && ext["fixed"].IsArray() && ext["fixed"].Size()==6) for (int j=0; j<6; j++){dof[j] = ext["fixed"][j].GetBool();}
+			if (ext.HasMember("translate") && ext["translate"].IsArray() && ext["translate"].Size()==3) for (int j=0; j<3; j++){disp[j] = ext["translate"][j].GetDouble();}
+			if (ext.HasMember("rotate") && ext["rotate"].IsArray() && ext["rotate"].Size()==3) for (int j=0; j<3; j++){disp[3+j] = ext["rotate"][j].GetDouble();}
+			if (ext.HasMember("force") && ext["force"].IsArray() && ext["force"].Size()==3) for (int j=0; j<3; j++){force[j] = (float)ext["force"][j].GetDouble();}
+			if (ext.HasMember("moment") && ext["moment"].IsArray() && ext["moment"].Size()==3) for (int j=0; j<3; j++){moment[j] = (float)ext["moment"][j].GetDouble();}
+
+			for (int j=0; j<ext["voxelIndices"].Size(); j++){
+				CVX_External* pE = voxelsList[ext["voxelIndices"][j].GetInt()]->external();
+				for (int k=0; k<6; k++)	if (dof[k]) pE->addDisplacement((dofComponent)k, disp[k]); //fixed degree of freedom
+				pE->addForce(force);
+				pE->addMoment(moment);
+			}
+		}
+	}
+
+	return true;
+}
+
+#include <iostream>
+bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
+{
+
+	//rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+
+	w.StartObject();
+	w.Key("voxelSize");		w.Double(voxSize);
+	if (ambientTemp != 0){		w.Key("relativeAmbientTemperature");	w.Double((double)ambientTemp);}
+	if (grav != 0){				w.Key("gravityAcceleration");			w.Double((double)grav);}
+	if (floor == true){			w.Key("floorEnabled");					w.Bool(floor);}
+	if (collisions == true){	w.Key("collisionsEnabled");				w.Bool(collisions);}
+
+	std::unordered_map<CVX_Material*, int> m2i; //lookup from material pointer to material index
+
+	w.Key("materials");
+	w.StartArray();
+	for (int i=0; i<materialCount(); i++){
+		m2i[material(i)] = i;
+		material(i)->writeJSON(w);
+	}
+	w.EndArray();
+
+	std::vector<CVX_External*> exts; //catalog of externals
+	std::vector<std::vector<int>> extVoxIndices; //array of voxels associated with each external
+	w.Key("voxels");
+	w.StartArray();
+	for (int i=0; i<voxelCount(); i++) { //array of x0, y0, z0, material0, x1, y1, z1, material1, ...
+		CVX_Voxel* pVox = voxel(i);
+		w.Int(pVox->indexX());
+		w.Int(pVox->indexY());
+		w.Int(pVox->indexZ());
+		w.Uint(m2i[pVox->material()]);
+
+		if (pVox->externalExists() && !pVox->external()->isEmpty()){
+			bool match = false;
+			for (int j=0; j<exts.size(); j++){
+				if (*pVox->external() == *exts[j]){ //found one!
+					extVoxIndices[j].push_back(i);
+					match = true;
+					break;
+				}
+			}
+			if (!match){ //doesn't exist yet
+				exts.push_back(pVox->external());
+				extVoxIndices.push_back(std::vector<int>(1,i));
+			}
+		}
+	}
+	w.EndArray();
+
+	if(exts.size() > 0){
+		w.Key("externals");
+		w.StartArray();
+		for (int i=0; i<exts.size(); i++){
+			CVX_External* e = exts[i];
+			w.StartObject();
+	
+			if (e->isFixedAny()){ //if anything is fixed
+				w.Key("fixed");
+				w.StartArray();
+				w.Bool(e->isFixed(X_TRANSLATE)); w.Bool(e->isFixed(Y_TRANSLATE)); w.Bool(e->isFixed(Z_TRANSLATE)); w.Bool(e->isFixed(X_ROTATE)); w.Bool(e->isFixed(Y_ROTATE)); w.Bool(e->isFixed(Z_ROTATE));
+				w.EndArray();
+			}
+
+			if (e->isFixedAnyTranslation() && e->translation() != Vec3D<double>()){w.Key("translate"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->translation()[j]); w.EndArray();}
+			if (e->isFixedAnyRotation() && e->rotation() != Vec3D<double>()){w.Key("rotate"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->rotation()[j]); w.EndArray();}
+			if (!e->isFixedAllTranslation() && e->force() != Vec3D<float>()){w.Key("force"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->force()[j]); w.EndArray();}
+			if (!e->isFixedAllRotation() && e->moment() != Vec3D<float>()){w.Key("moment"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->moment()[j]); w.EndArray();}
+
+			w.Key("voxelIndices");
+			w.StartArray();
+			for (int j=0; j<extVoxIndices[i].size(); j++) w.Uint(extVoxIndices[i][j]);
+			w.EndArray();
+			w.EndObject();
+		}
+		w.EndArray();
+		w.EndObject();
+	}
+
+//	std::cout << s.GetString() << std::endl;
+	//return s.GetString();
+	return true;
 }
 
 bool CVoxelyze::doLinearSolve() //linearizes at current point and solves
@@ -182,25 +375,36 @@ void CVoxelyze::clear() //deallocates and returns everything to defaults
 	voxelMats.clear();
 
 	voxSize = DEFAULT_VOXEL_SIZE;
-	currentTime = 0.0f;
+	currentTime=0.0f;
 	ambientTemp = 0.0f;
+	grav = 0.0f;
+	floor = false;
+	collisions = false;
 
 	clearCollisions();
 	collisionsStale = true;
 	nearbyStale = true;
+
+	boundingRadius = 0.75f;
+	watchDistance = 1.0f;
 }
 
 CVX_Material* CVoxelyze::addMaterial(float youngsModulus, float density)
 {
-	CVX_MaterialVoxel* pMat;
 	try {
-		pMat = new CVX_MaterialVoxel(voxSize, youngsModulus, density);
+		CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(youngsModulus, density, voxSize);
 		pMat->setGravityMultiplier(grav);
 		voxelMats.push_back(pMat);
+		return pMat; 
 	}
-	catch (std::bad_alloc&){
-		return NULL;
-	}
+	catch (std::bad_alloc&){return NULL;}
+}
+
+CVX_Material* CVoxelyze::addMaterial(rapidjson::Value& mat)
+{
+	CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(mat, voxSize);
+	pMat->setGravityMultiplier(grav);
+	voxelMats.push_back(pMat);
 	return pMat; 
 }
 

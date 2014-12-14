@@ -23,117 +23,38 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 CVX_Material::CVX_Material(float youngsModulus, float density)
 {
-//	vox1Mat = vox2Mat = NULL;
-
-	r = -1;
-	g = -1;
-	b = -1;
-	a = -1;
-//	linear = true; //set by "setModelLinear()" below.
-//	E = youngsModulus;
-//	sigmaYield = -1.0f;
-//	sigmaFail = -1.0f;
-//	epsilonYield = -1.0f;
-//	epsilonFail = -1.0f;
-	nu = 0.0f;
+	clear();
 	rho = density;
-	alphaCTE = 0.0f;
-	muStatic = 0.0f;
-	muKinetic = 0.0f;
-	zetaInternal = 1.0f;
-	zetaGlobal = 0.0f;
-	zetaCollision = 0.0f;
-
-//	nomSize=nominalSize;
-	extScale=Vec3D<>(1.0, 1.0, 1.0);
-
 	setModelLinear(youngsModulus);
 	updateDerived();
-}
 //
-//CVX_Material::CVX_Material(CVX_Material* mat1, CVX_Material* mat2) //link material from two dissimilar materials
-//{
-//	assert(mat1->nomSize == mat2->nomSize);
-//	nomSize = mat1->nomSize;
+////	vox1Mat = vox2Mat = NULL;
 //
-//	vox1Mat = mat1;
-//	vox2Mat = mat2;
+//	r = -1;
+//	g = -1;
+//	b = -1;
+//	a = -1;
+////	linear = true; //set by "setModelLinear()" below.
+////	E = youngsModulus;
+////	sigmaYield = -1.0f;
+////	sigmaFail = -1.0f;
+////	epsilonYield = -1.0f;
+////	epsilonFail = -1.0f;
+//	nu = 0.0f;
+//	rho = density;
+//	alphaCTE = 0.0f;
+//	muStatic = 0.0f;
+//	muKinetic = 0.0f;
+//	zetaInternal = 1.0f;
+//	zetaGlobal = 0.0f;
+//	zetaCollision = 0.0f;
 //
-//	r=0.5*(mat1->r + mat2->r);
-//	g=0.5*(mat1->g + mat2->g);
-//	b=0.5*(mat1->b + mat2->b);
-//	a=0.5*(mat1->a + mat2->a);
-//
-//	nu = 0.5*(mat1->nu + mat2->nu); //best guess
-//	rho = 0.5*(mat1->rho + mat2->rho);
-//	alphaCTE = 0.5*(mat1->alphaCTE + mat2->alphaCTE);
-//	muStatic = 0.5*(mat1->muStatic + mat2->muStatic);
-//	muKinetic = 0.5*(mat1->muKinetic + mat2->muKinetic);
-//	zetaInternal = 0.5*(mat1->zetaInternal + mat2->zetaInternal);
-//	zetaGlobal = 0.5*(mat1->zetaGlobal + mat2->zetaGlobal);
-//
+////	nomSize=nominalSize;
 //	extScale=Vec3D<>(1.0, 1.0, 1.0);
 //
-//	//failure stress (f) is the minimum of the two failure stresses, or if both are -1.0f it should also be -1.0f to denote no failure specified
-//	float stressFail=-1.0f, strainFail=-1.0f, f1=mat1->sigmaFail, f2=mat2->sigmaFail;
-//	bool foundStrainFail = false;
-//	if (f1 == -1.0f) stressFail = f2; //-1.0f or mat2 fail
-//	else if (f2 == -1.0f) stressFail = f1; //mat1 fail
-//	else stressFail = f1 < f2 ? f1 : f2; //the lesser stress denotes failure
-//
-//	if (mat1->linear && mat2->linear) setModelLinear(2.0f*mat1->E*mat2->E/(mat1->E+mat2->E), stressFail);
-//	else { //at least 1 bilinear or data-based, so build up data points and apply it.
-//		std::vector<float> newStressValues, newStrainValues;
-//		newStressValues.push_back(0.0f);
-//		newStrainValues.push_back(0.0f);
-//
-//		//step up through ascending strains data points (could alternate randomly between mat1 and mat2 points
-//		int dataIt1 = 1, dataIt2 = 1; //iterators through each data point of the model
-//		while (dataIt1 < mat1->strainData.size() && dataIt2 < mat2->strainData.size()){
-//			float strain = FLT_MAX; //strain for the next data point is the smaller of the two possible next strain points (but we have to make sure we don't access off the end of one of the arrays)
-//			if (dataIt1 < mat1->strainData.size()) strain = mat1->strainData[dataIt1];
-//			if (dataIt2 < mat2->strainData.size() && mat2->strainData[dataIt2]<strain) strain = mat2->strainData[dataIt2];
-//			else assert(strain != FLT_MAX); //this should never happen
-//
-//			if (strain == mat1->strainData[dataIt1]) dataIt1++;
-//			if (strain == mat2->strainData[dataIt2]) dataIt2++;
-//
-//
-//			float modulus1 = mat1->modulus(strain-FLT_EPSILON);
-//			float modulus2 = mat2->modulus(strain-FLT_EPSILON);
-//			float thisModulus = 2.0f*modulus1*modulus2/(modulus1+modulus2);
-//
-//			//float stress1, stress2; //stress for mat 1 and 2 at this strain
-//
-//			//if (strain == mat1->strainData[dataIt1]) stress1 = mat1->stressData[dataIt1++];//if we're adding a point at an existing point of mat 1 grab that stress directly and iterate to the next point for future iterations
-//			//else stress1 = mat1->stressData[dataIt1-1] + mat1->modulus(strain)*(strain - mat1->strainData[dataIt1-1]); //otherwise interpolate
-//
-//			//if (strain == mat2->strainData[dataIt2]) stress2 = mat2->stressData[dataIt2++];//if we're adding a point at an existing point of mat 1 grab that stress directly and iterate to the next point for future iterations
-//			//else stress2 = mat2->stressData[dataIt2-1] + mat2->modulus(strain)*(strain - mat2->strainData[dataIt2-1]); //otherwise interpolate
-//
-//			//add to the new strain/stress values
-//			int lastDataIndex = newStrainValues.size()-1;
-//
-//			newStrainValues.push_back(strain);
-//			newStressValues.push_back(newStressValues[lastDataIndex] + thisModulus*(strain - newStrainValues[lastDataIndex])); //springs in series equation
-////			newStressValues.push_back(2.0f*stress1*stress2/(stress1+stress2)); //springs in series equation
-//		}
-//
-//		setModel(newStrainValues.size(), &newStrainValues[0], &newStressValues[0]);
-//
-//		//override failure points in case no failure was specified before (as possible in combos of linear and bilinear materials)
-//		//yield point is handled correctly in setModel.
-//		sigmaFail = stressFail;
-//		epsilonFail = stressFail==-1.0f ? -1.0f : strain(stressFail);
-//	}
-//
+//	setModelLinear(youngsModulus);
 //	updateDerived();
-//}
-
-//CVX_Material::~CVX_Material(void)
-//{
-//
-//}
+}
 
 CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
 {
@@ -171,6 +92,119 @@ CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
 	//_2xSqIxExSxSxS=vIn._2xSqIxExSxSxS;
 
 	return *this;
+}
+
+void CVX_Material::clear()
+{
+	r = -1;
+	g = -1;
+	b = -1;
+	a = -1;
+	nu = 0.0f;
+	rho = 1.0f;
+	alphaCTE = 0.0f;
+	muStatic = 0.0f;
+	muKinetic = 0.0f;
+	zetaInternal = 1.0f;
+	zetaGlobal = 0.0f;
+	zetaCollision = 0.0f;
+
+	extScale=Vec3D<>(1.0, 1.0, 1.0);
+
+	setModelLinear(1.0);
+	updateDerived();
+}
+
+void CVX_Material::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
+{
+	//rapidjson::PrettyWriter<rapidjson::StringBuffer>* pW = (rapidjson::PrettyWriter<rapidjson::StringBuffer>*)writer;
+	w.StartObject();
+
+	if (linear){
+		w.Key("youngsModulus");	w.Double((double)E);
+		if (epsilonFail != -1){ w.Key("epsilonFail");	w.Double((double)epsilonFail);}
+	}
+	else {
+		w.Key("strainData");
+		w.StartArray();
+		for (int i=0; i<strainData.size(); i++) w.Double((double)strainData[i]);
+		w.EndArray();
+
+		w.Key("stressData");
+		w.StartArray();
+		for (int i=0; i<stressData.size(); i++) w.Double((double)stressData[i]);
+		w.EndArray();
+
+		//if (epsilonYield != -1){ w.Key("epsilonYield");	w.Double((double)epsilonYield);}
+		//if (epsilonFail != -1){	w.Key("epsilonFail");		w.Double((double)epsilonFail);}
+	}
+
+
+	if (rho != 1.0f){			w.Key("density");			w.Double(rho);}
+	if (myName != ""){			w.Key("name");				w.String(myName.c_str());}
+	if (r != -1){				w.Key("red");				w.Int(r);}
+	if (g != -1){				w.Key("green");				w.Int(g);}
+	if (b != -1){				w.Key("blue");				w.Int(b);}
+	if (a != -1){				w.Key("alpha");				w.Int(a);}
+	if (nu != 0){				w.Key("poissonsRatio");		w.Double(nu);}
+	if (alphaCTE != 0){			w.Key("CTE");				w.Double(alphaCTE);}
+	if (muStatic != 0){			w.Key("staticFriction");	w.Double(muStatic);}
+	if (muKinetic != 0){		w.Key("kineticFriction");	w.Double(muKinetic);}
+	if (zetaInternal != 1){		w.Key("internalDamping");	w.Double(zetaInternal);}
+	if (zetaGlobal != 0){		w.Key("globalDamping");		w.Double(zetaGlobal);}
+	if (zetaCollision != 1){	w.Key("collisionDamping");	w.Double(zetaCollision);}
+	if (extScale.x != 1 || extScale.y != 1 || extScale.z != 1){
+		w.Key("externalScaleFactor");
+		w.StartArray();
+		for (int i=0; i<3; i++) w.Double(extScale[i]);
+		w.EndArray();
+	}
+
+	w.EndObject();
+
+}
+
+bool CVX_Material::readJSON(rapidjson::Value& m)
+{
+	clear();
+	if (m.HasMember("youngsModulus") && m["youngsModulus"].IsDouble()){
+		float failStress = -1.0f;
+		if (m.HasMember("epsilonFail") && m["epsilonFail"].IsDouble()){
+			failStress = m["epsilonFail"].GetDouble()*m["youngsModulus"].GetDouble();
+		}
+		setModelLinear(m["youngsModulus"].GetDouble(), failStress);
+	}
+	else if (m.HasMember("strainData") && m["strainData"].IsArray() && m.HasMember("stressData") && m["stressData"].IsArray() && m["strainData"].Size()==m["stressData"].Size()){
+		std::vector<float> stress, strain;
+		int dataCount = m["strainData"].Size();
+		for (int i=0; i<dataCount; i++){
+			stress.push_back((float)m["stressData"].GetDouble());
+			strain.push_back((float)m["strainData"].GetDouble());
+		}
+		setModel(dataCount, &strain[0], &stress[0]); 
+	}
+	else return false; //no valid model
+
+	if (m.HasMember("density") && m["density"].IsDouble())						rho = m["density"].GetDouble();
+	if (m.HasMember("name") && m["name"].IsString())							myName = std::string(m["name"].GetString());
+	if (m.HasMember("red") && m["red"].IsInt())									r = m["red"].GetInt();
+	if (m.HasMember("green") && m["green"].IsInt())								g = m["green"].GetInt();
+	if (m.HasMember("blue") && m["blue"].IsInt())								b = m["blue"].GetInt();
+	if (m.HasMember("alpha") && m["alpha"].IsInt())								a = m["alpha"].GetInt();
+	if (m.HasMember("poissonsRatio") && m["poissonsRatio"].IsDouble())			nu = m["poissonsRatio"].GetDouble();
+	if (m.HasMember("CTE") && m["CTE"].IsDouble())								alphaCTE = m["CTE"].GetDouble();
+	if (m.HasMember("staticFriction") && m["staticFriction"].IsDouble())		muStatic = m["staticFriction"].GetDouble();
+	if (m.HasMember("kineticFriction") && m["kineticFriction"].IsDouble())		muKinetic = m["kineticFriction"].GetDouble();
+	if (m.HasMember("internalDamping") && m["internalDamping"].IsDouble())		zetaInternal = m["internalDamping"].GetDouble();
+	if (m.HasMember("globalDamping") && m["globalDamping"].IsDouble())			zetaGlobal = m["globalDamping"].GetDouble();
+	if (m.HasMember("collisionDamping") && m["collisionDamping"].IsDouble())	zetaCollision = m["collisionDamping"].GetDouble();
+	if (m.HasMember("externalScaleFactor") && m["externalScaleFactor"].IsArray() && m["externalScaleFactor"].Size()==3){
+		for (int i=0; i<3; i++) extScale[i] = m["externalScaleFactor"][i].GetDouble();
+	}
+
+	updateDerived();
+
+	return true;
 }
 
 //float CVX_Material::stress(float strain)

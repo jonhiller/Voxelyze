@@ -279,15 +279,19 @@ void CVX_LinearSolver::applyBX() //Assumes 0-based indices
 	//fill in all displacements first: (and build list to note which are prescribed/fixed)
 	for (int i=0; i<vCount; i++){
 		CVX_Voxel* pVox = vx->voxel(i);
+		bool hasExternal = pVox->externalExists();
 		Vec3D<double> position(pVox->displacement());
 		Vec3D<double> angle = (pVox->orientation().w == 1) ? Vec3D<double>(0,0,0) : pVox->orientation().ToRotationVector();
-		Vec3D<float> force(pVox->externalForce());
-		Vec3D<float> moment(pVox->externalMoment());
+		Vec3D<float> force(hasExternal ? pVox->external()->force() : Vec3D<float>());
+		Vec3D<float> moment(hasExternal ? pVox->external()->moment() : Vec3D<float>());
+//		Vec3D<float> force(pVox->externalForce());
+//		Vec3D<float> moment(pVox->externalMoment());
 		
 		for (int j=0; j<6; j++){
 			int thisDof = 6*i+j;
 			x[thisDof] = (j<3)?position[j]:angle[j%3]; //add in displacement
-			fixed[thisDof] = pVox->isFixed(dofMap[j]); //note if it is presecribed/fixed
+			fixed[thisDof] = hasExternal ? pVox->external()->isFixed(dofMap[j]) : false; //note if it is presecribed/fixed
+//			fixed[thisDof] = pVox->isFixed(dofMap[j]); //note if it is presecribed/fixed
 			if (!fixed[thisDof]) b[thisDof] = (j<3)?force[j]:moment[j%3]; //add in forces if it's not a fixed degree of freedom
 		}
 	}

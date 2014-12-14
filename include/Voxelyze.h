@@ -26,7 +26,6 @@ class CVX_MaterialVoxel;
 class CVX_MaterialLink;
 class CVX_Collision;
 
-
 //! Defines and simulates a configuration of voxels.
 /*!
 
@@ -34,11 +33,16 @@ class CVX_Collision;
 class CVoxelyze {
 public:
 	CVoxelyze(double voxelSize = DEFAULT_VOXEL_SIZE);
+	CVoxelyze(rapidjson::Value* pV);
 	~CVoxelyze(void);
 	CVoxelyze(const CVoxelyze& VIn) {*this = VIn;} //copy constructor
 	CVoxelyze& operator=(const CVoxelyze& VIn); //equal operator
 
-	void clear(); //deallocates and returns everything to defaults except voxel size.
+	void clear(); //deallocates and returns everything to defaults 
+	bool loadJSON(const char* jsonFilePath);
+	bool saveJSON(const char* jsonFilePath);
+
+
 
 	bool doLinearSolve(/*SOLVER thisSolver, float stepPercentage = 1.0f*/); //linearizes at current point and solves
 
@@ -48,6 +52,7 @@ public:
 
 //	std::vector<CVX_Material*> voxelMats; //up-to-date list of all voxel materials existing in this simulation
 	CVX_Material* addMaterial(float youngsModulus = 1e6f, float density = 1e3f);
+	CVX_Material* addMaterial(rapidjson::Value& mat);
 	bool removeMaterial(CVX_Material* toRemove);
 	bool replaceMaterial(CVX_Material* replaceMe, CVX_Material* replaceWith); //replace all voxels of replaceMe with replaceWith
 	int materialCount() {return voxelMats.size();}
@@ -139,6 +144,7 @@ private:
 	CArray3D<CVX_Voxel*> voxels; //main voxel array 3D lookup
 	std::vector<CVX_Voxel*> voxelsList; //main list of existing voxels (no particular order) (always kept syncd with voxels)
 
+	//maybe don't need this 3D array?
 	CArray3D<CVX_Link*> links[3]; //main link arrays in the X[0], Y[1] and Z[2] directions. (0,0,0) is the bond pointting in the positive direction from voxel (0,0,0)
 	std::vector<CVX_Link*> linksList; //main list of all existing links (no particular order) (always kept syncd with voxels)
 
@@ -166,6 +172,11 @@ private:
 	//convenience only...:
 	//bool isInList(CVX_Voxel* pV, std::list<CVX_Voxel*>* pList) {return std::find(pList->begin(), pList->end(), pV) != pList->end();} //returns true if the specified voxel is in the list
 	//bool isInVector(CVX_Voxel* pV, std::vector<CVX_Voxel*>* pVector) {return std::find(pList->pVector(), pVector->end(), pV) != pVector->end();} //returns true if the specified voxel is in the list
+
+	bool writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
+	bool readJSON(rapidjson::Value& vxl);
+	//void addJSON(rapidjson::Writer* pW);
+
 };
 
 

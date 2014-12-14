@@ -19,7 +19,8 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 class CVX_MaterialVoxel : public CVX_Material {
 	public:
-	CVX_MaterialVoxel(double nominalSize=0.001, float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor
+	CVX_MaterialVoxel(float youngsModulus=1e6f, float density=1e3f, double nominalSize=0.001); //!< Default Constructor
+	CVX_MaterialVoxel(rapidjson::Value& mat, double nominalSize=0.001); //!< 
 	//virtual ~CVX_MaterialVoxel(void); //!< Destructor. Virtual so we can just keep track of CVX_Material pointers.
 	CVX_MaterialVoxel(const CVX_MaterialVoxel& vIn) {*this = vIn;} //!< Copy constructor
 	virtual CVX_MaterialVoxel& operator=(const CVX_MaterialVoxel& vIn); //!< Equals operator
@@ -46,6 +47,7 @@ class CVX_MaterialVoxel : public CVX_Material {
 
 
 protected:
+	void initialize(double nominalSize);
 	//only the main simulation should update gravity
 	void setGravityMultiplier(float gravityMultiplier){gravMult = gravityMultiplier;}
 	float gravityMuliplier() {return gravMult;}

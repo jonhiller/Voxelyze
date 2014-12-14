@@ -2,10 +2,7 @@ lib/libpardiso500-WIN-X86-64.dll
 lib/libpardiso500-WIN-X86-64.exp
 lib/libpardiso500-WIN-X86-64.lib
 pardiso.lic
-*.log
-*.tlog
-*.idb
-*.pdb
-test/Debug/
-test/Release/
+test/Debug/*
+test/Release/*
+
 

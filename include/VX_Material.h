@@ -16,6 +16,9 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <vector>
 #include "Vec3D.h"
 
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/document.h"
 
 //!Defines the properties a raw material 
 /*!Contains all information relevant to a physical material to be simulated. All units are SI standard.
@@ -28,11 +31,13 @@ If a function returns unsuccessfully, check lastError() for the cause.
 class CVX_Material {
 	public:
 	CVX_Material(float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor. @Param[in] TODO
+	CVX_Material(rapidjson::Value& mat) {readJSON(mat);} //!< rapidjson::Value* pR
 	//CVX_Material(CVX_Material* mat1, CVX_Material* mat2); //!< Constructs this material from two constituent materials. The materials are combined such that the properties are the "best approximation" of a link material between two dissimilar adjacent voxel material (i.e half mat1, half mat2). As an illustration the stiffness (Young's Modulus) is set according to two springs in series (instead of a straight average) to account for the simulated material division in the middle of the link.
 	//virtual ~CVX_Material(void); //!< Destructor. //Virtual so we can just keep track of generic material pointers for voxel and link materials.
 	CVX_Material(const CVX_Material& vIn) {*this = vIn;} //!< Copy constructor
 	virtual CVX_Material& operator=(const CVX_Material& vIn); //!< Equals operator
 
+	void clear();
 	const char* lastError() const {return error.c_str();} //!< Returns the last error encountered for this object.
 
 	void setName(const char* name) {myName = std::string(name);} //!< Adds an optional name to the material. @param[in] name Desired name. 
@@ -140,20 +145,9 @@ protected:
 	virtual bool updateAll() {return false;} //updates/recalculates eveything possible (used by inherited classed)
 	virtual bool updateDerived(); //updates all the derived quantities cache (based on density, size and elastic modulus
 	float _eHat; // = E unless poissons ratio is non-zero.
-//	float _mass; //The mass of this voxel (kg)
-//	float _massInverse; //1/Mass (1/kg)
-//	float _sqrtMass; //1/Mass (1/kg)
-//	float _firstMoment; //1st moment "inertia" (needed for certain calculations) (kg*m)
-//	float _momentInertia; //mass moment of inertia (i.e. rotational "mass") (kg*m^2)
-//	float _momentInertiaInverse; //1/Inertia (1/(kg*m^2))
-//	float _2xSqMxExS; //needed for quick damping calculations (Kg*m/s)
-//	float _2xSqIxExSxSxS; //needed for quick rotational damping calculations (Kg*m^2/s)
-//	float _a1, _a2, _b1, _b2, _b3; //for link beam force calculations
-//	float _sqA1, _sqA2xIp, _sqB1, _sqB2xFMp, _sqB3xIp; //for link beam damping calculations
 
 	//private methods
 	bool setYieldFromData(float percentStrainOffset=0.2); //sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStr are set correctly.
-//	float eHat(){return E/((1-2*nu)*(1+nu));} //"effective" modulus for non-zero poisson's ratio
 	float strain(float stress); //returns a simple reverse lookup of the first strain that yields this stress from data point lookup
 
 	//Future parameters:
@@ -163,13 +157,12 @@ protected:
 
 	std::vector<CVX_Material*> dependentMaterials; //any materials in this list will have updateDerived() called whenever it's called for this material. For updatng link materials when one or both voxel materials change)
 
+	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
+	bool readJSON(rapidjson::Value& mat);
+
 	friend class CVoxelyze; //give the main simulation class full access
 	friend class CVX_Voxel; //give our voxel class direct access to all the members for quick access};
 	friend class CVX_Link; 
-
-//#ifdef DEBUG
-//	void TestVxMaterial(); //testing function. A sequence of operations that SHOULD fully test the class.
-//#endif
 };
 
 #endif //VX_MATERIAL_H
