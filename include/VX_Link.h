@@ -129,12 +129,12 @@ private:
 	Quat3D<double> orientLink(/*double restLength*/); //updates pos2, angle1, angle2, and smallAngle. returns the rotation quaternion (after toAxisX) used to get to this orientation
 
 	//unwind a coordinate as if the bond was in the the positive X direction (and back...)
-	template <typename T> void toAxisX			(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->x; pV->x=pV->y; pV->y = -tmp; break;} case Z_AXIS: {T tmp = pV->x; pV->x=pV->z; pV->z = -tmp; break;}}} //transforms a vec3D in the original orientation of the bond to that as if the bond was in +X direction
-	template <typename T> void toAxisX			(Quat3D<T>* const pQ) const {switch (axis){case Y_AXIS: {T tmp = pQ->x; pQ->x=pQ->y; pQ->y = -tmp; break;} case Z_AXIS: {T tmp = pQ->x; pQ->x=pQ->z; pQ->z = -tmp; break;}}}
+	template <typename T> void toAxisX			(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->x; pV->x=pV->y; pV->y = -tmp; break;} case Z_AXIS: {T tmp = pV->x; pV->x=pV->z; pV->z = -tmp; break;} default: break;}} //transforms a vec3D in the original orientation of the bond to that as if the bond was in +X direction
+	template <typename T> void toAxisX			(Quat3D<T>* const pQ) const {switch (axis){case Y_AXIS: {T tmp = pQ->x; pQ->x=pQ->y; pQ->y = -tmp; break;} case Z_AXIS: {T tmp = pQ->x; pQ->x=pQ->z; pQ->z = -tmp; break;} default: break;}}
 	template <typename T> Vec3D<T> toAxisX		(const Vec3D<T>& v)	const {switch (axis){case Y_AXIS: return Vec3D<T>(v.y, -v.x, v.z); case Z_AXIS: return Vec3D<T>(v.z, v.y, -v.x); default: return v;}} //transforms a vec3D in the original orientation of the bond to that as if the bond was in +X direction
 	template <typename T> Quat3D<T> toAxisX		(const Quat3D<T>& q)	const {switch (axis){case Y_AXIS: return Quat3D<T>(q.w, q.y, -q.x, q.z); case Z_AXIS: return Quat3D<T>(q.w, q.z, q.y, -q.x); default: return q;}} //transforms a vec3D in the original orientation of the bond to that as if the bond was in +X direction
-	template <typename T> void toAxisOriginal	(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->y; pV->y=pV->x; pV->x = -tmp; break;} case Z_AXIS: {T tmp = pV->z; pV->z=pV->x; pV->x = -tmp; break;}}}
-	template <typename T> void toAxisOriginal	(Quat3D<T>* const pQ) const {switch (axis){case Y_AXIS: {T tmp = pQ->y; pQ->y=pQ->x; pQ->x = -tmp; break;} case Z_AXIS: {T tmp = pQ->z; pQ->z=pQ->x; pQ->x = -tmp; break;}}}
+	template <typename T> void toAxisOriginal	(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->y; pV->y=pV->x; pV->x = -tmp; break;} case Z_AXIS: {T tmp = pV->z; pV->z=pV->x; pV->x = -tmp; break;} default: break;}}
+	template <typename T> void toAxisOriginal	(Quat3D<T>* const pQ) const {switch (axis){case Y_AXIS: {T tmp = pQ->y; pQ->y=pQ->x; pQ->x = -tmp; break;} case Z_AXIS: {T tmp = pQ->z; pQ->z=pQ->x; pQ->x = -tmp; break;} default: break;}}
 
 //	friend class CVX_Voxel;
 	friend class CVoxelyze;

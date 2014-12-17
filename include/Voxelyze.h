@@ -33,6 +33,7 @@ class CVX_Collision;
 class CVoxelyze {
 public:
 	CVoxelyze(double voxelSize = DEFAULT_VOXEL_SIZE);
+	CVoxelyze(const char* jsonFilePath) {loadJSON(jsonFilePath);}
 	CVoxelyze(rapidjson::Value* pV);
 	~CVoxelyze(void);
 	CVoxelyze(const CVoxelyze& VIn) {*this = VIn;} //copy constructor

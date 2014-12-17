@@ -89,7 +89,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 //	std::vector<CVX_Material*> matList;
 	rapidjson::Value& m = vxl["materials"];
 //	for (int i=0; i<m.Size(); i++) matList.push_back(addMaterial(m[i]));
-	for (int i=0; i<m.Size(); i++) {
+	for (int i=0; i<(int)m.Size(); i++) {
 		//if (m[i].HasMember("youngsModulus") && m[i]["youngsModulus"].IsDouble()){
 		//	float val = m[i]["youngsModulus"].GetDouble();
 		//}
@@ -104,7 +104,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 
 		//get min.max
 		int minX=INT_MAX, maxX=INT_MIN, minY=INT_MAX, maxY=INT_MIN, minZ=INT_MAX, maxZ=INT_MIN;
-		for (int i=0; i<v.Size()/4; i++){
+		for (int i=0; i<(int)v.Size()/4; i++){
 			int x = v[4*i].GetInt(), y=v[4*i+1].GetInt(), z=v[4*i+2].GetInt();
 			if (x<minX) minX=x;
 			if (x>maxX) maxX=x;
@@ -119,13 +119,13 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 		for (int i=0; i<3; i++) links[i].resize(maxX-minX+1, maxY-minY+1, maxZ-minZ+1, minX-1, minY-1, minZ-1);
 
 		//add 'em!
-		for (int i=0; i<v.Size()/4; i++) addVoxel(voxelMats[v[i*4+3].GetInt()], v[4*i].GetInt(), v[4*i+1].GetInt(), v[4*i+2].GetInt());
+		for (int i=0; i<(int)v.Size()/4; i++) addVoxel(voxelMats[v[i*4+3].GetInt()], v[4*i].GetInt(), v[4*i+1].GetInt(), v[4*i+2].GetInt());
 //		for (int i=0; i<v.Size()/4; i++) addVoxel((CVX_MaterialVoxel*)matList[v[i*4+3].GetInt()], v[4*i].GetInt(), v[4*i+1].GetInt(), v[4*i+2].GetInt());
 		//quicker link add?
 	}
 
 	if (vxl.HasMember("externals") && vxl["externals"].IsArray()){
-		for (int i=0; i<vxl["externals"].Size(); i++){
+		for (int i=0; i<(int)vxl["externals"].Size(); i++){
 			rapidjson::Value& ext = vxl["externals"][i];
 			if (!(ext.HasMember("voxelIndices") && ext["voxelIndices"].IsArray())) continue; //invalid external
 
@@ -139,7 +139,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 			if (ext.HasMember("force") && ext["force"].IsArray() && ext["force"].Size()==3) for (int j=0; j<3; j++){force[j] = (float)ext["force"][j].GetDouble();}
 			if (ext.HasMember("moment") && ext["moment"].IsArray() && ext["moment"].Size()==3) for (int j=0; j<3; j++){moment[j] = (float)ext["moment"][j].GetDouble();}
 
-			for (int j=0; j<ext["voxelIndices"].Size(); j++){
+			for (int j=0; j<(int)ext["voxelIndices"].Size(); j++){
 				CVX_External* pE = voxelsList[ext["voxelIndices"][j].GetInt()]->external();
 				for (int k=0; k<6; k++)	if (dof[k]) pE->addDisplacement((dofComponent)k, disp[k]); //fixed degree of freedom
 				pE->addForce(force);
@@ -187,7 +187,7 @@ bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
 
 		if (pVox->externalExists() && !pVox->external()->isEmpty()){
 			bool match = false;
-			for (int j=0; j<exts.size(); j++){
+			for (int j=0; j<(int)exts.size(); j++){
 				if (*pVox->external() == *exts[j]){ //found one!
 					extVoxIndices[j].push_back(i);
 					match = true;
@@ -205,7 +205,7 @@ bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
 	if(exts.size() > 0){
 		w.Key("externals");
 		w.StartArray();
-		for (int i=0; i<exts.size(); i++){
+		for (int i=0; i<(int)exts.size(); i++){
 			CVX_External* e = exts[i];
 			w.StartObject();
 	
@@ -223,7 +223,7 @@ bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
 
 			w.Key("voxelIndices");
 			w.StartArray();
-			for (int j=0; j<extVoxIndices[i].size(); j++) w.Uint(extVoxIndices[i][j]);
+			for (int j=0; j<(int)extVoxIndices[i].size(); j++) w.Uint(extVoxIndices[i][j]);
 			w.EndArray();
 			w.EndObject();
 		}
@@ -546,7 +546,7 @@ void CVoxelyze::removeVoxel(int xIndex, int yIndex, int zIndex)
 
 	//set collisions to stale
 	for (std::vector<CVX_Voxel*>::iterator it = voxelsList.begin(); it!=voxelsList.end(); it++){ //for each remaining voxel
-		CVX_Voxel* pV2 = (*it);
+//		CVX_Voxel* pV2 = (*it);
 //		pV2->setCollisionsStale(); //a bit inefficient now
 //		std::remove(pV2->pColWatchList->begin(), pV2->pColWatchList->end(), pV);
 //		std::remove(pV2->pNearInLattice->begin(), pV2->pNearInLattice->end(), pV);

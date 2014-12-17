@@ -127,12 +127,12 @@ void CVX_Material::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w
 	else {
 		w.Key("strainData");
 		w.StartArray();
-		for (int i=0; i<strainData.size(); i++) w.Double((double)strainData[i]);
+		for (int i=0; i<(int)strainData.size(); i++) w.Double((double)strainData[i]);
 		w.EndArray();
 
 		w.Key("stressData");
 		w.StartArray();
-		for (int i=0; i<stressData.size(); i++) w.Double((double)stressData[i]);
+		for (int i=0; i<(int)stressData.size(); i++) w.Double((double)stressData[i]);
 		w.EndArray();
 
 		//if (epsilonYield != -1){ w.Key("epsilonYield");	w.Double((double)epsilonYield);}
@@ -391,7 +391,7 @@ bool CVX_Material::setModel(int dataPointCount, float* pStrainValues, float* pSt
 		tmpStressData.push_back(thisStress);
 	}
 
-	assert(tmpStrainData.size() == dataPointCount+1 && tmpStressData.size() == dataPointCount+1); //sizes match up? (+1 to include the zero point)
+	assert((int)tmpStrainData.size() == dataPointCount+1 && (int)tmpStressData.size() == dataPointCount+1); //sizes match up? (+1 to include the zero point)
 
 	//at this point, we know we have valid data and will return true
 	strainData = tmpStrainData;
@@ -505,7 +505,7 @@ bool CVX_Material::setYieldFromData(float percentStrainOffset)
 	float oM = E; //the offset line slope (y=Mx+B)
 	float oB = (-percentStrainOffset/100*oM); //offset line intercept (100 factor turns percent into absolute
 
-	float tmpYieldStr = sigmaFail; //assume yield stress is the failure stress value unless we find a better one...
+	//float tmpYieldStr = sigmaFail; //assume yield stress is the failure stress value unless we find a better one...
 	
 	assert(strainData.size() == stressData.size());
 	assert(strainData.size() > 2); // more than 2 data points (more than bilinear)
@@ -529,6 +529,8 @@ bool CVX_Material::setYieldFromData(float percentStrainOffset)
 			}
 		}
 	}
+	sigmaYield = sigmaFail;
+	epsilonYield = epsilonFail;
 	return false;
 }
 

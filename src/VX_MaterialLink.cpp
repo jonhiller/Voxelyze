@@ -67,8 +67,8 @@ bool CVX_MaterialLink::updateAll()
 	extScale=Vec3D<>(1.0, 1.0, 1.0);
 
 	//failure stress (f) is the minimum of the two failure stresses, or if both are -1.0f it should also be -1.0f to denote no failure specified
-	float stressFail=-1.0f, strainFail=-1.0f, f1=vox1Mat->sigmaFail, f2=vox2Mat->sigmaFail;
-	bool foundStrainFail = false;
+	float stressFail=-1.0f, /*strainFail=-1.0f,*/ f1=vox1Mat->sigmaFail, f2=vox2Mat->sigmaFail;
+	//bool foundStrainFail = false;
 	if (f1 == -1.0f) stressFail = f2; //-1.0f or vox2Mat fail
 	else if (f2 == -1.0f) stressFail = f1; //vox1Mat fail
 	else stressFail = f1 < f2 ? f1 : f2; //the lesser stress denotes failure

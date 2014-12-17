@@ -15,6 +15,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 //#include "XML_Rip.h"
 #include <assert.h>
 #include <vector>
+#include <limits.h>
 //#include <fstream>
 
 //why can't min and max just be there when I need them?

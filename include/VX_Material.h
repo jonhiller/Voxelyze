@@ -33,7 +33,7 @@ class CVX_Material {
 	CVX_Material(float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor. @Param[in] TODO
 	CVX_Material(rapidjson::Value& mat) {readJSON(mat);} //!< rapidjson::Value* pR
 	//CVX_Material(CVX_Material* mat1, CVX_Material* mat2); //!< Constructs this material from two constituent materials. The materials are combined such that the properties are the "best approximation" of a link material between two dissimilar adjacent voxel material (i.e half mat1, half mat2). As an illustration the stiffness (Young's Modulus) is set according to two springs in series (instead of a straight average) to account for the simulated material division in the middle of the link.
-	//virtual ~CVX_Material(void); //!< Destructor. //Virtual so we can just keep track of generic material pointers for voxel and link materials.
+	virtual ~CVX_Material(void) {}; //!< Destructor. //Virtual so we can just keep track of generic material pointers for voxel and link materials.
 	CVX_Material(const CVX_Material& vIn) {*this = vIn;} //!< Copy constructor
 	virtual CVX_Material& operator=(const CVX_Material& vIn); //!< Equals operator
 

@@ -155,7 +155,8 @@ void CVX_Link::updateForces()
 	Vec3D<double> oldPos2 = pos2, oldAngle1v = angle1v, oldAngle2v = angle2v; //remember the positions/angles from last timestep to calculate velocity
 
 //	double restLength = 0.5*(pVNeg->nominalSize(axis) + pVPos->nominalSize(axis));
-	Quat3D<double> rotation = orientLink(/*restLength*/); //sets pos2, angle1, angle2
+//	Quat3D<double> rotation = 
+	orientLink(/*restLength*/); //sets pos2, angle1, angle2
 
 	Vec3D<double> dPos2 = 0.5*(pos2-oldPos2); //deltas for local damping. velocity at center is half the total velocity
 	Vec3D<double> dAngle1 = 0.5*(angle1v-oldAngle1v);

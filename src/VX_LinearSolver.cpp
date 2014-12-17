@@ -19,11 +19,13 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 static int blockOff[6][3] = {{0,4,5},{1,3,5},{2,3,4},{1,2,3},{0,2,4},{0,1,5}};
 static dofComponent dofMap[6] = {X_TRANSLATE, Y_TRANSLATE, Z_TRANSLATE, X_ROTATE, Y_ROTATE, Z_ROTATE};
 
-#ifdef PARDISO_5
-#pragma comment (lib, "libpardiso500-WIN-X86-64.lib") //link to the Pardiso library
-extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, double* dparm, int* error);
-extern "C" void pardiso (void* pt, int* maxfct, int* mnum, int* mtype, int* phase, int* n, double* a, int* ia, int* ja, int* perm, int* nrhs, int* iparm, int* msglvl, double* b, double* x, int* error, double* dparm);
-#endif
+//#ifdef PARDISO_5
+//#ifdef _win32
+//	#pragma comment (lib, "libpardiso500-WIN-X86-64.lib") //link to the Pardiso library
+//#endif
+//extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, double* dparm, int* error);
+//extern "C" void pardiso (void* pt, int* maxfct, int* mnum, int* mtype, int* phase, int* n, double* a, int* ia, int* ja, int* perm, int* nrhs, int* iparm, int* msglvl, double* b, double* x, int* error, double* dparm);
+//#endif
 
 CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 {
@@ -163,7 +165,8 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 				for (int k=0; k<3; k++)	ja[jACounter++] = 6*i2List[m]+blockOff[j][k];
 			}
 
-			ia[iACounter++] = ia[iACounter-1] + (jACounter-diagAIndex);
+			ia[iACounter] = ia[iACounter-1] + (jACounter-diagAIndex);
+			iACounter++;
 		}
 	}
 
@@ -212,7 +215,8 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 				R2 = 2; C2 = 3;
 				val = -pL->b2();
 				break;
-			case 2: //Z_AXIS
+//			case 2: //Z_AXIS
+			default: //Z_AXIS
 				R1 = 0; C1 = 4;
 				R2 = 1; C2 = 3;
 				val = pL->b2();
@@ -322,13 +326,13 @@ void CVX_LinearSolver::applyBX() //Assumes 0-based indices
 		}
 	}
 
-	for (int i=0; i<aToZero.size(); i++) a[aToZero[i]] = 0; //zero out the ones we've marked accordingly
+	for (int i=0; i<(int)aToZero.size(); i++) a[aToZero[i]] = 0; //zero out the ones we've marked accordingly
 }
 
 void CVX_LinearSolver::convertTo1Base()
 {
-	for (int i=0; i<ia.size(); i++) ia[i]++;
-	for (int i=0; i<ja.size(); i++) ja[i]++;
+	for (int i=0; i<(int)ia.size(); i++) ia[i]++;
+	for (int i=0; i<(int)ja.size(); i++) ja[i]++;
 }
 
 void CVX_LinearSolver::postResults() //overwrites state of voxelyze object with the results
@@ -352,7 +356,7 @@ void CVX_LinearSolver::OutputMatrices()
 	file << "A Matrix:\n";
 
 	int jaCount = 0;
-	for (int i=0; i<ia.size()-1; i++){
+	for (int i=0; i<(int)ia.size()-1; i++){
 		int colCount = 0;
 		while (colCount < dof){
 			if (jaCount+1 < ia[i+1] && colCount + 1 == ja[jaCount]){

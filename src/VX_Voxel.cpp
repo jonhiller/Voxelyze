@@ -453,13 +453,21 @@ float CVX_Voxel::transverseStrainSum(linkAxis axis)
 	if (mat->poissonsRatio() == 0) return 0;
 	
 	Vec3D<float> psVec = poissonsStrain();
-	
+
+//untested change!!	
 	switch (axis){
-	case X_AXIS: return strain(true).y+strain(true).z;
-	case Y_AXIS: return strain(true).x+strain(true).z;
-	case Z_AXIS: return strain(true).x+strain(true).y;
+	case X_AXIS: return psVec.y+psVec.z;
+	case Y_AXIS: return psVec.x+psVec.z;
+	case Z_AXIS: return psVec.x+psVec.y;
 	default: return 0.0f;
 	}
+
+//	switch (axis){
+//	case X_AXIS: return strain(true).y+strain(true).z;
+//	case Y_AXIS: return strain(true).x+strain(true).z;
+//	case Z_AXIS: return strain(true).x+strain(true).y;
+//	default: return 0.0f;
+//	}
 }
 
 float CVX_Voxel::transverseArea(linkAxis axis)
