@@ -16,7 +16,7 @@ class CVoxelyze;
 #include <vector>
 
 #ifdef PARDISO_5
-#ifdef _win32
+#ifdef _WIN32
 	#pragma comment (lib, "libpardiso500-WIN-X86-64.lib") //link to the Pardiso library
 #endif
 extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, double* dparm, int* error);
