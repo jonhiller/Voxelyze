@@ -12,6 +12,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "Voxelyze.h"
 #include "VX_MaterialLink.h"
 #include <unordered_map>
+#include <iostream>
 
 //VERSION 5
 
@@ -54,6 +55,7 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 
 bool CVX_LinearSolver::solve() //formulates and solves system!
 {
+	std::cout << "Solving...\n";
 	updateProgress(0, "Forming matrices...");
 	cancelFlag = false; //this may be set to true, in which case we should interrupt the solve process...
 	bool Success = true; //flag to track whether a part of the process fails.
@@ -67,7 +69,7 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 	calculateA();
 	applyBX();
 	convertTo1Base();
-	//OutputMatrices();
+	OutputMatrices();
 
 	if (dof == 0){ errorMsg = "No free degrees of freedom found. Aborting.\n"; return false;}
 
