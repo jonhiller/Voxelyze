@@ -69,7 +69,7 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 	calculateA();
 	applyBX();
 	convertTo1Base();
-	OutputMatrices();
+	//OutputMatrices();
 
 	if (dof == 0){ errorMsg = "No free degrees of freedom found. Aborting.\n"; return false;}
 
@@ -104,6 +104,9 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 		default: errorMsg = "Pardiso Error\n";
 		}
 	}
+
+	for (int i=0; i<vx->voxelCount()*6; i++)
+		std::cout << x[i] << "\n";
 
 	updateProgress(0.9, "Pardiso: Cleaning up...");
 	phase = -1; /* Release internal memory. */

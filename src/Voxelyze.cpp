@@ -141,7 +141,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 
 			for (int j=0; j<(int)ext["voxelIndices"].Size(); j++){
 				CVX_External* pE = voxelsList[ext["voxelIndices"][j].GetInt()]->external();
-				for (int k=0; k<6; k++)	if (dof[k]) pE->addDisplacement((dofComponent)k, disp[k]); //fixed degree of freedom
+				for (int k=0; k<6; k++)	if (dof[k]) pE->addDisplacement((dofComponent)(1<<k), disp[k]); //fixed degree of freedom
 				pE->addForce(force);
 				pE->addMoment(moment);
 			}
