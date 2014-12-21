@@ -97,6 +97,7 @@ public:
 	Vec3D<double> orientationAxis() const {return orient.Axis();} //!< Use with orientationAngle() to get the orientation of this voxel in angle/axis form. Returns a unit vector in the global coordinate system (GCS).
 
 	float displacementMagnitude() const {return (float)displacement().Length();}
+	float angularDisplacementMagnitude() const {return (float)orient.Angle();}
 	Vec3D<double> velocity() const {return linMom*mat->_massInverse;} //!< Returns the 3D velocity of this voxel in m/s (GCS)
 	float velocityMagnitude() const {return (float)(linMom.Length()*mat->_massInverse);} //!< Returns the velocity of this voxel in m/s.
 	Vec3D<double> angularVelocity() const {return angMom*mat->_momentInertiaInverse;} //!< Returns the 3D angular velocity of this voxel in rad/s (GCS)

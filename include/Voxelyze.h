@@ -32,6 +32,20 @@ class CVX_Collision;
 */
 class CVoxelyze {
 public:
+	enum stateInfoType {
+		DISPLACEMENT,
+		VELOCITY,
+		KINETIC_ENERGY,
+		ANGULAR_DISPLACEMENT,
+		ANGULAR_VELOCITY,
+		ENG_STRESS,
+		ENG_STRAIN,
+		STRAIN_ENERGY,
+		PRESSURE,
+		MASS
+	};
+	enum valueType {MIN, MAX, SUM, AVERAGE};
+
 	CVoxelyze(double voxelSize = DEFAULT_VOXEL_SIZE);
 	CVoxelyze(const char* jsonFilePath) {loadJSON(jsonFilePath);}
 	CVoxelyze(rapidjson::Value* pV);
@@ -114,6 +128,7 @@ public:
 	bool isCollisionsEnabled(void) const {return collisions;}
 
 	//info
+	float stateInfo(stateInfoType info, valueType type);
 
 private:
 	double voxSize; //lattice size

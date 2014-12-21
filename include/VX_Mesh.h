@@ -11,19 +11,25 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #ifndef VX_MESH_H
 #define VX_MESH_H
 
-#include <vector>
 #include "Voxelyze.h"
+#include <vector>
 
 //Voxelyze mesh visualizer
 class CVX_MeshRender
 {
 public:
-	enum viewColor {MATERIAL, KINETIC_ENERGY, STRAIN_ENERGY, ENG_STRAIN, ENG_STRESS, DISPLACEMENT, STATE, PRESSURE};
+	enum viewType {
+		MATERIAL, //material rgb
+		FAILURE, //red=failed yellow=yielded, white=ok
+		STATE_INFO //must specify a 2nd parameter for what coloring to show
+	};
+	//enum viewColor {MATERIAL, KINETIC_ENERGY, STRAIN_ENERGY, ENG_STRAIN, ENG_STRESS, DISPLACEMENT, STATE, PRESSURE};
 
 	CVX_MeshRender(CVoxelyze* voxelyzeInstance);
 	void generateMesh(); //generates from the linked voxelyze object. must be called whenever voxels change in the simulation
-	void updateMesh(viewColor color = MATERIAL);
+	void updateMesh(viewType view = MATERIAL, CVoxelyze::stateInfoType coloring = CVoxelyze::DISPLACEMENT);
 
+	void saveObj(const char* filePath);
 	void glDraw();
 
 private:
@@ -45,8 +51,8 @@ private:
 	float jetMapG(float val) {if (val<0.25f) return val*4; else if (val>0.75f) return 4-val*4; else return 1.0f;}
 	float jetMapB(float val) {if (val>0.5f) return 0.0f; else if (val<0.25f) return 1.0f; else return 2-val*4;}
 
-	float maxColorValue(viewColor color);
-	float minColorValue(viewColor color);
-	float linkMaxColorValue(CVX_Voxel* pV, viewColor color); //for link properties, the max
+//	float maxColorValue(viewColor color);
+//	float minColorValue(viewColor color);
+	float linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType coloring); //for link properties, the max
 };
 #endif

@@ -852,6 +852,54 @@ void CVoxelyze::regenerateCollisions(float threshRadiusSq)
 	collisionsStale = false; //good to go!
 }
 
+float CVoxelyze::stateInfo(stateInfoType info, valueType type)
+{
+	float returnVal = 0;
+	if (type == MAX) returnVal = -FLT_MAX;
+	else if (type == MIN) returnVal = FLT_MAX;
+
+	if (info == STRAIN_ENERGY || info==ENG_STRESS || info==ENG_STRAIN){ //Link properties
+		if (linkCount() == 0) return 0.0;
+		for (std::vector<CVX_Link*>::const_iterator it = linksList.begin(); it!=linksList.end(); it++){ //for each link
+			float thisVal = 0;
+			switch (info){
+				case STRAIN_ENERGY: thisVal = (*it)->strainEnergy();break;
+				case ENG_STRESS: thisVal = (*it)->axialStress(); break;
+				case ENG_STRAIN: thisVal = (*it)->axialStrain(); break;
+			}
+			switch (type){
+				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
+				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
+				case SUM: case AVERAGE: returnVal += thisVal; 
+			}
+		}
+		if (type == AVERAGE) returnVal /= linkCount();
+	}
+	else { //voxel properties: DISPLACEMENT, VELOCITY, KINETIC_ENERGY, ANGULAR_DISPLACEMENT, ANGULAR_VELOCITY, PRESSURE, MASS
+		if (voxelCount() == 0) return 0.0;
+		for (std::vector<CVX_Voxel*>::const_iterator it = voxelsList.begin(); it!=voxelsList.end(); it++){ //for each voxel
+			float thisVal = 0;
+			switch (info){
+				case DISPLACEMENT: thisVal = (*it)->displacementMagnitude(); break;
+				case VELOCITY: thisVal = (*it)->velocityMagnitude(); break;
+				case KINETIC_ENERGY: thisVal = (*it)->kineticEnergy();break;
+				case ANGULAR_DISPLACEMENT: thisVal = (*it)->angularDisplacementMagnitude(); break;
+				case ANGULAR_VELOCITY: thisVal = (*it)->angularVelocityMagnitude(); break;
+				case PRESSURE: thisVal = (*it)->pressure(); break;
+				case MASS: thisVal = (*it)->material()->mass(); break;
+			}
+			switch (type){
+				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
+				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
+				case SUM: case AVERAGE: returnVal += thisVal; 
+			}
+		}
+		if (type == AVERAGE) returnVal /= voxelCount();
+	}
+
+	return returnVal;
+}
+
 
 //void CVoxelyze::addConnectedVoxelsToList(CVX_Voxel* pV, std::list<CVX_Voxel*>* pList, Vec3D<>* pBeginLocation, float searchRadiusSq)
 //{
