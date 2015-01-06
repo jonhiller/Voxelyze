@@ -49,22 +49,22 @@ void CVX_External::setFixed(bool xTranslate, bool yTranslate, bool zTranslate, b
 	extTranslation = extRotation = Vec3D<double>(); //clear displacements
 }
 
-void CVX_External::addDisplacement(dofComponent dof, double displacement)
+void CVX_External::setDisplacement(dofComponent dof, double displacement)
 {
 	dofSet(dofFixed, dof, true);
 	if (displacement != 0.0f){
-		if (dof & X_TRANSLATE) extTranslation.x += displacement;
-		if (dof & Y_TRANSLATE) extTranslation.y += displacement;
-		if (dof & Z_TRANSLATE) extTranslation.z += displacement;
-		if (dof & X_ROTATE) extRotation.x += displacement;
-		if (dof & Y_ROTATE)	extRotation.y += displacement;
-		if (dof & Z_ROTATE) extRotation.z += displacement;
+		if (dof & X_TRANSLATE) extTranslation.x = displacement;
+		if (dof & Y_TRANSLATE) extTranslation.y = displacement;
+		if (dof & Z_TRANSLATE) extTranslation.z = displacement;
+		if (dof & X_ROTATE) extRotation.x = displacement;
+		if (dof & Y_ROTATE)	extRotation.y = displacement;
+		if (dof & Z_ROTATE) extRotation.z = displacement;
 	}
 
 	rotationChanged();
 }
 
-void CVX_External::addDisplacementAll(const Vec3D<double>& translation, const Vec3D<double>& rotation)
+void CVX_External::setDisplacementAll(const Vec3D<double>& translation, const Vec3D<double>& rotation)
 {
 	dofSetAll(dofFixed, true);
 	extTranslation = translation;
@@ -72,6 +72,22 @@ void CVX_External::addDisplacementAll(const Vec3D<double>& translation, const Ve
 
 	rotationChanged();
 }
+
+//void CVX_External::addDisplacement(dofComponent dof, double displacement)
+//{
+//	dofSet(dofFixed, dof, true);
+//	if (displacement != 0.0f){
+//		if (dof & X_TRANSLATE) extTranslation.x += displacement;
+//		if (dof & Y_TRANSLATE) extTranslation.y += displacement;
+//		if (dof & Z_TRANSLATE) extTranslation.z += displacement;
+//		if (dof & X_ROTATE) extRotation.x += displacement;
+//		if (dof & Y_ROTATE)	extRotation.y += displacement;
+//		if (dof & Z_ROTATE) extRotation.z += displacement;
+//	}
+//
+//	rotationChanged();
+//}
+
 
 void CVX_External::clearDisplacement(dofComponent dof)
 {

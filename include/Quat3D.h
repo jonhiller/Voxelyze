@@ -44,22 +44,24 @@ public:
 	Quat3D(void) {w=1; x=0; y=0; z=0;}
 	Quat3D(const T dw, const T dx, const T dy, const T dz) {w=dw; x=dx; y=dy; z=dz;} //constructor
 	Quat3D(const Quat3D& QuatIn) {w = QuatIn.w; x = QuatIn.x; y = QuatIn.y; z = QuatIn.z;} //copy constructor
-	Quat3D(const Vec3D<T>& VecIn) { //constructs from a rotation vector. adapted from http://physicsforgames.blogspot.com/2010/02/quaternions.html
-		Vec3D<T> theta = VecIn/2;
-		T s, thetaMag2 = theta.Length2();
-		if (thetaMag2*thetaMag2 < DBL_EPSILONx24 ){ //if the 4th taylor expansion term is negligible
-			w=1.0 - 0.5*thetaMag2;
-			s=1.0 - thetaMag2 / 6.0;
-		}
-		else {
-			T thetaMag = sqrt(thetaMag2);
-			w=cos(thetaMag);
-			s=sin(thetaMag) / thetaMag;
-		}
-		x=theta.x*s;
-		y=theta.y*s;
-		z=theta.z*s;
-	}
+	Quat3D(const Vec3D<T>& VecIn) {FromRotationVector(VecIn);}
+	
+	//{ //constructs from a rotation vector. adapted from http://physicsforgames.blogspot.com/2010/02/quaternions.html
+	//	Vec3D<T> theta = VecIn/2;
+	//	T s, thetaMag2 = theta.Length2();
+	//	if (thetaMag2*thetaMag2 < DBL_EPSILONx24 ){ //if the 4th taylor expansion term is negligible
+	//		w=1.0 - 0.5*thetaMag2;
+	//		s=1.0 - thetaMag2 / 6.0;
+	//	}
+	//	else {
+	//		T thetaMag = sqrt(thetaMag2);
+	//		w=cos(thetaMag);
+	//		s=sin(thetaMag) / thetaMag;
+	//	}
+	//	x=theta.x*s;
+	//	y=theta.y*s;
+	//	z=theta.z*s;
+	//}
 	Quat3D(const T angle, const Vec3D<T> &axis){
 		const T a = angle * (T)0.5;
 		const T s = sin(a);
@@ -139,6 +141,22 @@ public:
 		else return Vec3D<T>(x, y, z)*2.0*acos(w)/sqrt(squareLength);
 	};
 	
+	void FromRotationVector(const Vec3D<T>& VecIn) { //constructs from a rotation vector. adapted from http://physicsforgames.blogspot.com/2010/02/quaternions.html
+		Vec3D<T> theta = VecIn/2;
+		T s, thetaMag2 = theta.Length2();
+		if (thetaMag2*thetaMag2 < DBL_EPSILONx24 ){ //if the 4th taylor expansion term is negligible
+			w=1.0 - 0.5*thetaMag2;
+			s=1.0 - thetaMag2 / 6.0;
+		}
+		else {
+			T thetaMag = sqrt(thetaMag2);
+			w=cos(thetaMag);
+			s=sin(thetaMag) / thetaMag;
+		}
+		x=theta.x*s;
+		y=theta.y*s;
+		z=theta.z*s;
+	}
 
 	void FromAngleToPosX(const Vec3D<T>& RotateFrom){ //highly optimized at the expense of readability
 		if (Vec3D<T>(0,0,0) == RotateFrom) return; //leave off if it slows down too much!!
@@ -179,12 +197,12 @@ public:
 	}
 
 	template <typename U> const Vec3D<U> RotateVec3D(const Vec3D<U>& f) const { //rotate a vector in the direction of this quaternion
-		U fx=f.x, fy=f.y, fz=f.z;
-		U tw = fx*x + fy*y + fz*z;
-		U tx = fx*w - fy*z + fz*y;
-		U ty = fx*z + fy*w - fz*x;
-		U tz = -fx*y + fy*x + fz*w;
-		return Vec3D<U>(w*tx + x*tw + y*tz - z*ty, w*ty - x*tz + y*tw + z*tx, w*tz + x*ty - y*tx + z*tw);
+		U fx = (U)(f.x), fy=(U)(f.y), fz=(U)(f.z);
+		U tw = (U)(fx*x + fy*y + fz*z);
+		U tx = (U)(fx*w - fy*z + fz*y);
+		U ty = (U)(fx*z + fy*w - fz*x);
+		U tz = (U)(-fx*y + fy*x + fz*w);
+		return Vec3D<U>((U)(w*tx + x*tw + y*tz - z*ty), (U)(w*ty - x*tz + y*tw + z*tx), (U)(w*tz + x*ty - y*tx + z*tw));
 	}
 
 	const Vec3D<T> RotateVec3DInv(const Vec3D<T>& f) const { //rotate a vector in the opposite(inverse) direction of this quaternion

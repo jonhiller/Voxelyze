@@ -75,7 +75,7 @@ class CVX_Link {
 	bool isFailed() const; //!< Returns true if the stress on this bond has ever exceeded its failure stress
 
 	float strainEnergy() const; //!< Calculates and return the strain energy of this link according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
-	float axialStiffness() const; //!< Calculates and returns the current linear axial stiffness of this link at it's current strain.
+	float axialStiffness(); //!< Calculates and returns the current linear axial stiffness of this link at it's current strain.
 
 	void updateForces(); //!< Called every timestep to calculate the forces and moments acting between the two constituent voxels in their current relative positions and orientations.
 

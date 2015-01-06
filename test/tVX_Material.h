@@ -288,7 +288,7 @@ TEST(CVX_Material, setModel_DataValidation){ //test model data validation
 	ASSERT_FALSE(Mat8.setModel(4, testStrain8b, testStress8)); 
 	ASSERT_FALSE(Mat8.setModel(4, testStrain8c, testStress8)); 
 	ASSERT_FALSE(Mat8.setModel(4, testStrain8, testStress8a)); 
-	ASSERT_FALSE(Mat8.setModel(4, testStrain8, testStress8b)); 
+	ASSERT_TRUE(Mat8.setModel(4, testStrain8, testStress8b)); //currently CAN have non-monotonically increasing stress
 	ASSERT_FALSE(Mat8.setModel(4, testStrain8, testStress8c)); 
 
 

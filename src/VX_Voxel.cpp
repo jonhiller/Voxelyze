@@ -58,7 +58,7 @@ CVX_Voxel::~CVX_Voxel(void)
 void CVX_Voxel::reset()
 {
 //	double myNominalSize = mat->nominalSize();
-	pos = mat->nominalSize()*Vec3D<double>(ix, iy, iz);
+	pos = originalPosition(); //mat->nominalSize()*Vec3D<double>(ix, iy, iz);
 	orient = Quat3D<double>();
 
 //	if (!isFixed(X_TRANSLATE)) pos.x = ix*myNominalSize;
@@ -151,30 +151,30 @@ void CVX_Voxel::setTemperature(float temperature)
 	}
 } 
 
-//
-//Vec3D<float> CVX_Voxel::externalForce()
-//{
-//	Vec3D<float> returnForce(extForce);
-//	if (isFixed(X_TRANSLATE) || isFixed(Y_TRANSLATE) || isFixed(Z_TRANSLATE)){
-//		Vec3D<float> thisForce = (Vec3D<float>) -force();
-//		if (isFixed(X_TRANSLATE)) returnForce.x = thisForce.x;
-//		if (isFixed(Y_TRANSLATE)) returnForce.y = thisForce.y;
-//		if (isFixed(Z_TRANSLATE)) returnForce.z = thisForce.z;
-//	}
-//	return returnForce;
-//}
-//
-//Vec3D<float> CVX_Voxel::externalMoment()
-//{
-//	Vec3D<float> returnMoment(extMoment);
-//	if (isFixed(X_ROTATE) || isFixed(Y_ROTATE) || isFixed(Z_ROTATE)){
-//		Vec3D<float> thisMoment = (Vec3D<float>) -moment();
-//		if (isFixed(X_ROTATE)) returnMoment.x = thisMoment.x;
-//		if (isFixed(Y_ROTATE)) returnMoment.y = thisMoment.y;
-//		if (isFixed(Z_ROTATE)) returnMoment.z = thisMoment.z;
-//	}
-//	return returnMoment;
-//}
+
+Vec3D<float> CVX_Voxel::externalForce()
+{
+	Vec3D<float> returnForce(ext->force());
+	if (ext->isFixed(X_TRANSLATE) || ext->isFixed(Y_TRANSLATE) || ext->isFixed(Z_TRANSLATE)){
+		Vec3D<float> thisForce = (Vec3D<float>) -force();
+		if (ext->isFixed(X_TRANSLATE)) returnForce.x = thisForce.x;
+		if (ext->isFixed(Y_TRANSLATE)) returnForce.y = thisForce.y;
+		if (ext->isFixed(Z_TRANSLATE)) returnForce.z = thisForce.z;
+	}
+	return returnForce;
+}
+
+Vec3D<float> CVX_Voxel::externalMoment()
+{
+	Vec3D<float> returnMoment(ext->moment());
+	if (ext->isFixed(X_ROTATE) || ext->isFixed(Y_ROTATE) || ext->isFixed(Z_ROTATE)){
+		Vec3D<float> thisMoment = (Vec3D<float>) -moment();
+		if (ext->isFixed(X_ROTATE)) returnMoment.x = thisMoment.x;
+		if (ext->isFixed(Y_ROTATE)) returnMoment.y = thisMoment.y;
+		if (ext->isFixed(Z_ROTATE)) returnMoment.z = thisMoment.z;
+	}
+	return returnMoment;
+}
 //
 //
 //void CVX_Voxel::setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate)
@@ -213,7 +213,7 @@ Vec3D<float> CVX_Voxel::cornerOffset(voxelCorner corner) const
 {
 	Vec3D<> strains;
 	for (int i=0; i<3; i++){
-		bool posLink = corner&(1<<(2-i));
+		bool posLink = corner&(1<<(2-i))?true:false;
 		CVX_Link* pL = links[2*i + (posLink?0:1)];
 		if (pL && !pL->isFailed()){
 			//if (pL->isFailed()) strains[i] = 1.0;
@@ -308,16 +308,26 @@ void CVX_Voxel::timeStep(float dt)
 //	if (dofIsSet(dofFixed, Y_ROTATE)){angMom.y=0;}
 //	if (dofIsSet(dofFixed, Z_ROTATE)){angMom.z=0;}
 
-	orient = Quat3D<>(angularVelocity()*dt)*orient; //update the orientation
+//	orient = Quat3D<>(angularVelocity()*dt)*orient; //update the orientation
+	orient = Quat3D<>(angMom*(dt*mat->_momentInertiaInverse))*orient; //update the orientation
 
 	if (ext){
 		double size = mat->nominalSize();
 		if (ext->isFixed(X_TRANSLATE)) {pos.x = ix*size + ext->translation().x; linMom.x=0;}
 		if (ext->isFixed(Y_TRANSLATE)) {pos.y = iy*size + ext->translation().y; linMom.y=0;}
 		if (ext->isFixed(Z_TRANSLATE)) {pos.z = iz*size + ext->translation().z; linMom.z=0;}
-		if (ext->isFixed(X_ROTATE) || ext->isFixed(Y_ROTATE) || ext->isFixed(Z_ROTATE)){ //if any rotation fixed, all are fixed
-			orient = ext->rotationQuat();
-			angMom = Vec3D<double>();
+		if (ext->isFixedAnyRotation()){ //if any rotation fixed, all are fixed
+			if (ext->isFixedAllRotation()){
+				orient = ext->rotationQuat();
+				angMom = Vec3D<double>();
+			}
+			else { //partial fixes: slow!
+				Vec3D<double> tmpRotVec = orient.ToRotationVector();
+				if (ext->isFixed(X_ROTATE)){ tmpRotVec.x=0; angMom.x=0;}
+				if (ext->isFixed(Y_ROTATE)){ tmpRotVec.y=0; angMom.y=0;}
+				if (ext->isFixed(Z_ROTATE)){ tmpRotVec.z=0; angMom.z=0;}
+				orient.FromRotationVector(tmpRotVec);
+			}
 		}
 	}
 
@@ -420,20 +430,67 @@ Vec3D<float> CVX_Voxel::strain(bool poissonsStrain) const
 	for (int i=0; i<3; i++){ //cycle through axes
 		if (numBondAxis[i]==2) intStrRet[i] *= 0.5f; //average
 		if (poissonsStrain){
-			tension[i] = ((numBondAxis[i]==2) || (ext && (numBondAxis[i]==1 && ext->isFixed((dofComponent)(1<<i)) && ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
+//			tension[i] = ((numBondAxis[i]==2) || (ext && (numBondAxis[i]==1 && ext->isFixed((dofComponent)(1<<i)) && ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
+			tension[i] = ((numBondAxis[i]==2) || (ext && (numBondAxis[i]==1 && ext->isFixed((dofComponent)(1<<i)) || ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
 //			tension[i] = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && dofIsSet(dofFixed, (dofComponent)(1<<i)) && extForce[i] != 0)); //if both sides pulling, or just one side and a fixed or forced voxel...
 		}
 
 	}
 
 	if (poissonsStrain){
-		if (!(tension[0] && tension[1] && tension[2])){
+		if (!(tension[0] && tension[1] && tension[2])){ //if at least one isn't in tension
 			float add = 0;
 			for (int i=0; i<3; i++) if (tension[i]) add+=intStrRet[i];
 			float value = pow( 1.0f + add, -mat->poissonsRatio()) - 1.0f;
 			for (int i=0; i<3; i++) if (!tension[i]) intStrRet[i]=value;
 		}
 	}
+
+	//old
+//
+//	//if no connections in the positive and negative directions of a particular axis, strain is zero
+//	//if one connection in positive or negative direction of a particular axis, strain is that strain - ?? and force or constraint?
+//	//if connections in both the positive and negative directions of a particular axis, strain is the average. 
+////	float intStrRet[3] = {0}; //intermediate strain return value. axes according to linkAxis enum
+//	Vec3D<float> intStrRet(0,0,0); //intermediate strain return value. axes according to linkAxis enum
+//	
+//	int numBondAxis[3] = {0}; //number of bonds in this axis (0,1,2). axes according to linkAxis enum
+//	for (int i=0; i<6; i++){ //cycle through link directions
+//		if (links[i]){
+//			int axis = toAxis((linkDirection)i);
+//			intStrRet[axis] += links[i]->axialStrain(isNegative((linkDirection)i));
+//			numBondAxis[axis]++;
+//		}
+//	}
+//	for (int i=0; i<3; i++){ //cycle through axes
+//		if (numBondAxis[i]==2) intStrRet[i]*= 0.5f; //average
+//		if (poissonsStrain && numBondAxis[i]==1){ //if just one bond
+//			if ((ext && !ext->isFixed((dofComponent)(1<<i))) && ext->force()[i]==0 ) intStrRet[i]=0; //if no other external means of providing tension, zero out strain.
+//		}
+//	}
+//
+//
+//	//return Vec3D<>(intStrRet[0], intStrRet[1], intStrRet[2]);
+//
+//
+//	if (poissonsStrain){
+//		float mu = mat->poissonsRatio();
+//		Vec3D<> tmp(	intStrRet[0] + pow(1+intStrRet[1] + intStrRet[2], -mu)-1, 
+//						intStrRet[1] + pow(1+intStrRet[0] + intStrRet[2], -mu)-1, 
+//						intStrRet[2] + pow(1+intStrRet[0] + intStrRet[1], -mu)-1);
+//		intStrRet[0]=tmp.x;
+//		intStrRet[1]=tmp.y;
+//		intStrRet[2]=tmp.z;
+//
+//
+//
+//		//if (!(tension[0] && tension[1] && tension[2])){ //if at least one isn't in tension
+//		//	float add = 0;
+//		//	for (int i=0; i<3; i++) if (tension[i]) add+=intStrRet[i];
+//		//	float value = pow( 1.0f + add, -mat->poissonsRatio()) - 1.0f;
+//		//	for (int i=0; i<3; i++) if (!tension[i]) intStrRet[i]=value;
+//		//}
+//	}
 
 	return intStrRet;
 }
@@ -462,12 +519,12 @@ float CVX_Voxel::transverseStrainSum(linkAxis axis)
 	default: return 0.0f;
 	}
 
-//	switch (axis){
-//	case X_AXIS: return strain(true).y+strain(true).z;
-//	case Y_AXIS: return strain(true).x+strain(true).z;
-//	case Z_AXIS: return strain(true).x+strain(true).y;
-//	default: return 0.0f;
-//	}
+	//switch (axis){
+	//case X_AXIS: return strain(true).y+strain(true).z;
+	//case Y_AXIS: return strain(true).x+strain(true).z;
+	//case Z_AXIS: return strain(true).x+strain(true).y;
+	//default: return 0.0f;
+	//}
 }
 
 float CVX_Voxel::transverseArea(linkAxis axis)

@@ -50,8 +50,8 @@ public:
 	CVoxelyze(const char* jsonFilePath) {loadJSON(jsonFilePath);}
 	CVoxelyze(rapidjson::Value* pV);
 	~CVoxelyze(void);
-	CVoxelyze(const CVoxelyze& VIn) {*this = VIn;} //copy constructor
-	CVoxelyze& operator=(const CVoxelyze& VIn); //equal operator
+	CVoxelyze(CVoxelyze& VIn) {*this = VIn;} //copy constructor
+	CVoxelyze& operator=(CVoxelyze& VIn); //equal operator
 
 	void clear(); //deallocates and returns everything to defaults 
 	bool loadJSON(const char* jsonFilePath);
@@ -68,6 +68,8 @@ public:
 //	std::vector<CVX_Material*> voxelMats; //up-to-date list of all voxel materials existing in this simulation
 	CVX_Material* addMaterial(float youngsModulus = 1e6f, float density = 1e3f);
 	CVX_Material* addMaterial(rapidjson::Value& mat);
+	CVX_Material* addMaterial(const CVX_Material& mat); //copies the material (doesn't need to be a part of this voxelyze object, but can be)
+
 	bool removeMaterial(CVX_Material* toRemove);
 	bool replaceMaterial(CVX_Material* replaceMe, CVX_Material* replaceWith); //replace all voxels of replaceMe with replaceWith
 	int materialCount() {return voxelMats.size();}

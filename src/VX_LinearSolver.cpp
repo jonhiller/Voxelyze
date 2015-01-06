@@ -118,7 +118,7 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 
 	if (!Success) return false;
 
-	updateProgress(0.9, "Processing results...");
+	updateProgress(0.9f, "Processing results...");
 	postResults();
 	return true;
 }

@@ -124,7 +124,8 @@ Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle
 
 float CVX_Link::axialStrain(bool positiveEnd) const
 {
-	return positiveEnd ? 2.0f*strain/(1.0f+strainRatio) : 2.0f*strain*strainRatio/(1.0f+strainRatio);
+	return positiveEnd ? 2.0f*strain*strainRatio/(1.0f+strainRatio) : 2.0f*strain/(1.0f+strainRatio);
+//	return positiveEnd ? 2.0f*strain/(1.0f+strainRatio) : 2.0f*strain*strainRatio/(1.0f+strainRatio);
 }
 
 
@@ -229,14 +230,16 @@ void CVX_Link::updateForces()
 float CVX_Link::updateStrain(float axialStrain)
 {
 	strain = axialStrain; //redundant?
-	if (axialStrain > maxStrain) maxStrain = axialStrain; //remember this maximum for easy reference
 
-	if (mat->linear) return mat->stress(axialStrain, currentTransverseStrainSum);
+	if (mat->linear){
+		if (axialStrain > maxStrain) maxStrain = axialStrain; //remember this maximum for easy reference
+		return mat->stress(axialStrain, currentTransverseStrainSum);
+	}
 	else {
 		float returnStress;
 
 		if (axialStrain > maxStrain){ //if new territory on the stress/strain curve
-		//	maxStrain = axialStrain; //remember this maximum for easy reference
+			maxStrain = axialStrain; //remember this maximum for easy reference
 			returnStress = mat->stress(axialStrain, currentTransverseStrainSum);
 			
 			if (mat->nu != 0.0f) strainOffset = maxStrain-mat->stress(axialStrain)/(mat->_eHat*(1-mat->nu)); //precalculate strain offset for when we back off
@@ -263,9 +266,14 @@ float CVX_Link::strainEnergy() const
 			(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y)/(3.0*mat->_b3); //Bending Y
 }
 
-float CVX_Link::axialStiffness() const {
+float CVX_Link::axialStiffness() {
 	if (mat->isConstantArea()) return mat->_a1;
-	else return (float)(mat->_eHat*currentTransverseArea/((strain+1)*currentRestLength)); // _a1;
+	else {
+		updateRestLength();
+		updateTransverseInfo();
+
+		return (float)(mat->_eHat*currentTransverseArea/((strain+1)*currentRestLength)); // _a1;
+	}
 } 
 
 float CVX_Link::a1() const {return mat->_a1;}

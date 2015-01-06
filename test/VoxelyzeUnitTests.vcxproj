@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Code\VoxCad\Voxelyze\Utils;$(GoogleTestPath)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)../include;$(GoogleTestPath)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GoogleTestPath)msvc\gtest-md\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Code\VoxCad\Voxelyze;C:\Code\VoxCad\Voxelyze\Utils;$(GoogleTestPath)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)../include;$(GoogleTestPath)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(GoogleTestPath)msvc\gtest-md\release;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -87,13 +87,15 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\NEW\Voxelyze.cpp" />
-    <ClCompile Include="..\NEW\VX_Collision.cpp" />
-    <ClCompile Include="..\NEW\VX_Link.cpp" />
-    <ClCompile Include="..\NEW\VX_Material.cpp" />
-    <ClCompile Include="..\NEW\VX_MaterialLink.cpp" />
-    <ClCompile Include="..\NEW\VX_MaterialVoxel.cpp" />
-    <ClCompile Include="..\NEW\VX_Voxel.cpp" />
+    <ClCompile Include="..\src\Voxelyze.cpp" />
+    <ClCompile Include="..\src\VX_Collision.cpp" />
+    <ClCompile Include="..\src\VX_External.cpp" />
+    <ClCompile Include="..\src\VX_LinearSolver.cpp" />
+    <ClCompile Include="..\src\VX_Link.cpp" />
+    <ClCompile Include="..\src\VX_Material.cpp" />
+    <ClCompile Include="..\src\VX_MaterialLink.cpp" />
+    <ClCompile Include="..\src\VX_MaterialVoxel.cpp" />
+    <ClCompile Include="..\src\VX_Voxel.cpp" />
     <ClCompile Include="VoxelyzeUnitTests.cpp" />
   </ItemGroup>
   <ItemGroup>

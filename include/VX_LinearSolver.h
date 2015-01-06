@@ -58,7 +58,7 @@ private: //off limits variable and functions (internal)
 	void postResults(); //overwrites state of voxelyze object with the results
 	void OutputMatrices(); //for debugging small system only!!
 
-	void updateProgress(float percent, std::string message) {progressTick=percent*100, progressMsg = message;} //percent 0-1.0
+	void updateProgress(float percent, std::string message) {progressTick=(int)(percent*100), progressMsg = message;} //percent 0-1.0
 };
 
 //http://www.eng.fsu.edu/~chandra/courses/eml4536/Chapter4.ppt

@@ -74,18 +74,18 @@ int test2Vox(bool v1Fixed, linkDirection dir, Vec3D<float> force, Vec3D<float> m
 	Vec3D<> off = toOffset(dir);
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
 	if (v1Fixed){
-		pV1->setFixedAll();
+		pV1->external()->setFixedAll();
 	}
 	else {
-		pV1->setExternalForce(-force);
-		pV1->setExternalMoment(-moment);
-		pV1->setFixed(dofIsSet(dof, X_TRANSLATE), dofIsSet(dof, Y_TRANSLATE), dofIsSet(dof, Z_TRANSLATE), dofIsSet(dof, X_ROTATE), dofIsSet(dof, Y_ROTATE), dofIsSet(dof, Z_ROTATE));
+		pV1->external()->setForce(-force);
+		pV1->external()->setMoment(-moment);
+		pV1->external()->setFixed(dofIsSet(dof, X_TRANSLATE), dofIsSet(dof, Y_TRANSLATE), dofIsSet(dof, Z_TRANSLATE), dofIsSet(dof, X_ROTATE), dofIsSet(dof, Y_ROTATE), dofIsSet(dof, Z_ROTATE));
 	}
 
 	CVX_Voxel* pV2 = Sim.setVoxel(pMat1, (int)off.x, (int)off.y, (int)off.z);
-	pV2->setExternalForce(force);
-	pV2->setExternalMoment(moment);
-	pV2->setFixed(dofIsSet(dof, X_TRANSLATE), dofIsSet(dof, Y_TRANSLATE), dofIsSet(dof, Z_TRANSLATE), dofIsSet(dof, X_ROTATE), dofIsSet(dof, Y_ROTATE), dofIsSet(dof, Z_ROTATE));
+	pV2->external()->setForce(force);
+	pV2->external()->setMoment(moment);
+	pV2->external()->setFixed(dofIsSet(dof, X_TRANSLATE), dofIsSet(dof, Y_TRANSLATE), dofIsSet(dof, Z_TRANSLATE), dofIsSet(dof, X_ROTATE), dofIsSet(dof, Y_ROTATE), dofIsSet(dof, Z_ROTATE));
 	
 	float ts = Sim.recommendedTimeStep();
 	int convergeCount = 0; //consecutive times we've got the value we want
@@ -250,8 +250,8 @@ TEST(CVoxelyze, resetTime){
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
 	CVX_Voxel* pV2 = Sim.setVoxel(pMat1,1,0,0);
 
-	pV1->setFixedAll();
-	pV2->setExternalForce(1e-3f, 0, 0); //axial tension
+	pV1->external()->setFixedAll();
+	pV2->external()->setForce(1e-3f, 0, 0); //axial tension
 
 	for (int i=0; i<100; i++) Sim.doTimeStep();
 	Sim.resetTime();
@@ -268,12 +268,12 @@ TEST(CVoxelyze, internalDamping)
 
 	//surround with fixed voxels
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
-	pV1->setExternalForce(1e-6f, 1e-6f, 1e-6f);
+	pV1->external()->setForce(1e-6f, 1e-6f, 1e-6f);
 
 	for (int i=0; i<6; i++){
 		Vec3D<> off = toOffset((linkDirection)i);
 		CVX_Voxel* pV = Sim.setVoxel(pMat1, (int)off.x, (int)off.y, (int)off.z);
-		pV->setFixedAll();
+		pV->external()->setFixedAll();
 	}
 
 	float ts = Sim.recommendedTimeStep();
@@ -296,12 +296,12 @@ TEST(CVoxelyze, globalDamping)
 
 	//surround with fixed voxels
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
-	pV1->setExternalForce(1e-6f, 1e-6f, 1e-6f);
+	pV1->external()->setForce(1e-6f, 1e-6f, 1e-6f);
 
 	for (int i=0; i<6; i++){
 		Vec3D<> off = toOffset((linkDirection)i);
 		CVX_Voxel* pV = Sim.setVoxel(pMat1, (int)off.x, (int)off.y, (int)off.z);
-		pV->setFixedAll();
+		pV->external()->setFixedAll();
 	}
 
 	float ts = Sim.recommendedTimeStep();
@@ -320,9 +320,9 @@ TEST(CVoxelyze, globalDamping)
 	pMat2->setInternalDamping(0);
 
 	CVX_Voxel* pV21 = Sim2.setVoxel(pMat2,0,0,0);
-	pV21->setFixedAll();
+	pV21->external()->setFixedAll();
 	CVX_Voxel* pV22 = Sim2.setVoxel(pMat2,1,0,0);
-	pV22->setExternalForce(1e-6f, 1e-6f, 1e-6f);
+	pV22->external()->setForce(1e-6f, 1e-6f, 1e-6f);
 
 	ts = Sim2.recommendedTimeStep();
 	for (int k=0; k<300; k++){ //22 experimentally determined
@@ -346,8 +346,8 @@ TEST(CVoxelyze, combinedDamping)
 		for (int j=0; j<3; j++){
 			for (int k=0; k<3; k++){
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				else if (i==3) pV->setExternalForce(0,0,1e-6f);
+				if (i==0) pV->external()->setFixedAll();
+				else if (i==3) pV->external()->setForce(0,0,1e-6f);
 			}
 		}
 	}
@@ -391,12 +391,12 @@ TEST(CVoxelyze, scale)
 
 
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
-	pV1->setFixedAll();
+	pV1->external()->setFixedAll();
 	CVX_Voxel* pV2 = Sim.setVoxel(pMat1,1,0,0);
 	
 	for (int i=3; i<8; i++){
 		float force = 1/pow(10.0f, i), result = 4/pow(10.0f, i+3);
-		pV2->setExternalForce(force, force, force);
+		pV2->external()->setForce(force, force, force);
 		float ts = Sim.recommendedTimeStep();
 		Sim.resetTime();
 		for (int k=0; k<240; k++){
@@ -423,9 +423,9 @@ TEST(CVoxelyze, freqency){
 	CVX_Voxel* pV2 = Sim.setVoxel(pMat1,1,0,0);
 
 	//Axial natural frequency
-	pV1->setFixedAll();
-	pV2->setFixed(false, true, true, true, true, true);
-	pV2->setExternalForce(1e-3f, 0, 0); //axial tension
+	pV1->external()->setFixedAll();
+	pV2->external()->setFixed(false, true, true, true, true, true);
+	pV2->external()->setForce(1e-3f, 0, 0); //axial tension
 
 	float ts = Sim.recommendedTimeStep()/10;
 	std::vector<double> data;
@@ -456,11 +456,11 @@ TEST(CVoxelyze, largeDeformationDamping)
 
 	float ts = Sim.recommendedTimeStep();
 	file << ts << "\n"; //output the timestep
-	pV1->setFixedAll();
+	pV1->external()->setFixedAll();
 
 	//apply force, look at translations
 	CVX_Link* pL = Sim.link(0, 0, 0, X_POS);
-	pV2->setExternalForce(-0.2f, 0.0f, 0.2f);
+	pV2->external()->setForce(-0.2f, 0.0f, 0.2f);
 	for (int k=0; k<200; k++){
 		Sim.doTimeStep(ts);
 		file << pV2->position().z << "\t" <<  pL->isSmallAngle() << "\n";
@@ -487,12 +487,12 @@ TEST(CVoxelyze, largeDeformation)
 
 	float ts = Sim.recommendedTimeStep();
 	file << ts << "\n"; //output the timestep
-	pV1->setFixedAll();
+	pV1->external()->setFixedAll();
 	float lastValue = 0, lastDerivative = 0, maxDerivative2 = 0;
 
 	//apply force, look at translations
 	for (int i=0; i<100; i++){ //several forces.
-		pV2->setExternalForce(0, 0, i*2e-3f);
+		pV2->external()->setForce(0, 0, i*2e-3f);
 		CVX_Link* pL = Sim.link(0, 0, 0, X_POS);
 		for (int k=0; k<100; k++){
 			Sim.doTimeStep(ts);
@@ -537,16 +537,16 @@ TEST(CVoxelyze, doubleBondCantilever)
 
 	float ts = Sim.recommendedTimeStep();
 	file << ts << "\n"; //output the timestep
-	pV1->setFixedAll();
+	pV1->external()->setFixedAll();
 
 	//apply force, look at translations
 	for (int i=0; i<3; i++){ //3 translations
-		pV3->setFixed(!(i==0), !(i==1), !(i==2), true, !(i==2), !(i==1));
+		pV3->external()->setFixed(!(i==0), !(i==1), !(i==2), true, !(i==2), !(i==1));
 		for (int j=0; j<2; j++) { //positive and negative forcing
 			float sign = (j==0)?1.0f:-1.0f;
 			Vec3D<float> forceToAdd(0,0,0);
 			forceToAdd[i%3] = sign*5e-6f;
-			pV3->setExternalForce(forceToAdd);
+			pV3->external()->setForce(forceToAdd);
 			int convergeCount = 0; //consecutive times we've got the value we want
 			float expectedValue = (i==0 ? sign*1e-8f : sign*1.6e-7f);
 
@@ -587,15 +587,15 @@ TEST(CVoxelyze, impulse) //giant large-angle impulse to check for instabilities
 	for (int i=0; i<4; i++){ 
 		for (int j=0; j<2; j++){ 
 			CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,0);
-			if (i==0) pV->setFixedAll();
+			if (i==0) pV->external()->setFixedAll();
 		}
 	}
 
 	float ts = Sim.recommendedTimeStep();
 	for (int k=0; k<1000; k++){
 		CVX_Voxel* pV = Sim.voxel(3,0,0);
-		if (k==10) pV->setExternalForce(0,0,100);
-		else if (k==11) pV->setExternalForce(0,0,0);
+		if (k==10) pV->external()->setForce(0,0,100);
+		else if (k==11) pV->external()->setForce(0,0,0);
 
 		Sim.doTimeStep(ts);
 		float data = (float)pV->position().z;
@@ -626,8 +626,8 @@ TEST(CVoxelyze, multiSimple)
 	for (int i=0; i<2; i++){
 		CVX_Voxel* pV1 = Sim.setVoxel(pMat1,2*i,0,0);
 		CVX_Voxel* pV2 = Sim.setVoxel(pMat2,2*i+1,0,0);
-		if (i==0) pV1->setFixedAll();
-		if (i==1) pV2->setExternalForce(1e-3f, 0, 0);
+		if (i==0) pV1->external()->setFixedAll();
+		if (i==1) pV2->external()->setForce(1e-3f, 0, 0);
 	}
 
 	float ts = Sim.recommendedTimeStep();
@@ -663,8 +663,8 @@ TEST(CVoxelyze, multiSimple2) //2-thick layers (three effective materials)
 		if ((i/2)%2==0) pV = Sim.setVoxel(pMat1,i,0,0);
 		else pV = Sim.setVoxel(pMat2,i,0,0);
 
-		if (i==0) pV->setFixedAll();
-		if (i==7) pV->setExternalForce(1e-3f, 0, 0);
+		if (i==0) pV->external()->setFixedAll();
+		if (i==7) pV->external()->setForce(1e-3f, 0, 0);
 	}
 
 	float ts = Sim.recommendedTimeStep();
@@ -697,8 +697,8 @@ TEST(CVoxelyze, poissonsSmall) //1-wide
 
 	for (int i=0; i<3; i++){ 
 		CVX_Voxel* pV = Sim.setVoxel(pMat1,i,0,0);
-		if (i==0) pV->setFixedAll();
-		if (i==2) pV->setExternalForce(1e-3f, 0, 0);
+		if (i==0) pV->external()->setFixedAll();
+		if (i==2) pV->external()->setForce(1e-3f, 0, 0);
 	}
 
 	float ts = Sim.recommendedTimeStep();
@@ -728,8 +728,8 @@ TEST(CVoxelyze, poissonsLarge) //2x2x9
 		for (int j=0; j<2; j++){ 
 			for (int k=0; k<2; k++){ 
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				if (i==8) pV->setFixedAll(Vec3D<>(1e-3f, 0, 0));
+				if (i==0) pV->external()->setFixedAll();
+				if (i==8) pV->external()->setDisplacementAll(Vec3D<>(1e-3f, 0, 0));
 
 			}
 		}
@@ -743,7 +743,8 @@ TEST(CVoxelyze, poissonsLarge) //2x2x9
 
 	EXPECT_NEAR(5e-4, (float)(Sim.voxel(4,0,0)->position().x-0.004), 1e-7);
 
-	Vec3D<float> curSize = 2*Sim.voxel(4,0,0)->cornerPosition(CVX_Voxel::PPP); //to avoid edges
+//	Vec3D<float> curSize = 2*Sim.voxel(4,0,0)->cornerPosition(CVX_Voxel::PPP); //to avoid edges
+	Vec3D<float> curSize = 2*Sim.voxel(4,0,0)->cornerOffset(CVX_Voxel::PPP); //to avoid edges
 	Vec3D<float> curStrain = curSize - Vec3D<float>(0.001f, 0.001f, 0.001f);
 	curStrain /= 0.001f; 
 	EXPECT_NEAR(1.306e-1, curStrain.x, 1e-3);
@@ -783,8 +784,8 @@ TEST(CVoxelyze, poissonsHigh) //5x3x3
 		for (int j=0; j<3; j++){ 
 			for (int k=0; k<3; k++){ 
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				if (i==4) pV->setFixedAll(Vec3D<>(1e-5f, 0, 0));
+				if (i==0) pV->external()->setFixedAll();
+				if (i==4) pV->external()->setDisplacementAll(Vec3D<>(1e-5f, 0, 0));
 
 			}
 		}
@@ -823,8 +824,8 @@ TEST(CVoxelyze, poissonsMixed) //7x3x3
 				CVX_Voxel* pV;
 				if (i>1 && i<6)	pV = Sim.setVoxel(pMat2,i,j,k);
 				else pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				if (i==6) pV->setFixedAll(Vec3D<>(1e-3f, 0, 0));
+				if (i==0) pV->external()->setFixedAll();
+				if (i==6) pV->external()->setDisplacementAll(Vec3D<>(1e-3f, 0, 0));
 			}
 		}
 	}
@@ -856,8 +857,8 @@ TEST(CVoxelyze, deformableMaterial) //5x3x3
 		for (int j=0; j<3; j++){ 
 			for (int k=0; k<3; k++){ 
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				if (i==4) pV->setExternalForce(Vec3D<float>(0.2f, 0.0f, 0.0f));
+				if (i==0) pV->external()->setFixedAll();
+				if (i==4) pV->external()->setForce(Vec3D<float>(0.2f, 0.0f, 0.0f));
 
 			}
 		}
@@ -872,7 +873,7 @@ TEST(CVoxelyze, deformableMaterial) //5x3x3
 	//erase the forces
 	for (int j=0; j<3; j++){ 
 		for (int k=0; k<3; k++){ 
-			Sim.voxel(4,j,k)->setExternalForce(Vec3D<float>(0.0f, 0.0f, 0.0f));
+			Sim.voxel(4,j,k)->external()->setForce(Vec3D<float>(0.0f, 0.0f, 0.0f));
 		}
 	}
 
@@ -903,7 +904,7 @@ TEST(CVoxelyze, deformableMaterialPossions) //5x3x3
 		for (int j=0; j<3; j++){ 
 			for (int k=0; k<3; k++){ 
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
+				if (i==0) pV->external()->setFixedAll();
 				//if (i==4) pV->setExternalForce(Vec3D<float>(0.2f, 0.0f, 0.0f));
 
 			}
@@ -915,7 +916,7 @@ TEST(CVoxelyze, deformableMaterialPossions) //5x3x3
 		if (i<200){
 			for (int j=0; j<3; j++){ 
 				for (int k=0; k<3; k++){ 
-					Sim.voxel(4,j,k)->setFixedAll(Vec3D<>(7.5e-6f, 0.0f, 0.0f));
+					Sim.voxel(4,j,k)->external()->setDisplacementAll(Vec3D<>(i*7.5e-6f, 0.0f, 0.0f));
 				}
 			}
 		}
@@ -927,7 +928,7 @@ TEST(CVoxelyze, deformableMaterialPossions) //5x3x3
 	//erase the forces
 	for (int j=0; j<3; j++){ 
 		for (int k=0; k<3; k++){ 
-			Sim.voxel(4,j,k)->setUnfixedAll();
+			Sim.voxel(4,j,k)->external()->setFixedAll(false);
 		}
 	}
 
@@ -958,8 +959,8 @@ TEST(CVoxelyze, replaceMaterial)
 		for (int j=0; j<2; j++){
 			for (int k=0; k<2; k++){
 				CVX_Voxel* pV = Sim.setVoxel(pMat1,i,j,k);
-				if (i==0) pV->setFixedAll();
-				else if (i==4) pV->setExternalForce(0,0,1e-6f);
+				if (i==0) pV->external()->setFixedAll();
+				else if (i==4) pV->external()->setForce(0,0,1e-6f);
 			}
 		}
 	}
@@ -1004,8 +1005,8 @@ TEST(CVoxelyze, temperature)
 		CVX_Voxel* pV2 = Sim.setVoxel(pMat2,i,0,1);
 
 		if (i==0){
-			pV1->setFixedAll();
-			pV2->setFixedAll();		
+			pV1->external()->setFixedAll();
+			pV2->external()->setFixedAll();		
 		}
 	}
 
@@ -1056,18 +1057,18 @@ TEST(CVoxelyze, staticFriction)
 		file << Sim.voxel(0,0,0)->position().z << "\n";
 		Sim.doTimeStep(ts); //let it settle down...
 	}
-	pV1->setExternalForce(0.9f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(0.9f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_EQ(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 
 	//just above break of static friction
 	for (int l=0; l<50; l++) Sim.doTimeStep(ts);
-	pV1->setExternalForce(1.1f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(1.1f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_NE(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 
 	//increase gravity
@@ -1075,18 +1076,18 @@ TEST(CVoxelyze, staticFriction)
 
 	//just below break of static friction
 	for (int l=0; l<50; l++) Sim.doTimeStep(ts); //let it settle down...
-	pV1->setExternalForce(1.9f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(1.9f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_EQ(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 
 	//just above break of static friction
 	for (int l=0; l<50; l++) Sim.doTimeStep(ts);
-	pV1->setExternalForce(2.1f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(2.1f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_NE(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 	
 	//increase static friction
@@ -1095,18 +1096,18 @@ TEST(CVoxelyze, staticFriction)
 
 	//just below break of static friction
 	for (int l=0; l<50; l++) Sim.doTimeStep(ts); //let it settle down...
-	pV1->setExternalForce(1.9f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(1.9f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_EQ(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 
 	//just above break of static friction
 	for (int l=0; l<50; l++) Sim.doTimeStep(ts);
-	pV1->setExternalForce(2.1f*normalForce, 0.0f, 0.0f);
+	pV1->external()->setForce(2.1f*normalForce, 0.0f, 0.0f);
 	for (int l=0; l<10; l++) Sim.doTimeStep(ts);
 	EXPECT_NE(0.0, pV1->position().x);
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	Sim.resetTime();
 }
 
@@ -1140,7 +1141,7 @@ TEST(CVoxelyze, kineticFriction)
 	}
 	pMat1->setGlobalDamping(0.0001f);
 	float hForce = 2.0f*normalForce;
-	pV1->setExternalForce(hForce, 0.0f, 0.0f);
+	pV1->external()->setForce(hForce, 0.0f, 0.0f);
 	double lastPos = 0;
 	double vel = 0;
 	double energy = 0;
@@ -1155,7 +1156,7 @@ TEST(CVoxelyze, kineticFriction)
 		lastPos = curPos;
 	}
 	ASSERT_NEAR(energy, 0.5*mass*vel*vel, 2e-16); //check energy (not necessary, but kinda fun
-	pV1->setExternalForce(0.0f, 0.0f, 0.0f);
+	pV1->external()->setForce(0.0f, 0.0f, 0.0f);
 	for (int l=0; l<200; l++){
 		Sim.doTimeStep(ts);
 		double curPos = Sim.voxel(0,0,0)->position().x;
@@ -1178,7 +1179,7 @@ TEST(CVoxelyze, collisions) //could be expanded significantly
 	pMat1->setGlobalDamping(0.0f);
 
 	CVX_Voxel* pV1 = Sim.setVoxel(pMat1,0,0,0);
-	pV1->setFixedAll();
+	pV1->external()->setFixedAll();
 
 	CVX_Voxel* pV2 = Sim.setVoxel(pMat1,0,0,2);
 

@@ -22,6 +22,11 @@ CVX_MaterialVoxel::CVX_MaterialVoxel(rapidjson::Value& mat, double nominalSize) 
 	initialize(nominalSize);
 }
 
+CVX_MaterialVoxel::CVX_MaterialVoxel(const CVX_Material& mat, double nominalSize) : CVX_Material(mat)
+{
+	initialize(nominalSize);
+}
+
 void CVX_MaterialVoxel::initialize(double nominalSize)
 {
 	nomSize = nominalSize;

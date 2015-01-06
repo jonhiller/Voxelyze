@@ -61,19 +61,23 @@ public:
 
 
 	void setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate); //!< Set the specified true degrees of freedom as fixed for this voxel. (GCS) @param[in] xTranslate Translation in the X direction  @param[in] yTranslate Translation in the Y direction @param[in] zTranslate Translation in the Z direction @param[in] xRotate Rotation about the X axis @param[in] yRotate Rotation about the Y axis @param[in] zRotate Rotation about the Z axis
-	void setFixed(dofComponent dof, bool fixed=true) {fixed?addDisplacement(dof):clearDisplacement(dof);} 
-	void setFixedAll(bool fixed=true) {fixed?addDisplacementAll():clearDisplacementAll();}  
+	void setFixed(dofComponent dof, bool fixed=true) {fixed?setDisplacement(dof):clearDisplacement(dof);} 
+	void setFixedAll(bool fixed=true) {fixed?setDisplacementAll():clearDisplacementAll();}  
 
 //	void setFixed(dofComponent dof, double displacement=0.0f); //!< Sets the specified degree of freedom to fixed and applies the prescribed displacement. @param[in] dof Degree of freedom to fix according to the dofComponent enum. @param[in] displacement The prescribed displacement in meters for translational degrees of freedom and radians for rotational degrees of freedom.
 //	void setFixedAll(const Vec3D<double>& translation = Vec3D<double>(0,0,0), const Vec3D<double>& rotation = Vec3D<double>(0,0,0)); //!<Fixes all 6 degrees of freedom for this voxel. @param [in] translation Translation in meters to prescribe (GCS). @param[in] rotation Rotation in radians to prescribe. Applied in the order of X, Y, Z rotation in the global coordinate system.
 //	void setUnfixed(dofComponent dof) {dofSet(dofFixed, dof, false);} //!< Sets the specified degree of freedom to unfixed @param[in] dof Degree of freedom to fix according to the dofComponent enum.
 //	void setUnfixedAll() {dofSetAll(dofFixed, false);} //!< Unfixes all 6 degrees of freedom for this voxel.
+//	double displacement(dofComponent dof)
 
-	void addDisplacement(dofComponent dof, double displacement=0.0); //fixes, too
-	void addDisplacementAll(const Vec3D<double>& translation = Vec3D<double>(0,0,0), const Vec3D<double>& rotation = Vec3D<double>(0,0,0)); //fixes, too
+	void setDisplacement(dofComponent dof, double displacement=0.0); //fixes, too
+	void setDisplacementAll(const Vec3D<double>& translation = Vec3D<double>(0,0,0), const Vec3D<double>& rotation = Vec3D<double>(0,0,0)); //fixes, too
+
+//	void addDisplacement(dofComponent dof, double displacement); //fixes, too
+//	void addDisplacementAll(const Vec3D<double>& translation = Vec3D<double>(0,0,0), const Vec3D<double>& rotation = Vec3D<double>(0,0,0)) {setDisplacementAll(translation+extTranslation, rotation+extRotation);} //fixes, too
+
 	void clearDisplacement(dofComponent dof); //unfixes, too
 	void clearDisplacementAll(); //unfixes, too
-
 
 	Vec3D<float> force() const {return extForce;} //!< Returns the current applied external force in newtons.
 	Vec3D<float> moment() const {return extMoment;} //!< Returns the current applied external moment in N-m.
@@ -83,14 +87,15 @@ public:
 	void setMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment = Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
 	void setMoment(const Vec3D<float>& moment) {extMoment = moment;} //!< Convenience function for setExternalMoment(float, float, float).
 
-	void clearForce(){extForce = Vec3D<float>();}
-	void clearMoment(){extMoment = Vec3D<float>();}
-	
 	void addForce(const float xForce, const float yForce, const float zForce) {extForce += Vec3D<float>(xForce, yForce, zForce);} //!< Applies forces to this voxel in the global coordinate system. Has no effect in any fixed degrees of freedom. @param xForce Force in the X direction in newtons.  @param yForce Force in the Y direction in newtons.  @param zForce Force in the Z direction in newtons. 
 	void addForce(const Vec3D<float>& force) {extForce += force;} //!< Convenience function for setExternalForce(float, float, float).
 	void addMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment += Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
 	void addMoment(const Vec3D<float>& moment) {extMoment += moment;} //!< Convenience function for setExternalMoment(float, float, float).
+
+	void clearForce(){extForce = Vec3D<float>();}
+	void clearMoment(){extMoment = Vec3D<float>();}
 	
+
 	//	void setForceMoment(const Vec3D<float>& force = Vec3D<float>(0,0,0), const Vec3D<float>& moment = Vec3D<float>(0,0,0)) {extForce=force; extMoment=moment;} //!<
 //	void setForceMoment(dofComponent dof, double displacement=0.0f) {extForce=force; extMoment=moment;} //!<
 

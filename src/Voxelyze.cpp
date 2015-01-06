@@ -41,6 +41,28 @@ CVoxelyze::~CVoxelyze(void)
 	clear();
 }
 
+CVoxelyze& CVoxelyze::operator=(CVoxelyze& VIn)
+{
+	setVoxelSize(VIn.voxSize);
+	setAmbientTemperature(VIn.ambientTemperature(), true);
+	setGravity(VIn.gravity());
+	enableFloor(VIn.isFloorEnabled());
+	enableCollisions(VIn.isCollisionsEnabled());
+
+	//add all materials, map from VIn material to this material
+	std::unordered_map<CVX_Material*, CVX_Material*> matMap;
+	for (int i=0; i<VIn.materialCount(); i++) matMap[VIn.material(i)] = addMaterial(*(VIn.material(i)));
+
+	//for each voxel in VIn, call setVoxel here...
+	for (int i=0; i<VIn.voxelCount(); i++){
+		CVX_Voxel* pVIn = VIn.voxel(i);
+		CVX_Voxel* pVOut = setVoxel(matMap[pVIn->material()], pVIn->indexX(), pVIn->indexY(), pVIn->indexZ());
+		*pVOut->external() = *pVIn->external();
+	}
+	return *this;
+}
+
+
 bool CVoxelyze::loadJSON(const char* jsonFilePath)
 {
 	std::ifstream t(jsonFilePath);
@@ -141,7 +163,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 
 			for (int j=0; j<(int)ext["voxelIndices"].Size(); j++){
 				CVX_External* pE = voxelsList[ext["voxelIndices"][j].GetInt()]->external();
-				for (int k=0; k<6; k++)	if (dof[k]) pE->addDisplacement((dofComponent)(1<<k), disp[k]); //fixed degree of freedom
+				for (int k=0; k<6; k++)	if (dof[k]) pE->setDisplacement((dofComponent)(1<<k), disp[k]); //fixed degree of freedom
 				pE->addForce(force);
 				pE->addMoment(moment);
 			}
@@ -358,7 +380,7 @@ void CVoxelyze::resetTime()
 
 }
 
-void CVoxelyze::clear() //deallocates and returns everything to defaults
+void CVoxelyze::clear() //deallocates and returns everything to defaults (except voxel size)
 {
 	//delete and remove links
 	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++) delete *it;
@@ -374,7 +396,10 @@ void CVoxelyze::clear() //deallocates and returns everything to defaults
 	for (std::vector<CVX_MaterialVoxel*>::iterator it = voxelMats.begin(); it!=voxelMats.end(); it++) delete *it;
 	voxelMats.clear();
 
-	voxSize = DEFAULT_VOXEL_SIZE;
+	for (std::list<CVX_MaterialLink*>::iterator it = linkMats.begin(); it!=linkMats.end(); it++) delete *it;
+	linkMats.clear();
+
+	//voxSize = DEFAULT_VOXEL_SIZE;
 	currentTime=0.0f;
 	ambientTemp = 0.0f;
 	grav = 0.0f;
@@ -401,6 +426,14 @@ CVX_Material* CVoxelyze::addMaterial(float youngsModulus, float density)
 }
 
 CVX_Material* CVoxelyze::addMaterial(rapidjson::Value& mat)
+{
+	CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(mat, voxSize);
+	pMat->setGravityMultiplier(grav);
+	voxelMats.push_back(pMat);
+	return pMat; 
+}
+
+CVX_Material* CVoxelyze::addMaterial(const CVX_Material& mat)
 {
 	CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(mat, voxSize);
 	pMat->setGravityMultiplier(grav);

@@ -73,7 +73,7 @@ public:
 
 	CVX_MaterialVoxel* material() {return mat;} //!<Returns the linked material object containing the physical properties of this voxel.
 	
-	bool externalExists() {return (bool)ext;}
+	bool externalExists() {return ext?true:false;}
 	CVX_External* external() {if (!ext) ext = new CVX_External(); return ext;} //creates empty one if it doesn't exist
 
 
@@ -81,11 +81,12 @@ public:
 
 	//physical location
 	Vec3D<double> position() const {return pos;} //!< Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate system (LCS).
+	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);}
 	Vec3D<double> displacement() const {return (pos - originalPosition());} //!< Returns the 3D displacement of this voxel from its original location in meters (GCS)/
 	Vec3D<float> size() const {return cornerOffset(PPP)-cornerOffset(NNN);} //!< Returns the current deformed size of this voxel in the local voxel coordinates system (LCS). If asymmetric forces are acting on this voxel, the voxel may not be centered on position(). Use cornerNegative() and cornerPositive() to determine this information.
 	Vec3D<float> cornerPosition(voxelCorner corner) const; //!< Returns the deformed location of the voxel corner in the specified corner in the global coordinate system (GCS). Essentially cornerOffset() with the voxel's current global position/rotation applied.
 	Vec3D<float> cornerOffset(voxelCorner corner) const; //!< Returns the deformed location of the voxel corner in the specified corner in the local voxel coordinate system (LCS). Used to draw the deformed voxel in the correct position relative to the position().
-	bool isInterior() const {return (bool)(boolStates & SURFACE);} //!< Returns true if the voxel is surrounded by other voxels on its 6 coordinate faces. Returns false if 1 or more faces are exposed.
+	bool isInterior() const {return (boolStates & SURFACE)?true:false;} //!< Returns true if the voxel is surrounded by other voxels on its 6 coordinate faces. Returns false if 1 or more faces are exposed.
 	bool isSurface() const {return !isInterior();} //!< Convenience function to enhance code readibility. The inverse of isInterior(). Returns true 1 or more faces are exposed. Returns false if the voxel is surrounded by other voxels on its 6 coordinate faces.
 
 	Vec3D<double> baseSize() const {return mat->size()*(1+temp*mat->alphaCTE);} //!<Returns the nominal size of this voxel (LCS) accounting for any specified temperature and external actuation. Specifically, returns the zero-stress size of the voxel if all forces/moments were removed.
@@ -119,10 +120,10 @@ public:
 //	void addThermalEnergy(float energy); //adds a fixed amount of energy
 //	void fixTemperature(float temperature); //fixes temperature at the 
 
-//	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return the latest setExternalForce(). If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
+	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return any applied external forces. If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
 //	void setExternalForce(const float xForce, const float yForce, const float zForce) {extForce = Vec3D<float>(xForce, yForce, zForce);} //!< Applies forces to this voxel in the global coordinate system. Has no effect in any fixed degrees of freedom. @param xForce Force in the X direction in newtons.  @param yForce Force in the Y direction in newtons.  @param zForce Force in the Z direction in newtons. 
 //	void setExternalForce(const Vec3D<float>& force) {extForce = force;} //!< Convenience function for setExternalForce(float, float, float).
-//	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return the latest setExternalMoment(). If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
+	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return any applied external moments. If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
 //	void setExternalMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment = Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
 //	void setExternalMoment(const Vec3D<float>& moment) {extMoment = moment;} //!< Convenience function for setExternalMoment(float, float, float).
 
@@ -170,7 +171,6 @@ private:
 	CVX_MaterialVoxel* mat;
 	short ix, iy, iz;
 	CVX_External* ext;
-	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);}
 
 	void replaceMaterial(CVX_MaterialVoxel* newMaterial); //!<Replaces the material properties of this voxel (but not links) to this new CVX_Material. May cause unexpected behavior if certain material properties are changed mid-simulation. @param [in] newMaterial The new material properties for this voxel.
 

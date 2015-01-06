@@ -55,7 +55,6 @@ bool CVX_MaterialLink::updateAll()
 	b=(int)(0.5*(vox1Mat->b + vox2Mat->b));
 	a=(int)(0.5*(vox1Mat->a + vox2Mat->a));
 
-	nu = 0.5f*(vox1Mat->nu + vox2Mat->nu); //best guess
 	rho = 0.5f*(vox1Mat->rho + vox2Mat->rho);
 	alphaCTE = 0.5f*(vox1Mat->alphaCTE + vox2Mat->alphaCTE);
 	muStatic = 0.5f*(vox1Mat->muStatic + vox2Mat->muStatic);
@@ -109,6 +108,21 @@ bool CVX_MaterialLink::updateAll()
 		sigmaFail = stressFail;
 		epsilonFail = stressFail==-1.0f ? -1.0f : strain(stressFail);
 	}
+
+	//poissons ratio: choose such that Ehat ends up according to spring in series of Ehat1 and EHat2
+	if (vox1Mat->nu==0 && vox2Mat->nu==0) nu = 0;
+	else { //poissons ratio: choose such that Ehat ends up according to spring in series of Ehat1 and EHat2
+		float tmpEHat = 2*vox1Mat->_eHat*vox2Mat->_eHat/(vox1Mat->_eHat+vox2Mat->_eHat);
+		float tmpE = youngsModulus();
+		//completing the square algorithm to solve for nu.
+		//eHat = E/((1-2nu)(1+nu)) -> E/EHat = -2nu^2-nu+1 -> nu^2+0.5nu = (EHat+E)/(2EHat)
+		float c2 = (tmpEHat-tmpE)/(2*tmpEHat)+0.0625; //nu^2+0.5nu+0.0625 = c2 -> (nu+0.25)^2 = c2
+		nu = sqrt(c2)-0.25; //from solving above
+	}
+
+//	nu = std::max(vox1Mat->nu, vox2Mat->nu); //best guess
+//	nu = 0.5f*(vox1Mat->nu + vox2Mat->nu); //best guess
+
 	return updateDerived();
 }
 
