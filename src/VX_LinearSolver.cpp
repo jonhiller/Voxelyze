@@ -105,9 +105,6 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 		}
 	}
 
-	for (int i=0; i<vx->voxelCount()*6; i++)
-		std::cout << x[i] << "\n";
-
 	updateProgress(0.9, "Pardiso: Cleaning up...");
 	phase = -1; /* Release internal memory. */
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &dof, &a[0], &ia[0], &ja[0], &idum, &nrhs, iparm, &msglvl, &b[0], &x[0], &error, dparm);

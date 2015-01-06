@@ -899,11 +899,12 @@ float CVoxelyze::stateInfo(stateInfoType info, valueType type)
 				case STRAIN_ENERGY: thisVal = (*it)->strainEnergy();break;
 				case ENG_STRESS: thisVal = (*it)->axialStress(); break;
 				case ENG_STRAIN: thisVal = (*it)->axialStrain(); break;
+				default: thisVal=0;
 			}
 			switch (type){
 				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
 				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
-				case SUM: case AVERAGE: returnVal += thisVal; 
+				case TOTAL: case AVERAGE: returnVal += thisVal; 
 			}
 		}
 		if (type == AVERAGE) returnVal /= linkCount();
@@ -920,11 +921,12 @@ float CVoxelyze::stateInfo(stateInfoType info, valueType type)
 				case ANGULAR_VELOCITY: thisVal = (*it)->angularVelocityMagnitude(); break;
 				case PRESSURE: thisVal = (*it)->pressure(); break;
 				case MASS: thisVal = (*it)->material()->mass(); break;
+				default: thisVal=0;
 			}
 			switch (type){
 				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
 				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
-				case SUM: case AVERAGE: returnVal += thisVal; 
+				case TOTAL: case AVERAGE: returnVal += thisVal; 
 			}
 		}
 		if (type == AVERAGE) returnVal /= voxelCount();

@@ -9,13 +9,10 @@ VOXELYZE_VERSION = voxelyze.0.9
 VOXELYZE_LIB_NAME = lib$(VOXELYZE_NAME).a
 VOXELYZE_LIB_VERSION = lib$(VOXELYZE_VERSION).a
 
-
 CXX=g++
 CC=g++
 INCLUDE= -I./include
 FLAGS = -O3 -std=c++11 -DPARDISO_5=1 -Wall $(INCLUDE)
-
-#CPPFLAGS= $(CFLAGS)
 
 VOXELYZE_SRC = \
 	src/Voxelyze.cpp \
@@ -26,9 +23,8 @@ VOXELYZE_SRC = \
 	src/VX_MaterialVoxel.cpp \
 	src/VX_MaterialLink.cpp \
 	src/VX_Collision.cpp \
-	src/VX_LinearSolver.cpp 
-#	../libpardiso500-GNU481-X86-64.so \
-#	../libblas.a  
+	src/VX_LinearSolver.cpp \
+	src/VX_Mesh.cpp 
 
 VOXELYZE_OBJS = \
 	src/Voxelyze.o \
@@ -39,9 +35,9 @@ VOXELYZE_OBJS = \
 	src/VX_MaterialVoxel.o \
 	src/VX_MaterialLink.o \
 	src/VX_Collision.o \
-	src/VX_LinearSolver.o
-	
-	
+	src/VX_LinearSolver.o \
+	src/VX_Mesh.o
+		
 	
 .PHONY: clean all
 

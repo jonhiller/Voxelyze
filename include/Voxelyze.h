@@ -44,7 +44,7 @@ public:
 		PRESSURE,
 		MASS
 	};
-	enum valueType {MIN, MAX, SUM, AVERAGE};
+	enum valueType {MIN, MAX, TOTAL, AVERAGE};
 
 	CVoxelyze(double voxelSize = DEFAULT_VOXEL_SIZE);
 	CVoxelyze(const char* jsonFilePath) {loadJSON(jsonFilePath);}

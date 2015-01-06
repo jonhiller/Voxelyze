@@ -15,11 +15,18 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <iostream>
 #include <fstream>
 
-//tmp...
-#ifdef QT_GUI_LIB
-#include <qgl.h>
-#else
-#include "OpenGLInclude.h" //If not using QT's openGL system, make a header file "OpenGLInclude.h" that includes openGL library functions 
+#ifdef USE_OPENGL
+	#ifdef QT_GUI_LIB
+		#include <qgl.h>
+	#else
+		#ifdef __APPLE__
+			#include <OpenGL/gl.h>
+			#include <OpenGL/glu.h>
+		#else
+			#include <GL/gl.h>
+			#include <GL/glu.h>
+		#endif
+	#endif
 #endif
 
 //link direction to clockwise vertex lookup info:
@@ -203,6 +210,7 @@ void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring
 				case CVoxelyze::STRAIN_ENERGY: case CVoxelyze::ENG_STRAIN: case CVoxelyze::ENG_STRESS: jetValue = linkMaxColorValue(vx->voxel(quadVoxIndices[i]), coloring) / maxVal; break;
 				case CVoxelyze::DISPLACEMENT: jetValue = vx->voxel(quadVoxIndices[i])->displacementMagnitude()/maxVal; break;
 				case CVoxelyze::PRESSURE: jetValue = 0.5-vx->voxel(quadVoxIndices[i])->pressure()/(2*maxVal); break;
+				default: jetValue = 0;
 				}
 			break;
 		}
@@ -282,6 +290,7 @@ float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType 
 				case CVoxelyze::STRAIN_ENERGY: thisVal = pL->strainEnergy(); break;
 				case CVoxelyze::ENG_STRESS: thisVal = pL->axialStress(); break;
 				case CVoxelyze::ENG_STRAIN: thisVal = pL->axialStrain(); break;
+				default: thisVal=0;
 			}
 		}
 		
@@ -307,6 +316,7 @@ void CVX_MeshRender::saveObj(const char* filePath)
 
 void CVX_MeshRender::glDraw()
 {
+#ifdef USE_OPENGL
 
 	//quads
 	int qCount = quads.size()/4;
@@ -340,5 +350,6 @@ void CVX_MeshRender::glDraw()
 	glEnd();
 
 
-
+#endif
 }
+
