@@ -62,7 +62,7 @@ public:
 
 	CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, short indexZ); //!< Default constuctor. @param [in] material Links this CVX_Material to define the physical properties for this voxel.
 	~CVX_Voxel(); //!<destructor
-	void reset(); 
+	void reset();
 
 	CVX_Link* link(linkDirection direction) const {return links[direction];}
 	int linkCount() const {int retVal =0; for (int i=0; i<6; i++) if (links[i]) retVal++; return retVal;}
