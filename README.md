@@ -6,6 +6,7 @@ Voxelyze is a general purpose multi-material voxel simulation library for static
 
 
 User guide: [https://github.com/jonhiller/Voxelyze/wiki](https://github.com/jonhiller/Voxelyze/wiki)
+
 Documentation: [http://jonhiller.github.io/Voxelyze/annotated.html](http://jonhiller.github.io/Voxelyze/annotated.html)
 
 
