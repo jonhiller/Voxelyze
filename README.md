@@ -4,6 +4,11 @@ Voxelyze
 Voxelyze is a general purpose multi-material voxel simulation library for static and dynamic analysis. To quickly get a feel for its capabilities you can create and play with Voxelyze objects using [VoxCAD](http://www.voxcad.com) (Windows and Linux executables available). An paper describing the theory and capabilities of Voxelyze has been published in Soft Robotics journal: "[Dynamic Simulation of Soft Multimaterial 3D-Printed Objects](http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010)" (2014). [Numerous](https://sites.google.com/site/jonhiller/hardware/soft-robots) 
 [academic](http://creativemachines.cornell.edu/soft-robots), [corporate](http://www.fastcompany.com/3006259/stratasyss-programmable-materials-just-add-water), and [educational](http://www.sciencebuddies.org/science-fair-projects/project_ideas/Robotics_p016.shtml) projects make use of Voxelyze.
 
+
+User guide: [https://github.com/jonhiller/Voxelyze/wiki](https://github.com/jonhiller/Voxelyze/wiki)
+Documentation: [http://jonhiller.github.io/Voxelyze/annotated.html](http://jonhiller.github.io/Voxelyze/annotated.html)
+
+
 Basic Usage
 --------
 
