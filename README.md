@@ -23,8 +23,8 @@ Basic use of Voxelyze consists of five simple steps:
 
 ```c++
 #include "Voxelyze.h"
-CVoxelyze Vx(0.010); //1cm voxels
-CVX_Material* pMaterial = Vx.addMaterial(2e6, 1000); //A material with stiffness E=2MPa and density 1000Kg/m^3
+CVoxelyze Vx(0.005); //5mm voxels
+CVX_Material* pMaterial = Vx.addMaterial(1000000, 1000); //A material with stiffness E=1MPa and density 1000Kg/m^3
 CVX_Voxel* Voxel1 = Vx.setVoxel(pMaterial, 0, 0, 0); //Voxel at index x=0, y=0. z=0
 Voxel1->external()->setFixedAll(); //Fixes all 6 degrees of freedom with an external condition
 for (int i=0; i<100; i++) Vx.doTimeStep(); //simulates 100 timesteps
@@ -34,8 +34,8 @@ That particular example won't do anything interesting - the single voxel will ju
 
 ```c++
 #include "Voxelyze.h"
-CVoxelyze Vx(0.010); //1cm voxels
-CVX_Material* pMaterial = Vx.addMaterial(2e6, 1000); //A material with stiffness E=2MPa and density 1000Kg/m^3
+CVoxelyze Vx(0.005); //5mm voxels
+CVX_Material* pMaterial = Vx.addMaterial(1000000, 1000); //A material with stiffness E=1MPa and density 1000Kg/m^3
 CVX_Voxel* Voxel1 = Vx.setVoxel(pMaterial, 0, 0, 0); //Voxel at index x=0, y=0. z=0
 CVX_Voxel* Voxel2 = Vx.setVoxel(pMaterial, 1, 0, 0);
 CVX_Voxel* Voxel3 = Vx.setVoxel(pMaterial, 2, 0, 0); //Beam extends in the +X direction
