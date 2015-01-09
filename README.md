@@ -47,7 +47,7 @@ for (int i=0; i<100; i++) Vx.doTimeStep(); //simulate  100 timesteps.
 
 ```
 
-For further usage, please refer to the user guide. (todo) Complete documentation is avaialable here (todo).
+For further usage, please refer to the [user guide](https://github.com/jonhiller/Voxelyze/wiki). Complete documentation is avaialable [here](http://jonhiller.github.io/Voxelyze/annotated.html).
 
 Compiling Voxelyze
 --------
