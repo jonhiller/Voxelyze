@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Voxelyze: Main Page</title>
+<title>Voxelyze: CVX_MeshRender Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -46,8 +46,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -67,12 +67,49 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Voxelyze Documentation</div>  </div>
+<div class="title">CVX_MeshRender Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<!-- doxytag: class="CVX_MeshRender" -->
+<p><a href="class_c_v_x___mesh_render-members.html">List of all members.</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>viewType</b> { <b>MATERIAL</b>, 
+<b>FAILURE</b>, 
+<b>STATE_INFO</b>
+ }</td></tr>
+<tr><td colspan="2"><h2><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32b362733fcaab5fb8f60c15e3b9de5c"></a><!-- doxytag: member="CVX_MeshRender::CVX_MeshRender" ref="a32b362733fcaab5fb8f60c15e3b9de5c" args="(CVoxelyze *voxelyzeInstance)" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_MeshRender</b> (<a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *voxelyzeInstance)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa63b6c32802d347e481413de0cf4b1b4"></a><!-- doxytag: member="CVX_MeshRender::generateMesh" ref="aa63b6c32802d347e481413de0cf4b1b4" args="()" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>generateMesh</b> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb788226b983982e09a5eae979f6b6b9"></a><!-- doxytag: member="CVX_MeshRender::updateMesh" ref="afb788226b983982e09a5eae979f6b6b9" args="(viewType view=MATERIAL, CVoxelyze::stateInfoType coloring=CVoxelyze::DISPLACEMENT)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateMesh</b> (viewType view=MATERIAL, <a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83ca">CVoxelyze::stateInfoType</a> coloring=<a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83caac466544573b870d750f0a1e68fa7b56f">CVoxelyze::DISPLACEMENT</a>)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a621e28f0152417a1dc684ce2a4f7bb1a"></a><!-- doxytag: member="CVX_MeshRender::saveObj" ref="a621e28f0152417a1dc684ce2a4f7bb1a" args="(const char *filePath)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>saveObj</b> (const char *filePath)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b7dc7028f664f741294ffaa2276a1eb"></a><!-- doxytag: member="CVX_MeshRender::glDraw" ref="a2b7dc7028f664f741294ffaa2276a1eb" args="()" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>glDraw</b> ()</td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_v_x___mesh_8h_source.html">VX_Mesh.h</a></li>
+<li>C:/Code/VoxCad/Voxelyze/src/VX_Mesh.cpp</li>
+</ul>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
