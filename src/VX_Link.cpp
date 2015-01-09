@@ -41,20 +41,44 @@ static const float SA_BOND_EXT_PERC = 0.50f; //Amount for small angle bond calcu
 //end we can do better
 
 
-CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material, linkDirection direction)
+CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, linkDirection direction*/)
 {
 	assert(voxel1 != NULL);
 	assert(voxel2 != NULL);
 
-	if (isPositive(direction)){
-		pVNeg=voxel1;
-		pVPos=voxel2;
+	bool reverseOrder = false;
+	if (voxel1->indexX() == voxel2->indexX() && voxel1->indexY() == voxel2->indexY()){
+		if (voxel1->indexZ() == voxel2->indexZ()+1) reverseOrder = true;
+		else if (voxel1->indexZ()+1 == voxel2->indexZ()) reverseOrder = false;
+		else return; //non-adjacent
+		axis = Z_AXIS;
 	}
-	else {
-		pVNeg=voxel2;
-		pVPos=voxel1;
+	else if (voxel1->indexX() == voxel2->indexX() && voxel1->indexZ() == voxel2->indexZ()){
+		if (voxel1->indexY() == voxel2->indexY()+1) reverseOrder = true;
+		else if (voxel1->indexY()+1 == voxel2->indexY()) reverseOrder = false;
+		else return; //non-adjacent
+		axis = Y_AXIS;
 	}
-	axis = toAxis(direction);
+	else if (voxel1->indexY() == voxel2->indexY() && voxel1->indexZ() == voxel2->indexZ()){
+		if (voxel1->indexX() == voxel2->indexX()+1) reverseOrder = true;
+		else if (voxel1->indexX()+1 == voxel2->indexX()) reverseOrder = false;
+		else return; //non-adjacent
+		axis = X_AXIS;
+	}
+	else return; //non-adjacent
+
+	if (reverseOrder){ pVNeg=voxel2; pVPos=voxel1; }
+	else { pVNeg=voxel1; pVPos=voxel2; }
+
+	//if (isPositive(direction)){
+	//	pVNeg=voxel1;
+	//	pVPos=voxel2;
+	//}
+	//else {
+	//	pVNeg=voxel2;
+	//	pVPos=voxel1;
+	//}
+	//axis = toAxis(direction);
 
 	mat=material;
 

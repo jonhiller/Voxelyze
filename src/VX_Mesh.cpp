@@ -77,7 +77,7 @@ void CVX_MeshRender::generateMesh()
 
 		index3D thisVox(x, y, z);
 		for (int i=0; i<6; i++){ //for each direction that a quad face could exist
-			if (pV->adjacentVoxel((linkDirection)i)) continue;
+			if (pV->adjacentVoxel((CVX_Voxel::linkDirection)i)) continue;
 			for (int j=0; j<4; j++){ //for each corner of the (exposed) face in this direction
 				CVX_Voxel::voxelCorner thisCorner = CwLookup[i][j];
 				index3D thisVertInd3D = thisVox + index3D(thisCorner&(1<<2)?1:0, thisCorner&(1<<1)?1:0, thisCorner&(1<<0)?1:0);
@@ -284,7 +284,7 @@ float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType 
 	float voxMax = -FLT_MAX;
 	for (int i=0; i<6; i++){
 		float thisVal = -FLT_MAX;
-		CVX_Link* pL = pV->link((linkDirection)i);
+		CVX_Link* pL = pV->link((CVX_Voxel::linkDirection)i);
 		if (pL){
 			switch (coloring){
 				case CVoxelyze::STRAIN_ENERGY: thisVal = pL->strainEnergy(); break;

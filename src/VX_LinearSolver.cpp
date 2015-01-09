@@ -144,8 +144,8 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		//populate i2
 		i2List.clear();
 		for (int j=0; j<6; j++){ //for each possible link
-			if (iv->link((linkDirection)j)){
-				int i2 = v2i[iv->adjacentVoxel((linkDirection)j)];
+			if (iv->link((CVX_Voxel::linkDirection)j)){
+				int i2 = v2i[iv->adjacentVoxel((CVX_Voxel::linkDirection)j)];
 				if (i2>i) i2List.push_back(i2);
 			}
 		}

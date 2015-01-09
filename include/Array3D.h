@@ -18,11 +18,13 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <limits.h>
 //#include <fstream>
 
-//why can't min and max just be there when I need them?
+//why can't min and max just be there when you need them?
 #define LOCALMIN(a,b) (((a)<(b))?(a):(b))
 #define LOCALMAX(a,b) (((a)>(b))?(a):(b))
 
 #define INDEX_INVALID -32767 //guaranteed very negative number within range of int on all platforms
+
+
 struct index3D {
 	index3D(){x=y=z=INDEX_INVALID;}
 	index3D(int inX, int inY, int inZ){x=inX; y=inY; z=inZ;}
@@ -36,7 +38,7 @@ struct index3D {
 	int x, y, z;
 };
 
-//a general 3d array. Empty elements are synonomous with the element being defaultValue. Therefore any element that has not been set otherwise will return as defaultValue (empty)
+//!<a general 3d array. Empty elements are synonomous with the element being defaultValue. Therefore any element that has not been set otherwise will return as defaultValue (empty)
 template <typename T = float>
 class CArray3D
 {

@@ -4,10 +4,12 @@ lib/libpardiso500-WIN-X86-64.lib
 pardiso.lic
 test/Debug/*
 test/Release/*
+doc/html
 *~
 *.d
 *.o
 *.suo
 *.user
+
 
 

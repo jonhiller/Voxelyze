@@ -539,7 +539,7 @@ CVX_Voxel* CVoxelyze::addVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, 
 
 		//add any possible links utilizing this voxel
 		for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-			addLink(xIndex, yIndex, zIndex, (linkDirection)i); 
+			addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); 
 		}
 		return pV;
 	}
@@ -574,7 +574,7 @@ void CVoxelyze::removeVoxel(int xIndex, int yIndex, int zIndex)
 
 	//remove any links to this voxel
 	for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-		removeLink(xIndex, yIndex, zIndex, (linkDirection)i); 
+		removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); 
 	}
 
 	//set collisions to stale
@@ -598,21 +598,21 @@ void CVoxelyze::replaceVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, in
 
 		//reset all the links involving this voxel
 		for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-			removeLink(xIndex, yIndex, zIndex, (linkDirection)i);
-			addLink(xIndex, yIndex, zIndex, (linkDirection)i); //adds only if a voxel is found
+			removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i);
+			addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); //adds only if a voxel is found
 		}
 	//}
 }
 
-CVX_Link* CVoxelyze::link(int xIndex, int yIndex, int zIndex, linkDirection direction) const
+CVX_Link* CVoxelyze::link(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction) const
 {
-	return links[toAxis(direction)](
+	return links[CVX_Voxel::toAxis(direction)](
 		xIndex+xIndexLinkOffset(direction),
 		yIndex+yIndexLinkOffset(direction),
 		zIndex+zIndexLinkOffset(direction));
 }
 
-CVX_Link* CVoxelyze::addLink(int xIndex, int yIndex, int zIndex, linkDirection direction)
+CVX_Link* CVoxelyze::addLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction)
 {
 	CVX_Link* pL = link(xIndex, yIndex, zIndex, direction);
 	if (pL){return pL;} //if a link already exists... well, then it should be up to date.
@@ -629,9 +629,9 @@ CVX_Link* CVoxelyze::addLink(int xIndex, int yIndex, int zIndex, linkDirection d
 	//make the link and add it to the array+list
 	try {
 		CVX_MaterialLink* mat = combinedMaterial(voxel1->material(), voxel2->material());
-		pL = new CVX_Link(voxel1, voxel2, mat, direction);	//make the new link (change to both materials, etc.
+		pL = new CVX_Link(voxel1, voxel2, mat); //, direction);	//make the new link (change to both materials, etc.
 		linksList.push_back(pL);							//add to the list
-		links[toAxis(direction)].addValue(
+		links[CVX_Voxel::toAxis(direction)].addValue(
 			xIndex + xIndexLinkOffset(direction),
 			yIndex + yIndexLinkOffset(direction),
 			zIndex + zIndexLinkOffset(direction), pL);
@@ -641,18 +641,18 @@ CVX_Link* CVoxelyze::addLink(int xIndex, int yIndex, int zIndex, linkDirection d
 	}
 	//Add reference to this link to the relevant voxels
 	voxel1->addLinkInfo(direction, pL);
-	voxel2->addLinkInfo(toOpposite(direction), pL);
+	voxel2->addLinkInfo(CVX_Voxel::toOpposite(direction), pL);
 	return pL;
 }
 
-void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, linkDirection direction)
+void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction)
 {
 	//todo: get some unini'd voxels in our links in replacing material...
 	CVX_Link* pL = link(xIndex, yIndex, zIndex, direction);
 	if (pL==NULL) return; //no link here to see!
 
 	//remove the reference in the appropriate link 3d array
-	links[toAxis(direction)].removeValue( 
+	links[CVX_Voxel::toAxis(direction)].removeValue( 
 		xIndex + xIndexLinkOffset(direction),
 		yIndex + yIndexLinkOffset(direction),
 		zIndex + zIndexLinkOffset(direction)); 
@@ -677,7 +677,7 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, linkDirection dir
 		xIndex+xIndexVoxelOffset(direction),
 		yIndex+yIndexVoxelOffset(direction),
 		zIndex+zIndexVoxelOffset(direction));
-	if (voxel2) voxel2->removeLinkInfo(toOpposite(direction));
+	if (voxel2) voxel2->removeLinkInfo(CVX_Voxel::toOpposite(direction));
 
 	delete pL;
 }

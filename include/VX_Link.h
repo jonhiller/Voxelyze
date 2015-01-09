@@ -18,25 +18,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 class CVX_Voxel;
 class CVX_MaterialLink;
 
-enum linkDirection {	//!< Defines the direction of a link relative to a given voxel.
-	X_POS=0,			//!< Positive X direction
-	X_NEG=1,			//!< Negative X direction
-	Y_POS=2,			//!< Positive Y direction
-	Y_NEG=3,			//!< Negative Y direction
-	Z_POS=4,			//!< Positive Z direction
-	Z_NEG=5				//!< Negative Z direction
-}; 
-enum linkAxis {			//!< Defines an axis
-	X_AXIS = 0,			//!< X Axis
-	Y_AXIS = 1,			//!< Y Axis
-	Z_AXIS = 2			//!< Z Axis
-};
-//a couple global convenience functions to have wherever the link enums are used
-inline linkAxis toAxis(linkDirection direction) {return (linkAxis)((int)direction/2);}
-inline linkDirection toDirection(linkAxis axis, bool positiveDirection) {return (linkDirection)(2*((int)axis) + positiveDirection?0:1);}
-inline bool isNegative(linkDirection direction) {return direction%2==1;}
-inline bool isPositive(linkDirection direction) {return direction%2==0;}
-inline linkDirection toOpposite(linkDirection direction) {return (linkDirection)(direction-direction%2 + (direction+1)%2);}
 
 
 //!Defines a solid link between two adjacent voxels and holds its current state
@@ -49,16 +30,16 @@ The force and moment for either voxel can be queried, as well as the current axi
 Information pertaining to one voxel or the other is indicated by the boolean parameter "positiveEnd". If positiveEnd is true, information will be returned for the voxel with the most positive coordinate in the original (undeformed) lattice.
 */
 class CVX_Link {
-	//enum linkDataType { //todo:
-	//	AXIAL_STRESS,
-	//	AXIAL_STRAIN,
-	//	AXIAL_STIFFNESS,
-	//	STRAIN_ENERGY
-	//};
-
-
 	public:
-	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material, linkDirection direction); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link @param[in] direction The linkDirection from voxel1 to voxel2.
+	enum linkAxis {			//!< Defines an axis
+		X_AXIS = 0,			//!< X Axis
+		Y_AXIS = 1,			//!< Y Axis
+		Z_AXIS = 2			//!< Z Axis
+	};
+
+
+
+	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, CVX_Voxel::linkDirection direction*/); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link @param[in] direction The linkDirection from voxel1 to voxel2.
 	void reset(); //!< Resets all current state information about this link to the initial value.
 
 	CVX_Voxel* voxel(bool positiveEnd) const {return positiveEnd?pVPos:pVNeg;} //!< Returns a pointer to one of the two voxels that compose this link. @param[in] positiveEnd Specifies which voxel is desired.
