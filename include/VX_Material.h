@@ -127,6 +127,8 @@ protected:
 	float E; //!< Young's modulus (stiffness) in Pa.
 	float sigmaYield; //!< Yield stress in Pa.
 	float sigmaFail; //!< Failure stress in Pa
+	float epsilonYield; //!< Yield strain
+	float epsilonFail; //!< Failure strain
 	std::vector<float> strainData; //!< strain data points
 	std::vector<float> stressData; //!< stress data points
 	float nu; //!< Poissonss Ratio
@@ -151,18 +153,16 @@ protected:
 	//compressive strength? (/compressive data)
 	//heat conduction
 
+	bool setYieldFromData(float percentStrainOffset=0.2); //!< Sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStrain are set correctly.
+	float strain(float stress); //!< Returns a simple reverse lookup of the first strain that yields this stress from data point lookup.
+
+
 	std::vector<CVX_Material*> dependentMaterials; //!< Any materials in this list will have updateDerived() called whenever it's called for this material. For example, in Voxelyze this is used for updatng link materials when one or both voxel materials change
 
 	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w); //!< Writes this material's data to the rapidjson writing object.
 	bool readJSON(rapidjson::Value& mat); //!< reads this material data from the rapidjson Value.
 
 private:
-	float epsilonYield; //!< Yield strain
-	float epsilonFail; //!< Failure strain
-	
-	bool setYieldFromData(float percentStrainOffset=0.2); //sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStr are set correctly.
-	float strain(float stress); //returns a simple reverse lookup of the first strain that yields this stress from data point lookup
-
 	friend class CVoxelyze; //give the main simulation class full access
 	friend class CVX_Voxel; //give our voxel class direct access to all the members for quick access};
 	friend class CVX_Link; 
