@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['valid',['valid',['../struct_index3_d.html#a949c01013acef2a08410d70228143217',1,'Index3D']]],
+  ['vec3d',['Vec3D',['../class_vec3_d.html#a7b5f2ad683396f0089d7fe1081e13169',1,'Vec3D::Vec3D()'],['../class_vec3_d.html#afc4b7cbb5018295ce2c9f91c036fca6c',1,'Vec3D::Vec3D(const T dx, const T dy, const T dz)'],['../class_vec3_d.html#a60c376c9e1b6de94412420af57f40d19',1,'Vec3D::Vec3D(const Vec3D &amp;s)'],['../class_vec3_d.html#a98fb937e029be90c0dbfce22143f003b',1,'Vec3D::Vec3D(const Vec3D&lt; U &gt; &amp;s)']]],
   ['velocity',['velocity',['../class_c_v_x___voxel.html#a9fbbc5958f0afc0d51e4c3db46535474',1,'CVX_Voxel']]],
   ['velocitymagnitude',['velocityMagnitude',['../class_c_v_x___voxel.html#afb30a6af40d7831fa0527f74fb394050',1,'CVX_Voxel']]],
   ['volumetricstrain',['volumetricStrain',['../class_c_v_x___voxel.html#aeee2956ffb1194c63b8d636c626b0502',1,'CVX_Voxel']]],

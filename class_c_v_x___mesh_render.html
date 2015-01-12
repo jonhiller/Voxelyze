@@ -85,30 +85,159 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="CVX_MeshRender" -->
+<p>Voxelyze mesh visualizer.  
+ <a href="class_c_v_x___mesh_render.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_v_x___mesh_render_8h_source.html">VX_MeshRender.h</a>&gt;</code></p>
+
 <p><a href="class_c_v_x___mesh_render-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>viewType</b> { <b>MATERIAL</b>, 
-<b>FAILURE</b>, 
-<b>STATE_INFO</b>
+<tr><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554">viewColoring</a> { <a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554a199016a4e14e7c44d48d4238d4ccaf46">MATERIAL</a>, 
+<a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554a6685534379f515b10a9c8770af53d7f6">FAILURE</a>, 
+<a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554aebc00438c11aef25c04f26f099d443db">STATE_INFO</a>
  }</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines various ways of coloring the voxels in the 3D mesh.  <a href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32b362733fcaab5fb8f60c15e3b9de5c"></a><!-- doxytag: member="CVX_MeshRender::CVX_MeshRender" ref="a32b362733fcaab5fb8f60c15e3b9de5c" args="(CVoxelyze *voxelyzeInstance)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_MeshRender</b> (<a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *voxelyzeInstance)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#a32b362733fcaab5fb8f60c15e3b9de5c">CVX_MeshRender</a> (<a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *voxelyzeInstance)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes this mesh visualization with the specified voxelyze instance. This voxelyze pointer must remain valid for the duration of this object.  <a href="#a32b362733fcaab5fb8f60c15e3b9de5c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa63b6c32802d347e481413de0cf4b1b4"></a><!-- doxytag: member="CVX_MeshRender::generateMesh" ref="aa63b6c32802d347e481413de0cf4b1b4" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>generateMesh</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb788226b983982e09a5eae979f6b6b9"></a><!-- doxytag: member="CVX_MeshRender::updateMesh" ref="afb788226b983982e09a5eae979f6b6b9" args="(viewType view=MATERIAL, CVoxelyze::stateInfoType coloring=CVoxelyze::DISPLACEMENT)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateMesh</b> (viewType view=MATERIAL, <a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83ca">CVoxelyze::stateInfoType</a> coloring=<a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83caac466544573b870d750f0a1e68fa7b56f">CVoxelyze::DISPLACEMENT</a>)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a621e28f0152417a1dc684ce2a4f7bb1a"></a><!-- doxytag: member="CVX_MeshRender::saveObj" ref="a621e28f0152417a1dc684ce2a4f7bb1a" args="(const char *filePath)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>saveObj</b> (const char *filePath)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#aa63b6c32802d347e481413de0cf4b1b4">generateMesh</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates (or regenerates) this mesh from the linked voxelyze object. This must be called whenever voxels are added or removed in the simulation. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#a583ac2e720d4021054c12be2321dbd3a">updateMesh</a> (<a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554">viewColoring</a> colorScheme=<a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554a199016a4e14e7c44d48d4238d4ccaf46">MATERIAL</a>, <a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83ca">CVoxelyze::stateInfoType</a> stateType=<a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83caac466544573b870d750f0a1e68fa7b56f">CVoxelyze::DISPLACEMENT</a>)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme specified by the arguments.  <a href="#a583ac2e720d4021054c12be2321dbd3a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#a621e28f0152417a1dc684ce2a4f7bb1a">saveObj</a> (const char *filePath)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet.  <a href="#a621e28f0152417a1dc684ce2a4f7bb1a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b7dc7028f664f741294ffaa2276a1eb"></a><!-- doxytag: member="CVX_MeshRender::glDraw" ref="a2b7dc7028f664f741294ffaa2276a1eb" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>glDraw</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___mesh_render.html#a2b7dc7028f664f741294ffaa2276a1eb">glDraw</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPENGL is defined. <br/></td></tr>
 </table>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Voxelyze mesh visualizer. </p>
+<p>A simple way to generate a deformed mesh reflecting the current state of a voxelyze object. After constructing with a pointer to the desired voxelyze object the mesh is ready. If the state of the voxelyze object has changed or a different coloring is desired, simply call <a class="el" href="class_c_v_x___mesh_render.html#a583ac2e720d4021054c12be2321dbd3a" title="Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme...">updateMesh()</a>. If voxels are added or subtracted to the voxelyze object, <a class="el" href="class_c_v_x___mesh_render.html#aa63b6c32802d347e481413de0cf4b1b4" title="Generates (or regenerates) this mesh from the linked voxelyze object. This must be called whenever vo...">generateMesh()</a> must be called to regenerate the mesh before calling updateMesh or drawGl().</p>
+<p>The mesh can be drawn in an initialized OpenGL window by defining USE_OPENGL in the preprocessor and calling glDraw from within the drawing loop. An obj mesh file can also be generated at any time. </p>
+</div><hr/><h2>Member Enumeration Documentation</h2>
+<a class="anchor" id="ae89c5650eac24a9e5d2acf322121a554"></a><!-- doxytag: member="CVX_MeshRender::viewColoring" ref="ae89c5650eac24a9e5d2acf322121a554" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554">CVX_MeshRender::viewColoring</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Defines various ways of coloring the voxels in the 3D mesh. </p>
+<dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
+<tr><td valign="top"><em><a class="anchor" id="ae89c5650eac24a9e5d2acf322121a554a199016a4e14e7c44d48d4238d4ccaf46"></a><!-- doxytag: member="MATERIAL" ref="ae89c5650eac24a9e5d2acf322121a554a199016a4e14e7c44d48d4238d4ccaf46" args="" -->MATERIAL</em>&nbsp;</td><td>
+<p>Display the material color specified by its RGB values. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="ae89c5650eac24a9e5d2acf322121a554a6685534379f515b10a9c8770af53d7f6"></a><!-- doxytag: member="FAILURE" ref="ae89c5650eac24a9e5d2acf322121a554a6685534379f515b10a9c8770af53d7f6" args="" -->FAILURE</em>&nbsp;</td><td>
+<p>Display the current failure status (red=failed, yellow=yielded, white=ok) </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="ae89c5650eac24a9e5d2acf322121a554aebc00438c11aef25c04f26f099d443db"></a><!-- doxytag: member="STATE_INFO" ref="ae89c5650eac24a9e5d2acf322121a554aebc00438c11aef25c04f26f099d443db" args="" -->STATE_INFO</em>&nbsp;</td><td>
+<p>Display a color coded "head map" of the specified <a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83ca" title="Defines various types of information to query about the state of a voxelyze object.">CVoxelyze::stateInfoType</a> (displacement, kinetic energy, etc.) </p>
+</td></tr>
+</table>
+</dd>
+</dl>
+
+</div>
+</div>
+<hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a32b362733fcaab5fb8f60c15e3b9de5c"></a><!-- doxytag: member="CVX_MeshRender::CVX_MeshRender" ref="a32b362733fcaab5fb8f60c15e3b9de5c" args="(CVoxelyze *voxelyzeInstance)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_v_x___mesh_render.html#a32b362733fcaab5fb8f60c15e3b9de5c">CVX_MeshRender::CVX_MeshRender</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *&#160;</td>
+          <td class="paramname"><em>voxelyzeInstance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Initializes this mesh visualization with the specified voxelyze instance. This voxelyze pointer must remain valid for the duration of this object. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">voxelyzeInstance</td><td>The voxelyze instance to link this mesh object to. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a621e28f0152417a1dc684ce2a4f7bb1a"></a><!-- doxytag: member="CVX_MeshRender::saveObj" ref="a621e28f0152417a1dc684ce2a4f7bb1a" args="(const char *filePath)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___mesh_render.html#a621e28f0152417a1dc684ce2a4f7bb1a">CVX_MeshRender::saveObj</a> </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">filePath</td><td>File path to save the obj file as. Creates or overwrites. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a583ac2e720d4021054c12be2321dbd3a"></a><!-- doxytag: member="CVX_MeshRender::updateMesh" ref="a583ac2e720d4021054c12be2321dbd3a" args="(viewColoring colorScheme=MATERIAL, CVoxelyze::stateInfoType stateType=CVoxelyze::DISPLACEMENT)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___mesh_render.html#a583ac2e720d4021054c12be2321dbd3a">CVX_MeshRender::updateMesh</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554">viewColoring</a>&#160;</td>
+          <td class="paramname"><em>colorScheme</em> = <code><a class="el" href="class_c_v_x___mesh_render.html#ae89c5650eac24a9e5d2acf322121a554a199016a4e14e7c44d48d4238d4ccaf46">MATERIAL</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83ca">CVoxelyze::stateInfoType</a>&#160;</td>
+          <td class="paramname"><em>stateType</em> = <code><a class="el" href="class_c_voxelyze.html#a66c64774b92a558815e77cd26aae83caac466544573b870d750f0a1e68fa7b56f">CVoxelyze::DISPLACEMENT</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme specified by the arguments. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorScheme</td><td>The coloring scheme. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stateType</td><td>If colorScheme = STATE_INFO, this argument determines the state to color the object according to. Only kinetic energy, strain energy, displacement, and pressure are currently supported. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_v_x___mesh_8h_source.html">VX_Mesh.h</a></li>
-<li>C:/Code/VoxCad/Voxelyze/src/VX_Mesh.cpp</li>
+<li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_v_x___mesh_render_8h_source.html">VX_MeshRender.h</a></li>
+<li>C:/Code/VoxCad/Voxelyze/src/VX_MeshRender.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- window showing the filter options -->
@@ -116,7 +245,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>glDraw</b> ()</td></t
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -128,7 +257,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>glDraw</b> ()</td></t
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

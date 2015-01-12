@@ -85,27 +85,70 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="CVX_LinearSolver" -->
+<p>A linear solver for Voxelyze.  
+ <a href="class_c_v_x___linear_solver.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_v_x___linear_solver_8h_source.html">VX_LinearSolver.h</a>&gt;</code></p>
+
 <p><a href="class_c_v_x___linear_solver-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a690406d32253b73efaf8d12a79353a6f"></a><!-- doxytag: member="CVX_LinearSolver::CVX_LinearSolver" ref="a690406d32253b73efaf8d12a79353a6f" args="(CVoxelyze *voxelyze)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b> (<a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *voxelyze)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#a690406d32253b73efaf8d12a79353a6f">CVX_LinearSolver</a> (<a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *voxelyze)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Links to a voxelyze object and initializes the solver. The pointer to the voxelyze object must remain valid for the lifetime of this object.  <a href="#a690406d32253b73efaf8d12a79353a6f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3f1083c9a74641357abbd6529c1d63a"></a><!-- doxytag: member="CVX_LinearSolver::solve" ref="ae3f1083c9a74641357abbd6529c1d63a" args="()" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>solve</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#ae3f1083c9a74641357abbd6529c1d63a">solve</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Formulates and solves the linear system and writes the resulting voxel positions and angles back to the linked voxelyze object. Returns false if the solver errors out. (check errorMsg for the reason). NOTE: calling this function modifies the state of the linked voxelyze object! This function may take a while if there are a large number of voxels. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac07a6d39d332e1ad7591d7c847df2989"></a><!-- doxytag: member="CVX_LinearSolver::progressTick" ref="ac07a6d39d332e1ad7591d7c847df2989" args="" -->
-int&#160;</td><td class="memItemRight" valign="bottom"><b>progressTick</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#ac07a6d39d332e1ad7591d7c847df2989">progressTick</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">An arbitrary progress number somewhere between zero and progressMaxTick to be used updating a progress bar. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4dc32106755ef0517ac92d90e912c73d"></a><!-- doxytag: member="CVX_LinearSolver::progressMaxTick" ref="a4dc32106755ef0517ac92d90e912c73d" args="" -->
-int&#160;</td><td class="memItemRight" valign="bottom"><b>progressMaxTick</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#a4dc32106755ef0517ac92d90e912c73d">progressMaxTick</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">An arbitrary maximum for progress bars. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0079e7645dca0aab2ecb63a9b6f00340"></a><!-- doxytag: member="CVX_LinearSolver::progressMsg" ref="a0079e7645dca0aab2ecb63a9b6f00340" args="" -->
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>progressMsg</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#a0079e7645dca0aab2ecb63a9b6f00340">progressMsg</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">A message indicating the current status of the solver. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a98e120dc9a0e495155dbfcc4ffc9bbec"></a><!-- doxytag: member="CVX_LinearSolver::errorMsg" ref="a98e120dc9a0e495155dbfcc4ffc9bbec" args="" -->
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>errorMsg</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#a98e120dc9a0e495155dbfcc4ffc9bbec">errorMsg</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If an error occurs the reason will be found here. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e90543d90e9c1e50992ae427414c3a1"></a><!-- doxytag: member="CVX_LinearSolver::cancelFlag" ref="a8e90543d90e9c1e50992ae427414c3a1" args="" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>cancelFlag</b></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___linear_solver.html#a8e90543d90e9c1e50992ae427414c3a1">cancelFlag</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">A user-settable flag to indicate to the solver that an abort has been request during a solve process. May still not stop immediately, though. <br/></td></tr>
 </table>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>A linear solver for Voxelyze. </p>
+<p>Although voxelyze is fundamentally a dynamic non-linear materials simulator, sometimes a linear solution is still appropriate for a given problem. This class provides the means to do a one-time linear solve of the system in far less time than the equivalent doTimeStep() sequence.</p>
+<p>The simulation is currently always linearized about the voxels' nominal positions, so only the elastic modulus of materials is used. Density, poissons ratio, etc. are all disregarded.</p>
+<p>Currently only the pardiso solver is supported, although other more permissive solvers are in the works. See www.pardiso-project.com for the appropriate license (free for academic use) and libraries. Define PARDISO_5 in the preprocessor to compile in this pardiso support.</p>
+<p>Because solver execution time can be lengthy, a rudimentary set of status variables is maintained during the solve process. They can be accessed safely while the process is running. Likewise cancelFlag can be set to true and the solver will abort execution as soon as it can. Note that this can still be a lengthy wait. </p>
+</div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a690406d32253b73efaf8d12a79353a6f"></a><!-- doxytag: member="CVX_LinearSolver::CVX_LinearSolver" ref="a690406d32253b73efaf8d12a79353a6f" args="(CVoxelyze *voxelyze)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_v_x___linear_solver.html#a690406d32253b73efaf8d12a79353a6f">CVX_LinearSolver::CVX_LinearSolver</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_voxelyze.html">CVoxelyze</a> *&#160;</td>
+          <td class="paramname"><em>voxelyze</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Links to a voxelyze object and initializes the solver. The pointer to the voxelyze object must remain valid for the lifetime of this object. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">voxelyze</td><td>pointer to the voxelyze object to simulate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_v_x___linear_solver_8h_source.html">VX_LinearSolver.h</a></li>
 <li>C:/Code/VoxCad/Voxelyze/src/VX_LinearSolver.cpp</li>
@@ -116,7 +159,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>cancelFlag</b></td></
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -128,7 +171,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>cancelFlag</b></td></
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -86,145 +86,613 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="Vec3D" -->
+<p>A generic 3D vector template.  
+ <a href="class_vec3_d.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_vec3_d_8h_source.html">Vec3D.h</a>&gt;</code></p>
+
 <p><a href="class_vec3_d-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a60c376c9e1b6de94412420af57f40d19"></a><!-- doxytag: member="Vec3D::Vec3D" ref="a60c376c9e1b6de94412420af57f40d19" args="(const Vec3D &amp;s)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Vec3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b5f2ad683396f0089d7fe1081e13169"></a><!-- doxytag: member="Vec3D::Vec3D" ref="a7b5f2ad683396f0089d7fe1081e13169" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7b5f2ad683396f0089d7fe1081e13169">Vec3D</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialzes x, y, z to zero. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc4b7cbb5018295ce2c9f91c036fca6c"></a><!-- doxytag: member="Vec3D::Vec3D" ref="afc4b7cbb5018295ce2c9f91c036fca6c" args="(const T dx, const T dy, const T dz)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Vec3D</b> (const T dx, const T dy, const T dz)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#afc4b7cbb5018295ce2c9f91c036fca6c">Vec3D</a> (const T dx, const T dy, const T dz)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with specified individual values. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a60c376c9e1b6de94412420af57f40d19"></a><!-- doxytag: member="Vec3D::Vec3D" ref="a60c376c9e1b6de94412420af57f40d19" args="(const Vec3D &amp;s)" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a60c376c9e1b6de94412420af57f40d19">Vec3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b4c865deb65e6bc0ec0913acbf5cc3e"></a><!-- doxytag: member="Vec3D::IsValid" ref="a7b4c865deb65e6bc0ec0913acbf5cc3e" args="() const " -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7b4c865deb65e6bc0ec0913acbf5cc3e">IsValid</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if all values are valid numbers. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a98fb937e029be90c0dbfce22143f003b"></a><!-- doxytag: member="Vec3D::Vec3D" ref="a98fb937e029be90c0dbfce22143f003b" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Vec3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a98fb937e029be90c0dbfce22143f003b">Vec3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor from another template type. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a0d590be2591caae1b1aed7edf73df7ac"></a><!-- doxytag: member="Vec3D::operator Vec3D&lt; U &gt;" ref="a0d590be2591caae1b1aed7edf73df7ac" args="() const " -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator Vec3D&lt; U &gt;</b> () const </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a0d590be2591caae1b1aed7edf73df7ac">operator Vec3D&lt; U &gt;</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload conversion operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a84e3186f1881bd6177df8a5df9432b8d"></a><!-- doxytag: member="Vec3D::operator=" ref="a84e3186f1881bd6177df8a5df9432b8d" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a84e3186f1881bd6177df8a5df9432b8d">operator=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">equals operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a7106add260d1f5ad3dae998ea939156d"></a><!-- doxytag: member="Vec3D::operator+" ref="a7106add260d1f5ad3dae998ea939156d" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7106add260d1f5ad3dae998ea939156d">operator+</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">addition operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="acb86e45394e3a1484f0ba604d6c5ed30"></a><!-- doxytag: member="Vec3D::operator&#45;" ref="acb86e45394e3a1484f0ba604d6c5ed30" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#acb86e45394e3a1484f0ba604d6c5ed30">operator-</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">subtraction operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a93a22f3d3f6c1e1c9bfffb4891e00cfa"></a><!-- doxytag: member="Vec3D::operator*" ref="a93a22f3d3f6c1e1c9bfffb4891e00cfa" args="(const U &amp;f) const " -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator*</b> (const U &amp;f) const </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a93a22f3d3f6c1e1c9bfffb4891e00cfa">operator*</a> (const U &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">multiplication operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="ac1ecba31b0fac36c90706823de6183d9"></a><!-- doxytag: member="Vec3D::operator+=" ref="ac1ecba31b0fac36c90706823de6183d9" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator+=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ac1ecba31b0fac36c90706823de6183d9">operator+=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">add and set for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a97c71cf078d8a02139f13fc1c67596c1"></a><!-- doxytag: member="Vec3D::operator&#45;=" ref="a97c71cf078d8a02139f13fc1c67596c1" args="(const Vec3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator-=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a97c71cf078d8a02139f13fc1c67596c1">operator-=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">subract and set for different template types <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c9b90013bf93434eb298de99765dd69"></a><!-- doxytag: member="Vec3D::operator=" ref="a9c9b90013bf93434eb298de99765dd69" args="(const Vec3D &amp;s)" -->
-<a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a9c9b90013bf93434eb298de99765dd69">operator=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload equals. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a800ee63fa4d67d4bdcf564fb4976e73d"></a><!-- doxytag: member="Vec3D::operator+" ref="a800ee63fa4d67d4bdcf564fb4976e73d" args="(const Vec3D &amp;v) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a800ee63fa4d67d4bdcf564fb4976e73d">operator+</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload addition. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a0de97d6f53f58a4d757903b25e940e"></a><!-- doxytag: member="Vec3D::operator&#45;" ref="a8a0de97d6f53f58a4d757903b25e940e" args="(const Vec3D &amp;v) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a8a0de97d6f53f58a4d757903b25e940e">operator-</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload subtraction. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6719542cbae5af96522be6af88f1b05"></a><!-- doxytag: member="Vec3D::operator&#45;" ref="af6719542cbae5af96522be6af88f1b05" args="() const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> () const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#af6719542cbae5af96522be6af88f1b05">operator-</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload negation (unary). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23720e1c0740b730078bcf7ef0264dd6"></a><!-- doxytag: member="Vec3D::operator*" ref="a23720e1c0740b730078bcf7ef0264dd6" args="(const T &amp;f) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const T &amp;f) const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a23720e1c0740b730078bcf7ef0264dd6">operator*</a> (const T &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload multiplication. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefd94cf1a1a88be4aa7c1d28340c2c2e"></a><!-- doxytag: member="Vec3D::operator/" ref="aefd94cf1a1a88be4aa7c1d28340c2c2e" args="(const T &amp;f) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (const T &amp;f) const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#aefd94cf1a1a88be4aa7c1d28340c2c2e">operator/</a> (const T &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload division. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac219c0e6898f7532afd98b57ff04e979"></a><!-- doxytag: member="Vec3D::operator==" ref="ac219c0e6898f7532afd98b57ff04e979" args="(const Vec3D &amp;v)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ac219c0e6898f7532afd98b57ff04e979">operator==</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload is equal. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8bf65f9412ad5be1e13fa904e2e95eee"></a><!-- doxytag: member="Vec3D::operator!=" ref="a8bf65f9412ad5be1e13fa904e2e95eee" args="(const Vec3D &amp;v)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a8bf65f9412ad5be1e13fa904e2e95eee">operator!=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload is not equal. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52cb0a3c3c07bdc0ead8d1dc3373d868"></a><!-- doxytag: member="Vec3D::operator+=" ref="a52cb0a3c3c07bdc0ead8d1dc3373d868" args="(const Vec3D &amp;s)" -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a52cb0a3c3c07bdc0ead8d1dc3373d868">operator+=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload add and set <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1114c5579b74c23e5fcf6ffd91fadd3"></a><!-- doxytag: member="Vec3D::operator&#45;=" ref="af1114c5579b74c23e5fcf6ffd91fadd3" args="(const Vec3D &amp;s)" -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#af1114c5579b74c23e5fcf6ffd91fadd3">operator-=</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload subract and set <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23dbe1f3dbc8ddfc4952136b2e76941d"></a><!-- doxytag: member="Vec3D::operator*=" ref="a23dbe1f3dbc8ddfc4952136b2e76941d" args="(const T f)" -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (const T f)</td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a23dbe1f3dbc8ddfc4952136b2e76941d">operator*=</a> (const T f)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload multiply and set <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad59b8b248b7538f0c13906c89152346d"></a><!-- doxytag: member="Vec3D::operator/=" ref="ad59b8b248b7538f0c13906c89152346d" args="(const T f)" -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (const T f)</td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ad59b8b248b7538f0c13906c89152346d">operator/=</a> (const T f)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload divide and set <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4fa69d6856c69f634bae1b248da05c06"></a><!-- doxytag: member="Vec3D::operator[]" ref="a4fa69d6856c69f634bae1b248da05c06" args="(int index) const " -->
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int index) const </td></tr>
+const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a4fa69d6856c69f634bae1b248da05c06">operator[]</a> (int index) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ee469b0fe8c90f0ff693f483d65a4cb"></a><!-- doxytag: member="Vec3D::operator[]" ref="a6ee469b0fe8c90f0ff693f483d65a4cb" args="(int index)" -->
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int index)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b4c865deb65e6bc0ec0913acbf5cc3e"></a><!-- doxytag: member="Vec3D::IsValid" ref="a7b4c865deb65e6bc0ec0913acbf5cc3e" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsValid</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab45927cd414042bb59e6c9320a2a0627"></a><!-- doxytag: member="Vec3D::IsNear" ref="ab45927cd414042bb59e6c9320a2a0627" args="(const Vec3D &amp;s, const T thresh)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNear</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s, const T thresh)</td></tr>
+T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a6ee469b0fe8c90f0ff693f483d65a4cb">operator[]</a> (int index)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af09c9a0132a10b25107d8ebaa28569c9"></a><!-- doxytag: member="Vec3D::getX" ref="af09c9a0132a10b25107d8ebaa28569c9" args="(void) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>getX</b> (void) const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#af09c9a0132a10b25107d8ebaa28569c9">getX</a> (void) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the x value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ec4f07462b688b2435ff8b616a32205"></a><!-- doxytag: member="Vec3D::getY" ref="a0ec4f07462b688b2435ff8b616a32205" args="(void) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>getY</b> (void) const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a0ec4f07462b688b2435ff8b616a32205">getY</a> (void) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the y value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae83bde6235ab1734ba7cff28c30db168"></a><!-- doxytag: member="Vec3D::getZ" ref="ae83bde6235ab1734ba7cff28c30db168" args="(void) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>getZ</b> (void) const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ae83bde6235ab1734ba7cff28c30db168">getZ</a> (void) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the z value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acc4b12a69a2a549bd2107058d0b2ae70"></a><!-- doxytag: member="Vec3D::setX" ref="acc4b12a69a2a549bd2107058d0b2ae70" args="(const T XIn)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setX</b> (const T XIn)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#acc4b12a69a2a549bd2107058d0b2ae70">setX</a> (const T XIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the x value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7440851d2a12e79fd17a236349fa4457"></a><!-- doxytag: member="Vec3D::setY" ref="a7440851d2a12e79fd17a236349fa4457" args="(const T YIn)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setY</b> (const T YIn)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7440851d2a12e79fd17a236349fa4457">setY</a> (const T YIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the y value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8dd17d2eee67037eea7237cea1507d3"></a><!-- doxytag: member="Vec3D::setZ" ref="ac8dd17d2eee67037eea7237cea1507d3" args="(const T ZIn)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setZ</b> (const T ZIn)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ac8dd17d2eee67037eea7237cea1507d3">setZ</a> (const T ZIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the z value <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1e6a0863de8a2c1165884a2ec0b52fe"></a><!-- doxytag: member="Vec3D::Normalize" ref="ae1e6a0863de8a2c1165884a2ec0b52fe" args="()" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Normalize</b> ()</td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ae1e6a0863de8a2c1165884a2ec0b52fe">Normalize</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes this vector. Returns the previous magnitude of this vector before normalization. Note: function changes this vector. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a243c1164de6f2d88052c6ca13f541235"></a><!-- doxytag: member="Vec3D::NormalizeFast" ref="a243c1164de6f2d88052c6ca13f541235" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>NormalizeFast</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34361ce07b1261dc1a950deb865794e2"></a><!-- doxytag: member="Vec3D::Rot" ref="a34361ce07b1261dc1a950deb865794e2" args="(const Vec3D u, const T a)" -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Rot</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> u, const T a)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aedfdbc47ab7b3432526db39924b88b5a"></a><!-- doxytag: member="Vec3D::RotZ" ref="aedfdbc47ab7b3432526db39924b88b5a" args="(const T a)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RotZ</b> (const T a)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adfd9e39b79e0325f6d4a1911e043702b"></a><!-- doxytag: member="Vec3D::RotY" ref="adfd9e39b79e0325f6d4a1911e043702b" args="(const T a)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RotY</b> (const T a)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5efeb724ca3cc743ecb9f86d7c661144"></a><!-- doxytag: member="Vec3D::RotX" ref="a5efeb724ca3cc743ecb9f86d7c661144" args="(const T a)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RotX</b> (const T a)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a808979b833aea3322948be4011fdee01"></a><!-- doxytag: member="Vec3D::Cross" ref="a808979b833aea3322948be4011fdee01" args="(const Vec3D &amp;v) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Cross</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1121f494e901e0931fa2ba13b2802da2"></a><!-- doxytag: member="Vec3D::Dot" ref="a1121f494e901e0931fa2ba13b2802da2" args="(const Vec3D &amp;v) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Dot</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a243c1164de6f2d88052c6ca13f541235">NormalizeFast</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes this vector slightly faster than <a class="el" href="class_vec3_d.html#ae1e6a0863de8a2c1165884a2ec0b52fe" title="Normalizes this vector. Returns the previous magnitude of this vector before normalization. Note: function changes this vector.">Normalize()</a> by not returning a value. Note: function changes this vector. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a34361ce07b1261dc1a950deb865794e2">Rot</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> u, const T a)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotates this vector about an axis definied by "u" an angle "a". (<a href="http://www.cprogramming.com/tutorial/3d/rotation.html">http://www.cprogramming.com/tutorial/3d/rotation.html</a>) Note: function changes this vector.  <a href="#a34361ce07b1261dc1a950deb865794e2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#aedfdbc47ab7b3432526db39924b88b5a">RotZ</a> (const T a)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotates this vector about the Z axis "a" radians. Note: function changes this vector.  <a href="#aedfdbc47ab7b3432526db39924b88b5a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#adfd9e39b79e0325f6d4a1911e043702b">RotY</a> (const T a)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotates this vector about the Y axis "a" radians. Note: function changes this vector.  <a href="#adfd9e39b79e0325f6d4a1911e043702b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a5efeb724ca3cc743ecb9f86d7c661144">RotX</a> (const T a)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotates this vector about the X axis "a" radians. Note: function changes this vector.  <a href="#a5efeb724ca3cc743ecb9f86d7c661144"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a808979b833aea3322948be4011fdee01">Cross</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cross product of this vector crossed by the provided vector "v". This vector is not modified.  <a href="#a808979b833aea3322948be4011fdee01"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a1121f494e901e0931fa2ba13b2802da2">Dot</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the dot product of this vector dotted with the provided vector "v". This vector is not modified.  <a href="#a1121f494e901e0931fa2ba13b2802da2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a420679cf11ab451d99ee245497d0d4d3"></a><!-- doxytag: member="Vec3D::Abs" ref="a420679cf11ab451d99ee245497d0d4d3" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Abs</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a420679cf11ab451d99ee245497d0d4d3">Abs</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the absolute value of this vector. This vector is not modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74e763d76fe2af9f0ba9c075616c06ad"></a><!-- doxytag: member="Vec3D::Normalized" ref="a74e763d76fe2af9f0ba9c075616c06ad" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Normalized</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a74e763d76fe2af9f0ba9c075616c06ad">Normalized</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a normalized version of this vector. Unlike <a class="el" href="class_vec3_d.html#ae1e6a0863de8a2c1165884a2ec0b52fe" title="Normalizes this vector. Returns the previous magnitude of this vector before normalization. Note: function changes this vector.">Normalize()</a> or <a class="el" href="class_vec3_d.html#a243c1164de6f2d88052c6ca13f541235" title="Normalizes this vector slightly faster than Normalize() by not returning a value. Note: function chan...">NormalizeFast()</a>, this vector is not modified. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#ab45927cd414042bb59e6c9320a2a0627">IsNear</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s, const T thresh)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this vector is within "thresh" distance of the specified vector "s". Neither vector is modified.  <a href="#ab45927cd414042bb59e6c9320a2a0627"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57bfc5416a7879da6684b89696ad3f83"></a><!-- doxytag: member="Vec3D::Length" ref="a57bfc5416a7879da6684b89696ad3f83" args="() const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Length</b> () const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a57bfc5416a7879da6684b89696ad3f83">Length</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the length (magnitude) of this vector. This vector is not modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6677c52eb03b670cd9dc64d7be41f3e2"></a><!-- doxytag: member="Vec3D::Length2" ref="a6677c52eb03b670cd9dc64d7be41f3e2" args="() const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Length2</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b5f5f3da0105d34e86cdd97009b4699"></a><!-- doxytag: member="Vec3D::Min" ref="a2b5f5f3da0105d34e86cdd97009b4699" args="(const Vec3D &amp;s) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Min</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a981b394a0efc03cee16dacaccf3ea0e1"></a><!-- doxytag: member="Vec3D::Max" ref="a981b394a0efc03cee16dacaccf3ea0e1" args="(const Vec3D &amp;s) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Max</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s) const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a6677c52eb03b670cd9dc64d7be41f3e2">Length2</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the length (magnitude) squared of this vector. This vector is not modified. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a2b5f5f3da0105d34e86cdd97009b4699">Min</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector populated by the minimum x, y, and z value of this vector and the specified vector "s". This vector is not modified.  <a href="#a2b5f5f3da0105d34e86cdd97009b4699"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a981b394a0efc03cee16dacaccf3ea0e1">Max</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector populated by the maximum x, y, and z value of this vector and the specified vector "s". This vector is not modified.  <a href="#a981b394a0efc03cee16dacaccf3ea0e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86155d9ecbdb7c326e016a4c160a06b7"></a><!-- doxytag: member="Vec3D::Min" ref="a86155d9ecbdb7c326e016a4c160a06b7" args="() const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Min</b> () const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a86155d9ecbdb7c326e016a4c160a06b7">Min</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the smallest of x, y, or z of this vector. This vector is not modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2404b7862cf8fb63e37da3bb18f1fca2"></a><!-- doxytag: member="Vec3D::Max" ref="a2404b7862cf8fb63e37da3bb18f1fca2" args="() const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Max</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaeea816da940bfe7c08d10bfd40fb2ce"></a><!-- doxytag: member="Vec3D::Scale" ref="aaeea816da940bfe7c08d10bfd40fb2ce" args="(const Vec3D &amp;v) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Scale</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85bd6951304ec6f971752408c87bb0b9"></a><!-- doxytag: member="Vec3D::ScaleInv" ref="a85bd6951304ec6f971752408c87bb0b9" args="(const Vec3D &amp;v) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ScaleInv</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa907a0d7c1c8f27e101e6186c6e6b6c"></a><!-- doxytag: member="Vec3D::Dist" ref="afa907a0d7c1c8f27e101e6186c6e6b6c" args="(const Vec3D &amp;v) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Dist</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9217484cc539b41439d6db07aa3b4b5"></a><!-- doxytag: member="Vec3D::Dist2" ref="aa9217484cc539b41439d6db07aa3b4b5" args="(const Vec3D &amp;v) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>Dist2</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a80abbd264fa9d8ea240d2a13ad10efc7"></a><!-- doxytag: member="Vec3D::AlignWith" ref="a80abbd264fa9d8ea240d2a13ad10efc7" args="(const Vec3D target, Vec3D &amp;rotax) const " -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>AlignWith</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a> target, <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;rotax) const </td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a2404b7862cf8fb63e37da3bb18f1fca2">Max</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the largest of x, y, or z of this vector. This vector is not modified. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#aaeea816da940bfe7c08d10bfd40fb2ce">Scale</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector where each value of this vector is scaled by its respective value in vector "v". This vector is not modified.  <a href="#aaeea816da940bfe7c08d10bfd40fb2ce"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a85bd6951304ec6f971752408c87bb0b9">ScaleInv</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector where each value of this vector is inversely scaled by its respective value in vector "v". This vector is not modified.  <a href="#a85bd6951304ec6f971752408c87bb0b9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#afa907a0d7c1c8f27e101e6186c6e6b6c">Dist</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the euclidian distance between this vector and the specified vector "v". This vector is not modified.  <a href="#afa907a0d7c1c8f27e101e6186c6e6b6c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#aa9217484cc539b41439d6db07aa3b4b5">Dist2</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the euclidian distance squared between this vector and the specified vector "v". This vector is not modified.  <a href="#aa9217484cc539b41439d6db07aa3b4b5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a80abbd264fa9d8ea240d2a13ad10efc7">AlignWith</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a> target, <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;rotax) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a rotation amount in radians and a unit vector (returned via the rotax argument) that will align this vector with target vector "target'. This vector is not modified.  <a href="#a80abbd264fa9d8ea240d2a13ad10efc7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1eea9a4d6b5a664f99d443a3b87692ff"></a><!-- doxytag: member="Vec3D::ArbitraryNormal" ref="a1eea9a4d6b5a664f99d443a3b87692ff" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ArbitraryNormal</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a1eea9a4d6b5a664f99d443a3b87692ff">ArbitraryNormal</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates and returns an arbitrary vector that is normal to this one. This vector is not modified. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9abc0143f3972f8bc3488e8567e8ff1c"></a><!-- doxytag: member="Vec3D::x" ref="a9abc0143f3972f8bc3488e8567e8ff1c" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>x</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a9abc0143f3972f8bc3488e8567e8ff1c">x</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current X value. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7877b6d0fbb7921f35f6c70651203b73"></a><!-- doxytag: member="Vec3D::y" ref="a7877b6d0fbb7921f35f6c70651203b73" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>y</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7877b6d0fbb7921f35f6c70651203b73">y</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current Y value. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7caeb03f34106f563ea42f9760dddcca"></a><!-- doxytag: member="Vec3D::z" ref="a7caeb03f34106f563ea42f9760dddcca" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a7caeb03f34106f563ea42f9760dddcca">z</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current Z value. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="friends"></a>
 Friends</h2></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a2daee265fd7bbdd0825b33a835b42127"></a><!-- doxytag: member="Vec3D::operator*" ref="a2daee265fd7bbdd0825b33a835b42127" args="(const U f, const Vec3D&lt; T &gt; &amp;v)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator*</b> (const U f, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;v)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a2daee265fd7bbdd0825b33a835b42127">operator*</a> (const U f, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;v)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">multiplication operator for different template types with number first. Therefore must be a friend because scalar value comes first. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d0cb82e2c8fe975a0843aa37fd66d36"></a><!-- doxytag: member="Vec3D::operator*" ref="a1d0cb82e2c8fe975a0843aa37fd66d36" args="(const T f, const Vec3D &amp;v)" -->
-const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const T f, const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vec3_d.html#a1d0cb82e2c8fe975a0843aa37fd66d36">operator*</a> (const T f, const <a class="el" href="class_vec3_d.html">Vec3D</a> &amp;v)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload multiplication with number first. <br/></td></tr>
 </table>
-<h3>template&lt;typename T = double&gt;<br/>
- class Vec3D&lt; T &gt;</h3>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T = double&gt;<br/>
+class Vec3D&lt; T &gt;</h3>
 
+<p>A generic 3D vector template. </p>
+<p>The template parameter is assumed to be either float or double depending on the desired numerical resolution. </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a80abbd264fa9d8ea240d2a13ad10efc7"></a><!-- doxytag: member="Vec3D::AlignWith" ref="a80abbd264fa9d8ea240d2a13ad10efc7" args="(const Vec3D target, Vec3D &amp;rotax) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a80abbd264fa9d8ea240d2a13ad10efc7">AlignWith</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rotax</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a rotation amount in radians and a unit vector (returned via the rotax argument) that will align this vector with target vector "target'. This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">target</td><td>target vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rotax</td><td>Unit vector of rotation axis. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a808979b833aea3322948be4011fdee01"></a><!-- doxytag: member="Vec3D::Cross" ref="a808979b833aea3322948be4011fdee01" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a808979b833aea3322948be4011fdee01">Cross</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the cross product of this vector crossed by the provided vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector to cross by. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afa907a0d7c1c8f27e101e6186c6e6b6c"></a><!-- doxytag: member="Vec3D::Dist" ref="afa907a0d7c1c8f27e101e6186c6e6b6c" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#afa907a0d7c1c8f27e101e6186c6e6b6c">Dist</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the euclidian distance between this vector and the specified vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector to compare with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aa9217484cc539b41439d6db07aa3b4b5"></a><!-- doxytag: member="Vec3D::Dist2" ref="aa9217484cc539b41439d6db07aa3b4b5" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#aa9217484cc539b41439d6db07aa3b4b5">Dist2</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the euclidian distance squared between this vector and the specified vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector to compare with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1121f494e901e0931fa2ba13b2802da2"></a><!-- doxytag: member="Vec3D::Dot" ref="a1121f494e901e0931fa2ba13b2802da2" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a1121f494e901e0931fa2ba13b2802da2">Dot</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the dot product of this vector dotted with the provided vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector to dot with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ab45927cd414042bb59e6c9320a2a0627"></a><!-- doxytag: member="Vec3D::IsNear" ref="ab45927cd414042bb59e6c9320a2a0627" args="(const Vec3D &amp;s, const T thresh)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#ab45927cd414042bb59e6c9320a2a0627">IsNear</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>thresh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns true if this vector is within "thresh" distance of the specified vector "s". Neither vector is modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>vector to compare this position to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thresh</td><td>Euclidian distance to determine if the other vector is within. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a981b394a0efc03cee16dacaccf3ea0e1"></a><!-- doxytag: member="Vec3D::Max" ref="a981b394a0efc03cee16dacaccf3ea0e1" args="(const Vec3D &amp;s) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a981b394a0efc03cee16dacaccf3ea0e1">Max</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector populated by the maximum x, y, and z value of this vector and the specified vector "s". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>Second vector to consider. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a2b5f5f3da0105d34e86cdd97009b4699"></a><!-- doxytag: member="Vec3D::Min" ref="a2b5f5f3da0105d34e86cdd97009b4699" args="(const Vec3D &amp;s) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a2b5f5f3da0105d34e86cdd97009b4699">Min</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector populated by the minimum x, y, and z value of this vector and the specified vector "s". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>Second vector to consider. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a34361ce07b1261dc1a950deb865794e2"></a><!-- doxytag: member="Vec3D::Rot" ref="a34361ce07b1261dc1a950deb865794e2" args="(const Vec3D u, const T a)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a34361ce07b1261dc1a950deb865794e2">Rot</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Rotates this vector about an axis definied by "u" an angle "a". (<a href="http://www.cprogramming.com/tutorial/3d/rotation.html">http://www.cprogramming.com/tutorial/3d/rotation.html</a>) Note: function changes this vector. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">u</td><td>axis to rotate this vector about. Must be normalized. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The amount to rotate in radians. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5efeb724ca3cc743ecb9f86d7c661144"></a><!-- doxytag: member="Vec3D::RotX" ref="a5efeb724ca3cc743ecb9f86d7c661144" args="(const T a)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a5efeb724ca3cc743ecb9f86d7c661144">RotX</a> </td>
+          <td>(</td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Rotates this vector about the X axis "a" radians. Note: function changes this vector. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>Radians to rotate by. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="adfd9e39b79e0325f6d4a1911e043702b"></a><!-- doxytag: member="Vec3D::RotY" ref="adfd9e39b79e0325f6d4a1911e043702b" args="(const T a)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#adfd9e39b79e0325f6d4a1911e043702b">RotY</a> </td>
+          <td>(</td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Rotates this vector about the Y axis "a" radians. Note: function changes this vector. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>Radians to rotate by. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aedfdbc47ab7b3432526db39924b88b5a"></a><!-- doxytag: member="Vec3D::RotZ" ref="aedfdbc47ab7b3432526db39924b88b5a" args="(const T a)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#aedfdbc47ab7b3432526db39924b88b5a">RotZ</a> </td>
+          <td>(</td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Rotates this vector about the Z axis "a" radians. Note: function changes this vector. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>Radians to rotate by. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aaeea816da940bfe7c08d10bfd40fb2ce"></a><!-- doxytag: member="Vec3D::Scale" ref="aaeea816da940bfe7c08d10bfd40fb2ce" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#aaeea816da940bfe7c08d10bfd40fb2ce">Scale</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector where each value of this vector is scaled by its respective value in vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector with scaling values. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a85bd6951304ec6f971752408c87bb0b9"></a><!-- doxytag: member="Vec3D::ScaleInv" ref="a85bd6951304ec6f971752408c87bb0b9" args="(const Vec3D &amp;v) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vec3_d.html">Vec3D</a> <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;::<a class="el" href="class_vec3_d.html#a85bd6951304ec6f971752408c87bb0b9">ScaleInv</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector where each value of this vector is inversely scaled by its respective value in vector "v". This vector is not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Vector with scaling values. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_vec3_d_8h_source.html">Vec3D.h</a></li>
 </ul>
@@ -234,7 +702,7 @@ const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td clas
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -246,7 +714,7 @@ const friend <a class="el" href="class_vec3_d.html">Vec3D</a>&#160;</td><td clas
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

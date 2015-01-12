@@ -1,14 +1,26 @@
 var searchData=
 [
+  ['abs',['Abs',['../class_vec3_d.html#a420679cf11ab451d99ee245497d0d4d3',1,'Vec3D']]],
   ['addforce',['addForce',['../class_c_v_x___external.html#a156b3b1926fdbeaace18bdc1a8d8d87b',1,'CVX_External::addForce(const float xForce, const float yForce, const float zForce)'],['../class_c_v_x___external.html#a8172bc66dba65a0c124d488eda9ca4dd',1,'CVX_External::addForce(const Vec3D&lt; float &gt; &amp;force)']]],
   ['addmaterial',['addMaterial',['../class_c_voxelyze.html#a01cdf71a7439bc29d209a861c3767655',1,'CVoxelyze::addMaterial(float youngsModulus=1e6f, float density=1e3f)'],['../class_c_voxelyze.html#a8102aef696c4b38fe86c842549b677fe',1,'CVoxelyze::addMaterial(rapidjson::Value &amp;mat)'],['../class_c_voxelyze.html#a380e65b395d59680bc90cc2c00636a2e',1,'CVoxelyze::addMaterial(const CVX_Material &amp;mat)']]],
   ['addmoment',['addMoment',['../class_c_v_x___external.html#ac55681b8947545a4e5d2d0de536ab516',1,'CVX_External::addMoment(const float xMoment, const float yMoment, const float zMoment)'],['../class_c_v_x___external.html#a7d90067c9b24d9729e6e326427910822',1,'CVX_External::addMoment(const Vec3D&lt; float &gt; &amp;moment)']]],
+  ['addvalue',['addValue',['../class_c_array3_d.html#ae76806372a99f91eb8372bdcd5b05c6d',1,'CArray3D::addValue(const Index3D &amp;index, T value)'],['../class_c_array3_d.html#af25b774485c87b48aff9d82f6fdd147d',1,'CArray3D::addValue(int i, int j, int k, T value)']]],
   ['adjacentvoxel',['adjacentVoxel',['../class_c_v_x___voxel.html#a84abdbb231002e9e8658d10d91ac9d3d',1,'CVX_Voxel']]],
+  ['alignwith',['AlignWith',['../class_vec3_d.html#a80abbd264fa9d8ea240d2a13ad10efc7',1,'Vec3D']]],
   ['alpha',['alpha',['../class_c_v_x___material.html#a0f3e0726e75bb117552531fa6b999790',1,'CVX_Material']]],
   ['ambienttemperature',['ambientTemperature',['../class_c_voxelyze.html#a9ffaa9185b473210f2480c4e069363fb',1,'CVoxelyze']]],
+  ['angle',['Angle',['../class_quat3_d.html#a26caf1fc1d7fe9f747982640997c0eec',1,'Quat3D']]],
+  ['angleaxis',['AngleAxis',['../class_quat3_d.html#ac5f8e3f5bb00daa84832a27ca77b6966',1,'Quat3D']]],
+  ['angleaxisunnormalized',['AngleAxisUnNormalized',['../class_quat3_d.html#a860919293959c379b315b474ca67ed43',1,'Quat3D']]],
+  ['angledegrees',['AngleDegrees',['../class_quat3_d.html#ace4df436a4e2e866b8ba5e0ec83229f3',1,'Quat3D']]],
+  ['angulardisplacementmagnitude',['angularDisplacementMagnitude',['../class_c_v_x___voxel.html#abbfc78979023390f41c15033a8ca1ca9',1,'CVX_Voxel']]],
   ['angularvelocity',['angularVelocity',['../class_c_v_x___voxel.html#a02e64d68d0977a946deb83f5fbdbfb1b',1,'CVX_Voxel']]],
   ['angularvelocitymagnitude',['angularVelocityMagnitude',['../class_c_v_x___voxel.html#a4d25a8c0040dd82853f0e83a177dddbc',1,'CVX_Voxel']]],
+  ['arbitrarynormal',['ArbitraryNormal',['../class_vec3_d.html#a1eea9a4d6b5a664f99d443a3b87692ff',1,'Vec3D']]],
+  ['at',['at',['../class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353',1,'CArray3D::at(const Index3D &amp;i3D) const '],['../class_c_array3_d.html#a5656a31cc6a606cabf41001747956de3',1,'CArray3D::at(int i, int j, int k) const '],['../class_c_array3_d.html#a4f1743019689f3ec654d3ae03218f95b',1,'CArray3D::at(const Index3D &amp;i3D)'],['../class_c_array3_d.html#a01d30476268bcd62bfc9e7d371e74b8d',1,'CArray3D::at(int i, int j, int k)']]],
   ['axialstiffness',['axialStiffness',['../class_c_v_x___link.html#ab3df9fb2a1fbb2579798bac7be84bcbd',1,'CVX_Link']]],
   ['axialstrain',['axialStrain',['../class_c_v_x___link.html#aeaa5ba08e3c637a97bec5ede515a7e06',1,'CVX_Link::axialStrain() const '],['../class_c_v_x___link.html#ad686b0c3abb06f46c3237f00b5f52b58',1,'CVX_Link::axialStrain(bool positiveEnd) const ']]],
-  ['axialstress',['axialStress',['../class_c_v_x___link.html#a677f1c80f210c703b4d4a668a7097cc1',1,'CVX_Link']]]
+  ['axialstress',['axialStress',['../class_c_v_x___link.html#a677f1c80f210c703b4d4a668a7097cc1',1,'CVX_Link']]],
+  ['axis',['Axis',['../class_quat3_d.html#a7b8ece248e655fe20aa16c0cddde9c33',1,'Quat3D']]],
+  ['axisunnormalized',['AxisUnNormalized',['../class_quat3_d.html#a4a137f50a7b06adca856057c4ae33995',1,'Quat3D']]]
 ];

@@ -106,7 +106,8 @@ Public Types</h2></td></tr>
 <a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0a801e6ac1ad59c1ff9f44a8a870a7ee7f">Z_NEG</a> = 5
 <br/>
  }</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>voxelCorner</b> { <br/>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the direction of a link relative to a given voxel.  <a href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a1b67fddebd41c8894aa961e0f4fe50ef">voxelCorner</a> { <br/>
 &#160;&#160;<b>NNN</b> =  0, 
 <b>NNP</b> =  1, 
 <b>NPN</b> =  2, 
@@ -118,41 +119,51 @@ Public Types</h2></td></tr>
 <b>PPP</b> =  7
 <br/>
  }</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines each of 8 corners of a voxel. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a5b7889892ca034feee0d010a1a2201d1">CVX_Voxel</a> (<a class="el" href="class_c_v_x___material_voxel.html">CVX_MaterialVoxel</a> *<a class="el" href="class_c_v_x___voxel.html#ab085b4add56cd4108e27efec4b12ac51">material</a>, short indexX, short indexY, short indexZ)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a5b7889892ca034feee0d010a1a2201d1">CVX_Voxel</a> (<a class="el" href="class_c_v_x___material_voxel.html">CVX_MaterialVoxel</a> *<a class="el" href="class_c_v_x___voxel.html#ab085b4add56cd4108e27efec4b12ac51">material</a>, short <a class="el" href="class_c_v_x___voxel.html#acfaa79ddefa95dc4dc33284916c24156">indexX</a>, short <a class="el" href="class_c_v_x___voxel.html#aa4ccb8dc8c0a1a617df720887a13bc36">indexY</a>, short <a class="el" href="class_c_v_x___voxel.html#a8859ca0b16c1d638f12c1b5e60905a19">indexZ</a>)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constuctor.  <a href="#a5b7889892ca034feee0d010a1a2201d1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37bf611a308d692b9b2a3dfbd16189d5"></a><!-- doxytag: member="CVX_Voxel::~CVX_Voxel" ref="a37bf611a308d692b9b2a3dfbd16189d5" args="()" -->
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a37bf611a308d692b9b2a3dfbd16189d5">~CVX_Voxel</a> ()</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor <br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac290f488df45eeaf207ddfc95ed3e48d"></a><!-- doxytag: member="CVX_Voxel::reset" ref="ac290f488df45eeaf207ddfc95ed3e48d" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ac290f488df45eeaf207ddfc95ed3e48d">reset</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets this voxels to its original position, orientation, temperature, etc. and zeros its momentum. Does not affect any externals. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a97af28d3c3bd2c0c31f4c040bdeeee26"></a><!-- doxytag: member="CVX_Voxel::link" ref="a97af28d3c3bd2c0c31f4c040bdeeee26" args="(linkDirection direction) const " -->
-<a class="el" href="class_c_v_x___link.html">CVX_Link</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>link</b> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction) const </td></tr>
+<a class="el" href="class_c_v_x___link.html">CVX_Link</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a97af28d3c3bd2c0c31f4c040bdeeee26">link</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the link object in the specified direction if it exists. Returns null if a link does not exist in this direction. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe1eb3347b846201784fd4ed1f0761ed"></a><!-- doxytag: member="CVX_Voxel::linkCount" ref="abe1eb3347b846201784fd4ed1f0761ed" args="() const " -->
-int&#160;</td><td class="memItemRight" valign="bottom"><b>linkCount</b> () const </td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#abe1eb3347b846201784fd4ed1f0761ed">linkCount</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of links present for this voxel out of a total 6 possible. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_v_x___voxel.html">CVX_Voxel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a84abdbb231002e9e8658d10d91ac9d3d">adjacentVoxel</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction) const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the voxel in the specified direction if one exists, or NULL otherwise.  <a href="#a84abdbb231002e9e8658d10d91ac9d3d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acfaa79ddefa95dc4dc33284916c24156"></a><!-- doxytag: member="CVX_Voxel::indexX" ref="acfaa79ddefa95dc4dc33284916c24156" args="()" -->
-short&#160;</td><td class="memItemRight" valign="bottom"><b>indexX</b> ()</td></tr>
+short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#acfaa79ddefa95dc4dc33284916c24156">indexX</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global X index of this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa4ccb8dc8c0a1a617df720887a13bc36"></a><!-- doxytag: member="CVX_Voxel::indexY" ref="aa4ccb8dc8c0a1a617df720887a13bc36" args="()" -->
-short&#160;</td><td class="memItemRight" valign="bottom"><b>indexY</b> ()</td></tr>
+short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#aa4ccb8dc8c0a1a617df720887a13bc36">indexY</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global Y index of this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8859ca0b16c1d638f12c1b5e60905a19"></a><!-- doxytag: member="CVX_Voxel::indexZ" ref="a8859ca0b16c1d638f12c1b5e60905a19" args="()" -->
-short&#160;</td><td class="memItemRight" valign="bottom"><b>indexZ</b> ()</td></tr>
+short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a8859ca0b16c1d638f12c1b5e60905a19">indexZ</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the global Z index of this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab085b4add56cd4108e27efec4b12ac51"></a><!-- doxytag: member="CVX_Voxel::material" ref="ab085b4add56cd4108e27efec4b12ac51" args="()" -->
 <a class="el" href="class_c_v_x___material_voxel.html">CVX_MaterialVoxel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ab085b4add56cd4108e27efec4b12ac51">material</a> ()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the linked material object containing the physical properties of this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e29c2f312db26414bac4fc5a40b6e36"></a><!-- doxytag: member="CVX_Voxel::externalExists" ref="a6e29c2f312db26414bac4fc5a40b6e36" args="()" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>externalExists</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a6e29c2f312db26414bac4fc5a40b6e36">externalExists</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if this voxel has had its <a class="el" href="class_c_v_x___external.html" title="Container for all external influences on a voxel such as forces and prescribed displacements.">CVX_External</a> object created. This does not mecessarily imply that this external object actually contains any fixes or forces. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9a77fad4345f9fc62152ab89ea5ff1cd"></a><!-- doxytag: member="CVX_Voxel::external" ref="a9a77fad4345f9fc62152ab89ea5ff1cd" args="()" -->
-<a class="el" href="class_c_v_x___external.html">CVX_External</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>external</b> ()</td></tr>
+<a class="el" href="class_c_v_x___external.html">CVX_External</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a9a77fad4345f9fc62152ab89ea5ff1cd">external</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to this voxel's unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn't already exist. Use <a class="el" href="class_c_v_x___voxel.html#a6e29c2f312db26414bac4fc5a40b6e36" title="Returns true if this voxel has had its CVX_External object created. This does not mecessarily imply t...">externalExists()</a> to determine if <a class="el" href="class_c_v_x___voxel.html#a9a77fad4345f9fc62152ab89ea5ff1cd" title="Returns a pointer to this voxel&#39;s unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn&#39;t already exist. Use externalExists() to determine if external() has been previously called at any time.">external()</a> has been previously called at any time. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ae508da81d56c672fb829b05af2a79460">timeStep</a> (float dt)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances this voxel's state according to all forces and moments acting on it. Large timesteps will cause instability. Use <a class="el" href="class_c_voxelyze.html#a474fe5edc957e39a1b5b7d519058fc4a" title="Returns an estimate of the largest stable time step based on the current state of the simulation...">CVoxelyze::recommendedTimeStep()</a> to get the recommended largest stable timestep.  <a href="#ae508da81d56c672fb829b05af2a79460"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af923a3cd7d0dd0af5bce370a24944bee"></a><!-- doxytag: member="CVX_Voxel::position" ref="af923a3cd7d0dd0af5bce370a24944bee" args="() const " -->
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#af923a3cd7d0dd0af5bce370a24944bee">position</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate system (LCS). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19c5f2f49ef7df7d8922037e3a60c4fb"></a><!-- doxytag: member="CVX_Voxel::originalPosition" ref="a19c5f2f49ef7df7d8922037e3a60c4fb" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>originalPosition</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a19c5f2f49ef7df7d8922037e3a60c4fb">originalPosition</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the initial (nominal) position of this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a528c5a29671c9584a54aa4718f1a2878"></a><!-- doxytag: member="CVX_Voxel::displacement" ref="a528c5a29671c9584a54aa4718f1a2878" args="() const " -->
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a528c5a29671c9584a54aa4718f1a2878">displacement</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 3D displacement of this voxel from its original location in meters (GCS)/. <br/></td></tr>
@@ -160,10 +171,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>externalExists</b> ()
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a6e473c2d50357f851fb6ca665586d514">size</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current deformed size of this voxel in the local voxel coordinates system (LCS). If asymmetric forces are acting on this voxel, the voxel may not be centered on <a class="el" href="class_c_v_x___voxel.html#af923a3cd7d0dd0af5bce370a24944bee" title="Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate...">position()</a>. Use cornerNegative() and cornerPositive() to determine this information. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a334359ecc1f4a50018707f9a14f632a1"></a><!-- doxytag: member="CVX_Voxel::cornerPosition" ref="a334359ecc1f4a50018707f9a14f632a1" args="(voxelCorner corner) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a334359ecc1f4a50018707f9a14f632a1">cornerPosition</a> (voxelCorner corner) const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a334359ecc1f4a50018707f9a14f632a1">cornerPosition</a> (<a class="el" href="class_c_v_x___voxel.html#a1b67fddebd41c8894aa961e0f4fe50ef">voxelCorner</a> corner) const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the deformed location of the voxel corner in the specified corner in the global coordinate system (GCS). Essentially <a class="el" href="class_c_v_x___voxel.html#a21dbadd4247984ab46cc6f496f67cc82" title="Returns the deformed location of the voxel corner in the specified corner in the local voxel coordina...">cornerOffset()</a> with the voxel's current global position/rotation applied. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a21dbadd4247984ab46cc6f496f67cc82"></a><!-- doxytag: member="CVX_Voxel::cornerOffset" ref="a21dbadd4247984ab46cc6f496f67cc82" args="(voxelCorner corner) const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a21dbadd4247984ab46cc6f496f67cc82">cornerOffset</a> (voxelCorner corner) const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a21dbadd4247984ab46cc6f496f67cc82">cornerOffset</a> (<a class="el" href="class_c_v_x___voxel.html#a1b67fddebd41c8894aa961e0f4fe50ef">voxelCorner</a> corner) const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the deformed location of the voxel corner in the specified corner in the local voxel coordinate system (LCS). Used to draw the deformed voxel in the correct position relative to the <a class="el" href="class_c_v_x___voxel.html#af923a3cd7d0dd0af5bce370a24944bee" title="Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate...">position()</a>. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75abf104fdeb92636bc5e11859d062b7"></a><!-- doxytag: member="CVX_Voxel::isInterior" ref="a75abf104fdeb92636bc5e11859d062b7" args="() const " -->
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a75abf104fdeb92636bc5e11859d062b7">isInterior</a> () const </td></tr>
@@ -190,9 +201,11 @@ float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ab7370a10484f7cb9bd42842e750c25d8">orientationAxis</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Use with <a class="el" href="class_c_v_x___voxel.html#a4db11a574683abb27faf863b5cbac345" title="Use with orientationAxis() to get the orientation of this voxel in angle/axis form. Returns the angle in radians.">orientationAngle()</a> to get the orientation of this voxel in angle/axis form. Returns a unit vector in the global coordinate system (GCS). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07c7ef14975bf8387926c8da7ada016f"></a><!-- doxytag: member="CVX_Voxel::displacementMagnitude" ref="a07c7ef14975bf8387926c8da7ada016f" args="() const " -->
-float&#160;</td><td class="memItemRight" valign="bottom"><b>displacementMagnitude</b> () const </td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a07c7ef14975bf8387926c8da7ada016f">displacementMagnitude</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the distance (magnitude of displacement) this voxel has moved from its initial nominal position. (GCS) <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abbfc78979023390f41c15033a8ca1ca9"></a><!-- doxytag: member="CVX_Voxel::angularDisplacementMagnitude" ref="abbfc78979023390f41c15033a8ca1ca9" args="() const " -->
-float&#160;</td><td class="memItemRight" valign="bottom"><b>angularDisplacementMagnitude</b> () const </td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#abbfc78979023390f41c15033a8ca1ca9">angularDisplacementMagnitude</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angle (magnitude of angular displacement) this voxel has rotated from its initial nominal orientation. (GCS) <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9fbbc5958f0afc0d51e4c3db46535474"></a><!-- doxytag: member="CVX_Voxel::velocity" ref="a9fbbc5958f0afc0d51e4c3db46535474" args="() const " -->
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a9fbbc5958f0afc0d51e4c3db46535474">velocity</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 3D velocity of this voxel in m/s (GCS) <br/></td></tr>
@@ -264,15 +277,20 @@ float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 <tr><td colspan="2"><h2><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac22d56e440c713f56cba2effd84f402e"></a><!-- doxytag: member="CVX_Voxel::toAxis" ref="ac22d56e440c713f56cba2effd84f402e" args="(linkDirection direction)" -->
-static <a class="el" href="class_c_v_x___link.html#ae576d8198601b25ae41ea558c8333d91">CVX_Link::linkAxis</a>&#160;</td><td class="memItemRight" valign="bottom"><b>toAxis</b> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+static <a class="el" href="class_c_v_x___link.html#ae576d8198601b25ae41ea558c8333d91">CVX_Link::linkAxis</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ac22d56e440c713f56cba2effd84f402e">toAxis</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the link axis of the specified link direction. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa4bb13f519a69c4f6746b3213e366d7e"></a><!-- doxytag: member="CVX_Voxel::toDirection" ref="aa4bb13f519a69c4f6746b3213e366d7e" args="(CVX_Link::linkAxis axis, bool positiveDirection)" -->
-static <a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><b>toDirection</b> (<a class="el" href="class_c_v_x___link.html#ae576d8198601b25ae41ea558c8333d91">CVX_Link::linkAxis</a> axis, bool positiveDirection)</td></tr>
+static <a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#aa4bb13f519a69c4f6746b3213e366d7e">toDirection</a> (<a class="el" href="class_c_v_x___link.html#ae576d8198601b25ae41ea558c8333d91">CVX_Link::linkAxis</a> axis, bool positiveDirection)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the link direction of the specified link axis and sign. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa2034fffd6dc331be8d7a6a92da219b5"></a><!-- doxytag: member="CVX_Voxel::isNegative" ref="aa2034fffd6dc331be8d7a6a92da219b5" args="(linkDirection direction)" -->
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isNegative</b> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#aa2034fffd6dc331be8d7a6a92da219b5">isNegative</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified link direction is negative. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3fe2acd97d6ec5686b262b66368bf9ff"></a><!-- doxytag: member="CVX_Voxel::isPositive" ref="a3fe2acd97d6ec5686b262b66368bf9ff" args="(linkDirection direction)" -->
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPositive</b> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#a3fe2acd97d6ec5686b262b66368bf9ff">isPositive</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified link direction is positive. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2c6d692493621301710394b0f4d840e"></a><!-- doxytag: member="CVX_Voxel::toOpposite" ref="ac2c6d692493621301710394b0f4d840e" args="(linkDirection direction)" -->
-static <a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><b>toOpposite</b> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+static <a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___voxel.html#ac2c6d692493621301710394b0f4d840e">toOpposite</a> (<a class="el" href="class_c_v_x___voxel.html#a1c07f828986ee360852baef8fa1ea7a0">linkDirection</a> direction)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the opposite (negated) link direction of the specified direction. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="friends"></a>
 Friends</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a064cdb2e1cd10edea15f22e9bbc3980d"></a><!-- doxytag: member="CVX_Voxel::CVoxelyze" ref="a064cdb2e1cd10edea15f22e9bbc3980d" args="" -->
@@ -286,7 +304,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b>
 <div class="textblock"><p>Defines a specific instance of a voxel and holds its current state. </p>
 <p>The voxel class contains all information about a voxel's physical characteristics, state, and <a class="el" href="class_c_v_x___link.html" title="Defines a solid link between two adjacent voxels and holds its current state.">CVX_Link</a>'s to other adjacent voxels.</p>
 <p>A voxel needs a <a class="el" href="class_c_v_x___material_voxel.html" title="Defines a voxel type of a specific material.">CVX_MaterialVoxel</a> to be created and define its physical properties. Later, these can be accessed by <a class="el" href="class_c_v_x___voxel.html#ab085b4add56cd4108e27efec4b12ac51" title="Returns the linked material object containing the physical properties of this voxel.">material()</a>.</p>
-<p>A voxel can be fixed with any combination of degrees of freedom using setFixed() or setAllFixed(). External forces and moments can also be applied using setForce() or setMoment().</p>
+<p>A voxel can have external forced or prescribed displacements applied by accessing its <a class="el" href="class_c_v_x___external.html" title="Container for all external influences on a voxel such as forces and prescribed displacements.">CVX_External</a> object using the <a class="el" href="class_c_v_x___voxel.html#a9a77fad4345f9fc62152ab89ea5ff1cd" title="Returns a pointer to this voxel&#39;s unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn&#39;t already exist. Use externalExists() to determine if external() has been previously called at any time.">external()</a> function. To save memory allocation the <a class="el" href="class_c_v_x___external.html" title="Container for all external influences on a voxel such as forces and prescribed displacements.">CVX_External</a> object is not created until the first time <a class="el" href="class_c_v_x___voxel.html#a9a77fad4345f9fc62152ab89ea5ff1cd" title="Returns a pointer to this voxel&#39;s unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn&#39;t already exist. Use externalExists() to determine if external() has been previously called at any time.">external()</a> is called. Use <a class="el" href="class_c_v_x___voxel.html#a6e29c2f312db26414bac4fc5a40b6e36" title="Returns true if this voxel has had its CVX_External object created. This does not mecessarily imply t...">externalExists()</a> to determine if this voxel has any externals applied.</p>
 <p>The state of the voxel includes it <a class="el" href="class_c_v_x___voxel.html#af923a3cd7d0dd0af5bce370a24944bee" title="Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate...">position()</a>, <a class="el" href="class_c_v_x___voxel.html#a6e473c2d50357f851fb6ca665586d514" title="Returns the current deformed size of this voxel in the local voxel coordinates system (LCS)...">size()</a>, <a class="el" href="class_c_v_x___voxel.html#ab08f45e7c82eedb782fa87a6f0778352" title="Returns the orientation of this voxel in quaternion form (GCS). This orientation defines the relative...">orientation()</a>, <a class="el" href="class_c_v_x___voxel.html#a9fbbc5958f0afc0d51e4c3db46535474" title="Returns the 3D velocity of this voxel in m/s (GCS)">velocity()</a>, etc.</p>
 <p>A voxel has a local coordinate system (LCS) that always stays centered on the center of the voxel and oriented with the axes of the cube. The global coordinate system (GCS) is just that - the global coordinate system. </p>
 </div><hr/><h2>Member Enumeration Documentation</h2>
@@ -300,10 +318,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Defines the direction of a link relative to a given voxel. </p>
 <dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
 <tr><td valign="top"><em><a class="anchor" id="a1c07f828986ee360852baef8fa1ea7a0a7af755292b105f81b0801886c8bb3d4f"></a><!-- doxytag: member="X_POS" ref="a1c07f828986ee360852baef8fa1ea7a0a7af755292b105f81b0801886c8bb3d4f" args="" -->X_POS</em>&nbsp;</td><td>
-<p>Defines the direction of a link relative to a given voxel. </p>
-<p>Positive X direction </p>
+<p>Positive X direction. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a1c07f828986ee360852baef8fa1ea7a0addd23bb30f0806dc7f81ad3b1c8a9cad"></a><!-- doxytag: member="X_NEG" ref="a1c07f828986ee360852baef8fa1ea7a0addd23bb30f0806dc7f81ad3b1c8a9cad" args="" -->X_NEG</em>&nbsp;</td><td>
 <p>Negative X direction. </p>
@@ -368,6 +387,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">material</td><td>Links this <a class="el" href="class_c_v_x___material.html" title="Defines the properties a raw material.">CVX_Material</a> to define the physical properties for this voxel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexX</td><td>The global X index of this voxel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexY</td><td>The global Y index of this voxel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexZ</td><td>The global Z index of this voxel. </td></tr>
   </table>
   </dd>
 </dl>
@@ -460,7 +482,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -472,7 +494,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>CVX_LinearSolver</b>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

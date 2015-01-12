@@ -84,6 +84,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="CVX_External" -->
+<p>Container for all external influences on a voxel such as forces and prescribed displacements.  
+ <a href="class_c_v_x___external.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_v_x___external_8h_source.html">VX_External.h</a>&gt;</code></p>
+
 <p><a href="class_c_v_x___external-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
@@ -101,45 +106,55 @@ Public Member Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a609fa913f09ce42cb14d7769957259f8">operator==</a> (const <a class="el" href="class_c_v_x___external.html">CVX_External</a> &amp;b)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">comparison operator <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab944813ca738cb574dc39b6db29cd40b"></a><!-- doxytag: member="CVX_External::reset" ref="ab944813ca738cb574dc39b6db29cd40b" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#ab944813ca738cb574dc39b6db29cd40b">reset</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets this external to defaults - i.e., no effect on a voxel (forces, fixed, displacements, etc) <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6552e5f673e6ae074dd83eec409a17d"></a><!-- doxytag: member="CVX_External::isEmpty" ref="ad6552e5f673e6ae074dd83eec409a17d" args="()" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isEmpty</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#ad6552e5f673e6ae074dd83eec409a17d">isEmpty</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">returns true if this external is empty - i.e is exerting no effect on a voxel <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#ac11e2150ecfeeb8ef347e795f2c9c0f9">isFixed</a> (dofComponent dof) const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the specified degree of freedom is fixed for this voxel.  <a href="#ac11e2150ecfeeb8ef347e795f2c9c0f9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17354b8406471d133a92d466f3366e6e"></a><!-- doxytag: member="CVX_External::isFixedAll" ref="a17354b8406471d133a92d466f3366e6e" args="() const " -->
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a17354b8406471d133a92d466f3366e6e">isFixedAll</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if all 6 degrees of freedom are fixed for this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d205a364c0ff2773dbb0d79b56515fc"></a><!-- doxytag: member="CVX_External::isFixedAllTranslation" ref="a1d205a364c0ff2773dbb0d79b56515fc" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFixedAllTranslation</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a1d205a364c0ff2773dbb0d79b56515fc">isFixedAllTranslation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if all translational degrees of freedom are fixed. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95fcfb3e75b26e38d32c98e3c43dc64e"></a><!-- doxytag: member="CVX_External::isFixedAllRotation" ref="a95fcfb3e75b26e38d32c98e3c43dc64e" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFixedAllRotation</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a95fcfb3e75b26e38d32c98e3c43dc64e">isFixedAllRotation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if all rotationsl degrees of freedom are fixed. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d005dae2cc5173505431f0326e71dbc"></a><!-- doxytag: member="CVX_External::isFixedAny" ref="a6d005dae2cc5173505431f0326e71dbc" args="() const " -->
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a6d005dae2cc5173505431f0326e71dbc">isFixedAny</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if any of the 6 degrees of freedom are fixed for this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0393f2b1ec11e93a3e3e96d3ccb9434b"></a><!-- doxytag: member="CVX_External::isFixedAnyTranslation" ref="a0393f2b1ec11e93a3e3e96d3ccb9434b" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFixedAnyTranslation</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a0393f2b1ec11e93a3e3e96d3ccb9434b">isFixedAnyTranslation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if any of the three translational degrees of freedom are fixed. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9084c3e4b966adf74bb0991147cc0501"></a><!-- doxytag: member="CVX_External::isFixedAnyRotation" ref="a9084c3e4b966adf74bb0991147cc0501" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFixedAnyRotation</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a9084c3e4b966adf74bb0991147cc0501">isFixedAnyRotation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if any of the three rotational degrees of freedom are fixed. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ea3bf8241bfc49580d1e2ff95d93170"></a><!-- doxytag: member="CVX_External::translation" ref="a2ea3bf8241bfc49580d1e2ff95d93170" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>translation</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a2ea3bf8241bfc49580d1e2ff95d93170">translation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns any external translation that has been applied to this external. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85ef54b8799178b5818e903c7e6fe103"></a><!-- doxytag: member="CVX_External::rotation" ref="a85ef54b8799178b5818e903c7e6fe103" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rotation</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a85ef54b8799178b5818e903c7e6fe103">rotation</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns any external rotation that has been applied to this external as a rotation vector. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7edbd84d2edb934bf0c0491a54ec50c8"></a><!-- doxytag: member="CVX_External::rotationQuat" ref="a7edbd84d2edb934bf0c0491a54ec50c8" args="() const " -->
-<a class="el" href="class_quat3_d.html">Quat3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rotationQuat</b> () const </td></tr>
+<a class="el" href="class_quat3_d.html">Quat3D</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a7edbd84d2edb934bf0c0491a54ec50c8">rotationQuat</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns any external rotation that has been applied to this external as a quaternion. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a37cd0ce28dffef6da68cf4b4194157d2">setFixed</a> (bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the specified true degrees of freedom as fixed for this voxel. (GCS)  <a href="#a37cd0ce28dffef6da68cf4b4194157d2"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea0043541cd93bf14b166ddde2e6a058"></a><!-- doxytag: member="CVX_External::setFixed" ref="aea0043541cd93bf14b166ddde2e6a058" args="(dofComponent dof, bool fixed=true)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFixed</b> (dofComponent dof, bool fixed=true)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c4ff8745e4beafacf0ce99235e3185b"></a><!-- doxytag: member="CVX_External::setFixedAll" ref="a1c4ff8745e4beafacf0ce99235e3185b" args="(bool fixed=true)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFixedAll</b> (bool fixed=true)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa90e0a59802b2b7a28ca301e5329864d"></a><!-- doxytag: member="CVX_External::setDisplacement" ref="aa90e0a59802b2b7a28ca301e5329864d" args="(dofComponent dof, double displacement=0.0)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDisplacement</b> (dofComponent dof, double displacement=0.0)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac89945575d2689b157110ed7ac697c37"></a><!-- doxytag: member="CVX_External::setDisplacementAll" ref="ac89945575d2689b157110ed7ac697c37" args="(const Vec3D&lt; double &gt; &amp;translation=Vec3D&lt; double &gt;(0, 0, 0), const Vec3D&lt; double &gt; &amp;rotation=Vec3D&lt; double &gt;(0, 0, 0))" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDisplacementAll</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;translation=<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;(0, 0, 0), const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;rotation=<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;(0, 0, 0))</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6748e5f8785273c590b28401bcd430b8"></a><!-- doxytag: member="CVX_External::clearDisplacement" ref="a6748e5f8785273c590b28401bcd430b8" args="(dofComponent dof)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearDisplacement</b> (dofComponent dof)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets any of the degrees of freedom specified as "true" to fixed for this voxel. (GCS)  <a href="#a37cd0ce28dffef6da68cf4b4194157d2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#aea0043541cd93bf14b166ddde2e6a058">setFixed</a> (dofComponent dof, bool fixed=true)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the specified degree of freedom to either fixed or free, depending on the value of fixed. Either way, sets the translational or rotational displacement of this degree of freedom to zero.  <a href="#aea0043541cd93bf14b166ddde2e6a058"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a1c4ff8745e4beafacf0ce99235e3185b">setFixedAll</a> (bool fixed=true)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all 6 degrees of freedom to either fixed or free depending on the value of fixed. Either way, sets all displacements to zero.  <a href="#a1c4ff8745e4beafacf0ce99235e3185b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#aa90e0a59802b2b7a28ca301e5329864d">setDisplacement</a> (dofComponent dof, double displacement=0.0)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixes the specified degree of freedom and applies the prescribed displacement if specified.  <a href="#aa90e0a59802b2b7a28ca301e5329864d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#ac89945575d2689b157110ed7ac697c37">setDisplacementAll</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;<a class="el" href="class_c_v_x___external.html#a2ea3bf8241bfc49580d1e2ff95d93170">translation</a>=<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;(0, 0, 0), const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;<a class="el" href="class_c_v_x___external.html#a85ef54b8799178b5818e903c7e6fe103">rotation</a>=<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt;(0, 0, 0))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixes the all degrees of freedom and applies the specified translation and rotation.  <a href="#ac89945575d2689b157110ed7ac697c37"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a6748e5f8785273c590b28401bcd430b8">clearDisplacement</a> (dofComponent dof)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears any prescribed displacement from this degree of freedom and unfixes it, too.  <a href="#a6748e5f8785273c590b28401bcd430b8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6df14741788ac6da9d9199be4ee3a809"></a><!-- doxytag: member="CVX_External::clearDisplacementAll" ref="a6df14741788ac6da9d9199be4ee3a809" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearDisplacementAll</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a6df14741788ac6da9d9199be4ee3a809">clearDisplacementAll</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all prescribed displacement from this voxel and completely unfixes it, too. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb6cbe301a5a43b562351a7b9ebbfd32"></a><!-- doxytag: member="CVX_External::force" ref="abb6cbe301a5a43b562351a7b9ebbfd32" args="() const " -->
 <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#abb6cbe301a5a43b562351a7b9ebbfd32">force</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current applied external force in newtons. <br/></td></tr>
@@ -167,11 +182,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#a7d90067c9b24d9729e6e326427910822">addMoment</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; float &gt; &amp;<a class="el" href="class_c_v_x___external.html#aa2ba997b03440320fbd449d4066d3846">moment</a>)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function for setExternalMoment(float, float, float). <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae9a3419cbcd2b37c2ff46d9d39814748"></a><!-- doxytag: member="CVX_External::clearForce" ref="ae9a3419cbcd2b37c2ff46d9d39814748" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearForce</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#ae9a3419cbcd2b37c2ff46d9d39814748">clearForce</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all applied forces from this voxel. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8970b744c673bf29621da7a876022fb"></a><!-- doxytag: member="CVX_External::clearMoment" ref="aa8970b744c673bf29621da7a876022fb" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_v_x___external.html#aa8970b744c673bf29621da7a876022fb">clearMoment</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all applied moments from this voxel. <br/></td></tr>
 </table>
-<hr/><h2>Member Function Documentation</h2>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Container for all external influences on a voxel such as forces and prescribed displacements. </p>
+<p>dof = degree(s) of freedom (three translational, three rotational = 6 total) </p>
+</div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a156b3b1926fdbeaace18bdc1a8d8d87b"></a><!-- doxytag: member="CVX_External::addForce" ref="a156b3b1926fdbeaace18bdc1a8d8d87b" args="(const float xForce, const float yForce, const float zForce)" -->
 <div class="memitem">
 <div class="memproto">
@@ -258,6 +278,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
 
 </div>
 </div>
+<a class="anchor" id="a6748e5f8785273c590b28401bcd430b8"></a><!-- doxytag: member="CVX_External::clearDisplacement" ref="a6748e5f8785273c590b28401bcd430b8" args="(dofComponent dof)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___external.html#a6748e5f8785273c590b28401bcd430b8">CVX_External::clearDisplacement</a> </td>
+          <td>(</td>
+          <td class="paramtype">dofComponent&#160;</td>
+          <td class="paramname"><em>dof</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Clears any prescribed displacement from this degree of freedom and unfixes it, too. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dof</td><td>the degree of freedom in question. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ac11e2150ecfeeb8ef347e795f2c9c0f9"></a><!-- doxytag: member="CVX_External::isFixed" ref="ac11e2150ecfeeb8ef347e795f2c9c0f9" args="(dofComponent dof) const " -->
 <div class="memitem">
 <div class="memproto">
@@ -277,6 +322,78 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dof</td><td>Degree of freedom to query according to the dofComponent enum. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aa90e0a59802b2b7a28ca301e5329864d"></a><!-- doxytag: member="CVX_External::setDisplacement" ref="aa90e0a59802b2b7a28ca301e5329864d" args="(dofComponent dof, double displacement=0.0)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___external.html#aa90e0a59802b2b7a28ca301e5329864d">CVX_External::setDisplacement</a> </td>
+          <td>(</td>
+          <td class="paramtype">dofComponent&#160;</td>
+          <td class="paramname"><em>dof</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>displacement</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fixes the specified degree of freedom and applies the prescribed displacement if specified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dof</td><td>the degree of freedom in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">displacement</td><td>The displacement in meters (translational dofs) or radians (rotational dofs) to apply. Large fixed displacements may cause instability. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac89945575d2689b157110ed7ac697c37"></a><!-- doxytag: member="CVX_External::setDisplacementAll" ref="ac89945575d2689b157110ed7ac697c37" args="(const Vec3D&lt; double &gt; &amp;translation=Vec3D&lt; double &gt;(0, 0, 0), const Vec3D&lt; double &gt; &amp;rotation=Vec3D&lt; double &gt;(0, 0, 0))" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___external.html#ac89945575d2689b157110ed7ac697c37">CVX_External::setDisplacementAll</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>translation</em> = <code><a class="el" href="class_vec3_d.html">Vec3D</a>&lt;double&gt;(0,0,0)</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rotation</em> = <code><a class="el" href="class_vec3_d.html">Vec3D</a>&lt;double&gt;(0,0,0)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fixes the all degrees of freedom and applies the specified translation and rotation. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">translation</td><td>The translation in meters from this voxel's nominal position to fix it at. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rotation</td><td>The rotation (in the form of a rotation vector) from this voxel's nominal orientation to fix it at. </td></tr>
   </table>
   </dd>
 </dl>
@@ -332,7 +449,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
 </div>
 <div class="memdoc">
 
-<p>Set the specified true degrees of freedom as fixed for this voxel. (GCS) </p>
+<p>Sets any of the degrees of freedom specified as "true" to fixed for this voxel. (GCS) </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">xTranslate</td><td>Translation in the X direction </td></tr>
@@ -341,6 +458,67 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
     <tr><td class="paramdir">[in]</td><td class="paramname">xRotate</td><td>Rotation about the X axis </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yRotate</td><td>Rotation about the Y axis </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zRotate</td><td>Rotation about the Z axis </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aea0043541cd93bf14b166ddde2e6a058"></a><!-- doxytag: member="CVX_External::setFixed" ref="aea0043541cd93bf14b166ddde2e6a058" args="(dofComponent dof, bool fixed=true)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___external.html#a37cd0ce28dffef6da68cf4b4194157d2">CVX_External::setFixed</a> </td>
+          <td>(</td>
+          <td class="paramtype">dofComponent&#160;</td>
+          <td class="paramname"><em>dof</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fixed</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the specified degree of freedom to either fixed or free, depending on the value of fixed. Either way, sets the translational or rotational displacement of this degree of freedom to zero. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dof</td><td>the degree of freedom in question </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fixed</td><td>Whether this degree of freedom should be fixed (true) or free (false). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1c4ff8745e4beafacf0ce99235e3185b"></a><!-- doxytag: member="CVX_External::setFixedAll" ref="a1c4ff8745e4beafacf0ce99235e3185b" args="(bool fixed=true)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_v_x___external.html#a1c4ff8745e4beafacf0ce99235e3185b">CVX_External::setFixedAll</a> </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fixed</em> = <code>true</code></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets all 6 degrees of freedom to either fixed or free depending on the value of fixed. Either way, sets all displacements to zero. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fixed</td><td>Whether all degrees of freedom should be fixed (true) or free (false). </td></tr>
   </table>
   </dd>
 </dl>
@@ -443,7 +621,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -455,7 +633,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMoment</b> ()</t
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

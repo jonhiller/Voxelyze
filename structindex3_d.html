@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="index3D" -->
-<p>a general 3d array. Empty elements are synonomous with the element being defaultValue. Therefore any element that has not been set otherwise will return as defaultValue (empty)  
+<p>A generic three-integer index container (for X, Y, Z) for use with the <a class="el" href="class_c_array3_d.html" title="A generic 3D multi-size array template.">CArray3D</a> class.  
  <a href="structindex3_d.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_array3_d_8h_source.html">Array3D.h</a>&gt;</code></p>
@@ -94,22 +94,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad4af3c17a2b0476e2d4af0b3a54a5f21"></a><!-- doxytag: member="index3D::index3D" ref="ad4af3c17a2b0476e2d4af0b3a54a5f21" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#ad4af3c17a2b0476e2d4af0b3a54a5f21">index3D</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Indices will be invalid until set. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1188279ec58c221e2643d60b7e33fc9"></a><!-- doxytag: member="index3D::index3D" ref="ae1188279ec58c221e2643d60b7e33fc9" args="(int inX, int inY, int inZ)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>index3D</b> (int inX, int inY, int inZ)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#ae1188279ec58c221e2643d60b7e33fc9">index3D</a> (int inX, int inY, int inZ)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs with the specified indices. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f84caf3b5cf5baeae0ed3ba303fa7cb"></a><!-- doxytag: member="index3D::index3D" ref="a7f84caf3b5cf5baeae0ed3ba303fa7cb" args="(const index3D &amp;i3D)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>index3D</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#a7f84caf3b5cf5baeae0ed3ba303fa7cb">index3D</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a53f43d22321b55ffeda310f6ada513be"></a><!-- doxytag: member="index3D::operator=" ref="a53f43d22321b55ffeda310f6ada513be" args="(const index3D &amp;i3D)" -->
-<a class="el" href="structindex3_d.html">index3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D)</td></tr>
+<a class="el" href="structindex3_d.html">index3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#a53f43d22321b55ffeda310f6ada513be">operator=</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload equals. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa16373221e39286f8dcf50df0f344d17"></a><!-- doxytag: member="index3D::operator+" ref="aa16373221e39286f8dcf50df0f344d17" args="(const index3D &amp;i3D) const " -->
-const <a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+const <a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#aa16373221e39286f8dcf50df0f344d17">operator+</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an <a class="el" href="structindex3_d.html" title="A generic three-integer index container (for X, Y, Z) for use with the CArray3D class.">index3D</a> to this one. Indices are added individually. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac609a482add2a066ee92c2ac5583f313"></a><!-- doxytag: member="index3D::operator&#45;" ref="ac609a482add2a066ee92c2ac5583f313" args="(const index3D &amp;i3D) const " -->
-const <a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+const <a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#ac609a482add2a066ee92c2ac5583f313">operator-</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Subtracts an <a class="el" href="structindex3_d.html" title="A generic three-integer index container (for X, Y, Z) for use with the CArray3D class.">index3D</a> from this one. Indices are subtracted individually. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c64db8f667ba639760dbc3f301a27dc"></a><!-- doxytag: member="index3D::operator==" ref="a7c64db8f667ba639760dbc3f301a27dc" args="(const index3D &amp;i3D) const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#a7c64db8f667ba639760dbc3f301a27dc">operator==</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Two index3Ds are equal only if all indices are equal. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c283eb498beeb0f646324b5b78cdee6"></a><!-- doxytag: member="index3D::operator!=" ref="a1c283eb498beeb0f646324b5b78cdee6" args="(const index3D &amp;i3D) const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a63b66040dcbaee731d952c318044c6e9"></a><!-- doxytag: member="index3D::Valid" ref="a63b66040dcbaee731d952c318044c6e9" args="()" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Valid</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#a1c283eb498beeb0f646324b5b78cdee6">operator!=</a> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Two index3Ds are not equal if any indices are not equal. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8f9b44b2f1245d4f88d92f6078582b9"></a><!-- doxytag: member="index3D::valid" ref="aa8f9b44b2f1245d4f88d92f6078582b9" args="()" -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structindex3_d.html#aa8f9b44b2f1245d4f88d92f6078582b9">valid</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if all indices are valid. <br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5b41f92e098665534ea393905e88e92"></a><!-- doxytag: member="index3D::x" ref="ae5b41f92e098665534ea393905e88e92" args="" -->
@@ -120,7 +131,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>y</b></td></tr>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>a general 3d array. Empty elements are synonomous with the element being defaultValue. Therefore any element that has not been set otherwise will return as defaultValue (empty) </p>
+<div class="textblock"><p>A generic three-integer index container (for X, Y, Z) for use with the <a class="el" href="class_c_array3_d.html" title="A generic 3D multi-size array template.">CArray3D</a> class. </p>
+<p>Indices do not have a default and can be invalid. If any indices are invalid <a class="el" href="structindex3_d.html#aa8f9b44b2f1245d4f88d92f6078582b9" title="Returns true if all indices are valid.">valid()</a> will return false. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_array3_d_8h_source.html">Array3D.h</a></li>
 </ul>
@@ -130,7 +142,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -142,7 +154,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Jan 11 2015 15:47:16 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

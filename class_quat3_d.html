@@ -85,121 +85,516 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="Quat3D" -->
+<p>A generic 3D quaternion template.  
+ <a href="class_quat3_d.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_quat3_d_8h_source.html">Quat3D.h</a>&gt;</code></p>
+
 <p><a href="class_quat3_d-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91a37097678dc8fbc8b501822d333ff2"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a91a37097678dc8fbc8b501822d333ff2" args="(void)" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a91a37097678dc8fbc8b501822d333ff2">Quat3D</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialzes w, x, y, z to zero. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a311943c7c9074b2a3e6c6920f505e382"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a311943c7c9074b2a3e6c6920f505e382" args="(const T dw, const T dx, const T dy, const T dz)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Quat3D</b> (const T dw, const T dx, const T dy, const T dz)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a311943c7c9074b2a3e6c6920f505e382">Quat3D</a> (const T dw, const T dx, const T dy, const T dz)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with specified individual values. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a45bbc2d74a15596bfba89c0032696017"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a45bbc2d74a15596bfba89c0032696017" args="(const Quat3D &amp;QuatIn)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Quat3D</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;QuatIn)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf30c050b5eb50bac9139be792321418"></a><!-- doxytag: member="Quat3D::Quat3D" ref="aaf30c050b5eb50bac9139be792321418" args="(const Vec3D&lt; T &gt; &amp;VecIn)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Quat3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;VecIn)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8524e0db8c07612e96256f32c5d53d1f"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a8524e0db8c07612e96256f32c5d53d1f" args="(const T angle, const Vec3D&lt; T &gt; &amp;axis)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Quat3D</b> (const T angle, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a97fe6127f552cea4b0867f4b22c9e2"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a4a97fe6127f552cea4b0867f4b22c9e2" args="(const Vec3D&lt; T &gt; &amp;RotateFrom, const Vec3D&lt; T &gt; &amp;RotateTo)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>Quat3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateFrom, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateTo)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a45bbc2d74a15596bfba89c0032696017">Quat3D</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;QuatIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#aaf30c050b5eb50bac9139be792321418">Quat3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;VecIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs this quaternion from rotation vector VecIn. See <a class="el" href="class_quat3_d.html#a355af3122e85190f73b22037ca440403" title="Overwrites this quaternion with values from the specified rotation vector. Adapted from http://physic...">FromRotationVector()</a>.  <a href="#aaf30c050b5eb50bac9139be792321418"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a8524e0db8c07612e96256f32c5d53d1f">Quat3D</a> (const T angle, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs this quaternion from an angle in radians and a unit axis.  <a href="#a8524e0db8c07612e96256f32c5d53d1f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a4a97fe6127f552cea4b0867f4b22c9e2">Quat3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateFrom, const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateTo)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs this quaternion to represent the rotation from two vectors. The vectors need not be normalized and are not modified.  <a href="#a4a97fe6127f552cea4b0867f4b22c9e2"></a><br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a1b1adfa63aaa87d2d6cafd04e84e4b99"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a1b1adfa63aaa87d2d6cafd04e84e4b99" args="(const Quat3D&lt; U &gt; &amp;QuatIn)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Quat3D</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;QuatIn)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a1b1adfa63aaa87d2d6cafd04e84e4b99">Quat3D</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;QuatIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor from another template type. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="aee62fd9bcf54128f69ac9eec41537e1a"></a><!-- doxytag: member="Quat3D::Quat3D" ref="aee62fd9bcf54128f69ac9eec41537e1a" args="(const Vec3D&lt; U &gt; &amp;VecIn)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Quat3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;VecIn)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#aee62fd9bcf54128f69ac9eec41537e1a">Quat3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;VecIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies x, y, z from the specified vector and sets w to zero. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="aa46712f105a8babc6411cc563b204254"></a><!-- doxytag: member="Quat3D::operator Quat3D&lt; U &gt;" ref="aa46712f105a8babc6411cc563b204254" args="() const " -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator Quat3D&lt; U &gt;</b> () const </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#aa46712f105a8babc6411cc563b204254">operator Quat3D&lt; U &gt;</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload conversion operator for different template types <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a7bfb382033b7a0775a80d1e6c1388561"></a><!-- doxytag: member="Quat3D::operator=" ref="a7bfb382033b7a0775a80d1e6c1388561" args="(const Quat3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a7bfb382033b7a0775a80d1e6c1388561">operator=</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Equals operator for different template types. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a2fd63480703ef3ed6738b2803d949738"></a><!-- doxytag: member="Quat3D::operator+" ref="a2fd63480703ef3ed6738b2803d949738" args="(const Quat3D&lt; U &gt; &amp;s)" -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a2fd63480703ef3ed6738b2803d949738">operator+</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Addition operator for different template types. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a2a06a97e7762b6eefe218b783f7af6fb"></a><!-- doxytag: member="Quat3D::operator*" ref="a2a06a97e7762b6eefe218b783f7af6fb" args="(const U &amp;f) const " -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator*</b> (const U &amp;f) const </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a2a06a97e7762b6eefe218b783f7af6fb">operator*</a> (const U &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar multiplication operator for different template types. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a2bb78c8ff3ba0afb61f11ae0ca8290fc"></a><!-- doxytag: member="Quat3D::operator*" ref="a2bb78c8ff3ba0afb61f11ae0ca8290fc" args="(const Quat3D&lt; U &gt; &amp;f) const " -->
 template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator*</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;f) const </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a2bb78c8ff3ba0afb61f11ae0ca8290fc">operator*</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; U &gt; &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Quaternion multplication operator for different template types. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5872d5cc20ce85efc9416643a70e996"></a><!-- doxytag: member="Quat3D::operator=" ref="aa5872d5cc20ce85efc9416643a70e996" args="(const Quat3D &amp;s)" -->
-<a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
+<a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#aa5872d5cc20ce85efc9416643a70e996">operator=</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload equals <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf1407de488770d137b70afb07483411"></a><!-- doxytag: member="Quat3D::operator+" ref="abf1407de488770d137b70afb07483411" args="(const Quat3D &amp;s) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#abf1407de488770d137b70afb07483411">operator+</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload additoon <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aef5c1c6b15f8d7a7749541768f455243"></a><!-- doxytag: member="Quat3D::operator&#45;" ref="aef5c1c6b15f8d7a7749541768f455243" args="(const Quat3D &amp;s) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#aef5c1c6b15f8d7a7749541768f455243">operator-</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload subtraction <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a848a2efc012a81c4a3ac15d56306815e"></a><!-- doxytag: member="Quat3D::operator*" ref="a848a2efc012a81c4a3ac15d56306815e" args="(const T f) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const T f) const </td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a848a2efc012a81c4a3ac15d56306815e">operator*</a> (const T f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload scalar multiplication <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09773aac108984ffd0eb957cfb4b53a4"></a><!-- doxytag: member="Quat3D::operator*" ref="a09773aac108984ffd0eb957cfb4b53a4" args="(const T f, const Quat3D v)" -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a> friend&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const T f, const <a class="el" href="class_quat3_d.html">Quat3D</a> v)</td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a> friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a09773aac108984ffd0eb957cfb4b53a4">operator*</a> (const T f, const <a class="el" href="class_quat3_d.html">Quat3D</a> v)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload scalar multiplication with number first. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e8e2a6301616ed23a547764728280a2"></a><!-- doxytag: member="Quat3D::operator*" ref="a3e8e2a6301616ed23a547764728280a2" args="(const Quat3D &amp;f) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;f) const </td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a3e8e2a6301616ed23a547764728280a2">operator*</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload quaternion multiplication. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4ead46255a6762a28833d20e47f48c6"></a><!-- doxytag: member="Quat3D::operator==" ref="ab4ead46255a6762a28833d20e47f48c6" args="(const Quat3D &amp;s) const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ab4ead46255a6762a28833d20e47f48c6">operator==</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload is equal. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1fbea8cad687e606f88cd2d05c187c3"></a><!-- doxytag: member="Quat3D::operator!=" ref="ad1fbea8cad687e606f88cd2d05c187c3" args="(const Quat3D &amp;s) const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ad1fbea8cad687e606f88cd2d05c187c3">operator!=</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload is not equal. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12ab7c35f75a4fc8ea40f658bdb16f91"></a><!-- doxytag: member="Quat3D::operator+=" ref="a12ab7c35f75a4fc8ea40f658bdb16f91" args="(const Quat3D &amp;s)" -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a12ab7c35f75a4fc8ea40f658bdb16f91">operator+=</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload add and set <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad37f117d8167423a18268458d39149f8"></a><!-- doxytag: member="Quat3D::operator&#45;=" ref="ad37f117d8167423a18268458d39149f8" args="(const Quat3D &amp;s)" -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a401c310c044264e323aa5835cf56f7e7"></a><!-- doxytag: member="Quat3D::ToVec" ref="a401c310c044264e323aa5835cf56f7e7" args="(void) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ToVec</b> (void) const </td></tr>
+const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ad37f117d8167423a18268458d39149f8">operator-=</a> (const <a class="el" href="class_quat3_d.html">Quat3D</a> &amp;s)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">overload subtract and set <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313aa774dcefcbe2013d0ffb3b1ac4f3"></a><!-- doxytag: member="Quat3D::ToVec" ref="a313aa774dcefcbe2013d0ffb3b1ac4f3" args="() const " -->
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a313aa774dcefcbe2013d0ffb3b1ac4f3">ToVec</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit casting to a vector. Throws away w and copies x, y, z directly. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c8eb1624a92120d54fecf59f2d14843"></a><!-- doxytag: member="Quat3D::Length" ref="a5c8eb1624a92120d54fecf59f2d14843" args="() const " -->
-const T&#160;</td><td class="memItemRight" valign="bottom"><b>Length</b> () const </td></tr>
+const T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a5c8eb1624a92120d54fecf59f2d14843">Length</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the length (magnitude) of the quaternion. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d3158cadc35f7cfdf3551ee3ba513f8"></a><!-- doxytag: member="Quat3D::Length2" ref="a5d3158cadc35f7cfdf3551ee3ba513f8" args="() const " -->
-const T&#160;</td><td class="memItemRight" valign="bottom"><b>Length2</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6fc4693c64dc92501f206c88f63507c6"></a><!-- doxytag: member="Quat3D::Normalize" ref="a6fc4693c64dc92501f206c88f63507c6" args="(void)" -->
-const T&#160;</td><td class="memItemRight" valign="bottom"><b>Normalize</b> (void)</td></tr>
+const T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a5d3158cadc35f7cfdf3551ee3ba513f8">Length2</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the length (magnitude) squared of the quaternion. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2e5ffdcb35a1b225212a9d4bdfb39216"></a><!-- doxytag: member="Quat3D::Normalize" ref="a2e5ffdcb35a1b225212a9d4bdfb39216" args="()" -->
+const T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a2e5ffdcb35a1b225212a9d4bdfb39216">Normalize</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes this quaternion. Returns the previous magnitude of this quaternion before normalization. Note: function changes this quaternion. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0fd8ad9e052e01e17593eb86a59ea27c"></a><!-- doxytag: member="Quat3D::NormalizeFast" ref="a0fd8ad9e052e01e17593eb86a59ea27c" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>NormalizeFast</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a053f724370508f75026a3c01d61c5c54"></a><!-- doxytag: member="Quat3D::Inverse" ref="a053f724370508f75026a3c01d61c5c54" args="(void) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Inverse</b> (void) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adbbc5c985e935a049adb27ea51524bb4"></a><!-- doxytag: member="Quat3D::Conjugate" ref="adbbc5c985e935a049adb27ea51524bb4" args="(void) const " -->
-const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Conjugate</b> (void) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a0fd8ad9e052e01e17593eb86a59ea27c">NormalizeFast</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes this quaternion slightly faster than <a class="el" href="class_quat3_d.html#a2e5ffdcb35a1b225212a9d4bdfb39216" title="Normalizes this quaternion. Returns the previous magnitude of this quaternion before normalization...">Normalize()</a> by not returning a value. Note: function changes this quaternion. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a53098df16c304c747aa2148342ea00ee"></a><!-- doxytag: member="Quat3D::Inverse" ref="a53098df16c304c747aa2148342ea00ee" args="() const " -->
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a53098df16c304c747aa2148342ea00ee">Inverse</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a quaternion that is the inverse of this quaternion. This quaternion is not modified. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd51162b2a19aeb5011edc2d7425f5de"></a><!-- doxytag: member="Quat3D::Conjugate" ref="acd51162b2a19aeb5011edc2d7425f5de" args="() const " -->
+const <a class="el" href="class_quat3_d.html">Quat3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#acd51162b2a19aeb5011edc2d7425f5de">Conjugate</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a quaternion that is the conjugate of this quaternion. This quaternion is not modified. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a26caf1fc1d7fe9f747982640997c0eec"></a><!-- doxytag: member="Quat3D::Angle" ref="a26caf1fc1d7fe9f747982640997c0eec" args="() const " -->
-const T&#160;</td><td class="memItemRight" valign="bottom"><b>Angle</b> () const </td></tr>
+const T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a26caf1fc1d7fe9f747982640997c0eec">Angle</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angular rotation of this quaternion in radians. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace4df436a4e2e866b8ba5e0ec83229f3"></a><!-- doxytag: member="Quat3D::AngleDegrees" ref="ace4df436a4e2e866b8ba5e0ec83229f3" args="() const " -->
-const T&#160;</td><td class="memItemRight" valign="bottom"><b>AngleDegrees</b> () const </td></tr>
+const T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ace4df436a4e2e866b8ba5e0ec83229f3">AngleDegrees</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angular rotation of this quaternion in degrees. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae27ae8aff8de08c208230c4e8b329e3f"></a><!-- doxytag: member="Quat3D::IsNegligibleAngle" ref="ae27ae8aff8de08c208230c4e8b329e3f" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNegligibleAngle</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ae27ae8aff8de08c208230c4e8b329e3f">IsNegligibleAngle</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the angular rotation of this quaternion is likely to be considered negligible. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a1ef4c9389b4f9d1fa9013f57759fab"></a><!-- doxytag: member="Quat3D::IsSmallAngle" ref="a6a1ef4c9389b4f9d1fa9013f57759fab" args="() const " -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsSmallAngle</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a6a1ef4c9389b4f9d1fa9013f57759fab">IsSmallAngle</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the angular rotation of this quaternion is small enough to be a good candidate for small angle approximations. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b8ece248e655fe20aa16c0cddde9c33"></a><!-- doxytag: member="Quat3D::Axis" ref="a7b8ece248e655fe20aa16c0cddde9c33" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Axis</b> () const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a7b8ece248e655fe20aa16c0cddde9c33">Axis</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the normalized axis of rotation of this quaternion. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a137f50a7b06adca856057c4ae33995"></a><!-- doxytag: member="Quat3D::AxisUnNormalized" ref="a4a137f50a7b06adca856057c4ae33995" args="() const " -->
-<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>AxisUnNormalized</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5f8e3f5bb00daa84832a27ca77b6966"></a><!-- doxytag: member="Quat3D::AngleAxis" ref="ac5f8e3f5bb00daa84832a27ca77b6966" args="(T &amp;angle, Vec3D&lt; T &gt; &amp;axis) const " -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AngleAxis</b> (T &amp;angle, <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a860919293959c379b315b474ca67ed43"></a><!-- doxytag: member="Quat3D::AngleAxisUnNormalized" ref="a860919293959c379b315b474ca67ed43" args="(T &amp;angle, Vec3D&lt; T &gt; &amp;axis) const " -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AngleAxisUnNormalized</b> (T &amp;angle, <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis) const </td></tr>
+<a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a4a137f50a7b06adca856057c4ae33995">AxisUnNormalized</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the un0normalized axis of rotation of this quaternion. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ac5f8e3f5bb00daa84832a27ca77b6966">AngleAxis</a> (T &amp;angle, <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angle and a normalize axis that represent this quaternion's rotation.  <a href="#ac5f8e3f5bb00daa84832a27ca77b6966"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a860919293959c379b315b474ca67ed43">AngleAxisUnNormalized</a> (T &amp;angle, <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;axis) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the angle and an un-normalized axis that represent this quaternion's rotation.  <a href="#a860919293959c379b315b474ca67ed43"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bbffd2fb3dec0fd9aa2bacd768c6b62"></a><!-- doxytag: member="Quat3D::ToRotationVector" ref="a9bbffd2fb3dec0fd9aa2bacd768c6b62" args="() const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ToRotationVector</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a355af3122e85190f73b22037ca440403"></a><!-- doxytag: member="Quat3D::FromRotationVector" ref="a355af3122e85190f73b22037ca440403" args="(const Vec3D&lt; T &gt; &amp;VecIn)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>FromRotationVector</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;VecIn)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afcd3afaf7e586faaf7558263a1035aad"></a><!-- doxytag: member="Quat3D::FromAngleToPosX" ref="afcd3afaf7e586faaf7558263a1035aad" args="(const Vec3D&lt; T &gt; &amp;RotateFrom)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>FromAngleToPosX</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateFrom)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a257e60875271dce37ce623509db49704"></a><!-- doxytag: member="Quat3D::RotateVec3D" ref="a257e60875271dce37ce623509db49704" args="(const Vec3D&lt; T &gt; &amp;f) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>RotateVec3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;f) const </td></tr>
-<tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a5c760c01510dc6c02f5242952c3bf8df"></a><!-- doxytag: member="Quat3D::RotateVec3D" ref="a5c760c01510dc6c02f5242952c3bf8df" args="(const Vec3D&lt; U &gt; &amp;f) const " -->
-template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>RotateVec3D</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;f) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae160789428f366ca31df71a945b31761"></a><!-- doxytag: member="Quat3D::RotateVec3DInv" ref="ae160789428f366ca31df71a945b31761" args="(const Vec3D&lt; T &gt; &amp;f) const " -->
-const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>RotateVec3DInv</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;f) const </td></tr>
-<tr><td class="memTemplParams" colspan="2"><a class="anchor" id="a0c70632071169cc412dab81575f5856e"></a><!-- doxytag: member="Quat3D::RotateVec3DInv" ref="a0c70632071169cc412dab81575f5856e" args="(const Vec3D&lt; U &gt; &amp;f) const " -->
-template&lt;typename U &gt; </td></tr>
-<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>RotateVec3DInv</b> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;f) const </td></tr>
+const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a9bbffd2fb3dec0fd9aa2bacd768c6b62">ToRotationVector</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a rotation vector representing this quaternion rotation. Adapted from <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/">http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/</a>. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a355af3122e85190f73b22037ca440403">FromRotationVector</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;VecIn)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Overwrites this quaternion with values from the specified rotation vector. Adapted from <a href="http://physicsforgames.blogspot.com/2010/02/quaternions.html">http://physicsforgames.blogspot.com/2010/02/quaternions.html</a>. Note: function changes this quaternion.  <a href="#a355af3122e85190f73b22037ca440403"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#afcd3afaf7e586faaf7558263a1035aad">FromAngleToPosX</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;RotateFrom)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Overwrites this quaternion with the calculated rotation that would transform the specified RotateFrom vector to point in the positve X direction. Note: function changes this quaternion.  <a href="#afcd3afaf7e586faaf7558263a1035aad"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a257e60875271dce37ce623509db49704">RotateVec3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector representing the specified vector "f" rotated by this quaternion.  <a href="#a257e60875271dce37ce623509db49704"></a><br/></td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename U &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a5c760c01510dc6c02f5242952c3bf8df">RotateVec3D</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector representing the specified vector "f" rotated by this quaternion. Mixed template parameter version.  <a href="#a5c760c01510dc6c02f5242952c3bf8df"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ae160789428f366ca31df71a945b31761">RotateVec3DInv</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector representing the specified vector "f" rotated by the inverse of this quaternion. This is the opposite of RotateVec3D.  <a href="#ae160789428f366ca31df71a945b31761"></a><br/></td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename U &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a0c70632071169cc412dab81575f5856e">RotateVec3DInv</a> (const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;f) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a vector representing the specified vector "f" rotated by the inverse of this quaternion. This is the opposite of RotateVec3D. Mixed template parameter version.  <a href="#a0c70632071169cc412dab81575f5856e"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24fe0c6514a4c68ba9cfeb3e4146f0fb"></a><!-- doxytag: member="Quat3D::w" ref="a24fe0c6514a4c68ba9cfeb3e4146f0fb" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>w</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a24fe0c6514a4c68ba9cfeb3e4146f0fb">w</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current W value. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae12a9fa4f7d709e1a5a3188a9e676afb"></a><!-- doxytag: member="Quat3D::x" ref="ae12a9fa4f7d709e1a5a3188a9e676afb" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>x</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ae12a9fa4f7d709e1a5a3188a9e676afb">x</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current X value. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8cf9f96cd6ef5a0b6cc40ec2a0e044f"></a><!-- doxytag: member="Quat3D::y" ref="ae8cf9f96cd6ef5a0b6cc40ec2a0e044f" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>y</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#ae8cf9f96cd6ef5a0b6cc40ec2a0e044f">y</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current Y value. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f49499a288442dafdf391ec738e3423"></a><!-- doxytag: member="Quat3D::z" ref="a4f49499a288442dafdf391ec738e3423" args="" -->
-T&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
+T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_quat3_d.html#a4f49499a288442dafdf391ec738e3423">z</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The current Z value. <br/></td></tr>
 </table>
-<h3>template&lt;typename T = double&gt;<br/>
- class Quat3D&lt; T &gt;</h3>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T = double&gt;<br/>
+class Quat3D&lt; T &gt;</h3>
 
+<p>A generic 3D quaternion template. </p>
+<p>The template parameter is assumed to be either float or double depending on the desired numerical resolution. </p>
+</div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aaf30c050b5eb50bac9139be792321418"></a><!-- doxytag: member="Quat3D::Quat3D" ref="aaf30c050b5eb50bac9139be792321418" args="(const Vec3D&lt; T &gt; &amp;VecIn)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html">Quat3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>VecIn</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Constructs this quaternion from rotation vector VecIn. See <a class="el" href="class_quat3_d.html#a355af3122e85190f73b22037ca440403" title="Overwrites this quaternion with values from the specified rotation vector. Adapted from http://physic...">FromRotationVector()</a>. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">VecIn</td><td>A rotation vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a8524e0db8c07612e96256f32c5d53d1f"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a8524e0db8c07612e96256f32c5d53d1f" args="(const T angle, const Vec3D&lt; T &gt; &amp;axis)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html">Quat3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>angle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Constructs this quaternion from an angle in radians and a unit axis. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle</td><td>An angle in radians </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td>A normalize rotation axis. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4a97fe6127f552cea4b0867f4b22c9e2"></a><!-- doxytag: member="Quat3D::Quat3D" ref="a4a97fe6127f552cea4b0867f4b22c9e2" args="(const Vec3D&lt; T &gt; &amp;RotateFrom, const Vec3D&lt; T &gt; &amp;RotateTo)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html">Quat3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>RotateFrom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>RotateTo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Constructs this quaternion to represent the rotation from two vectors. The vectors need not be normalized and are not modified. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">RotateFrom</td><td>A vector representing a pre-rotation orientation. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">RotateTo</td><td>A vector representing a post-rotation orientation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ac5f8e3f5bb00daa84832a27ca77b6966"></a><!-- doxytag: member="Quat3D::AngleAxis" ref="ac5f8e3f5bb00daa84832a27ca77b6966" args="(T &amp;angle, Vec3D&lt; T &gt; &amp;axis) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#ac5f8e3f5bb00daa84832a27ca77b6966">AngleAxis</a> </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"><em>angle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the angle and a normalize axis that represent this quaternion's rotation. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">angle</td><td>The rotation angle in radians. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">axis</td><td>The rotation axis in normalized vector form. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a860919293959c379b315b474ca67ed43"></a><!-- doxytag: member="Quat3D::AngleAxisUnNormalized" ref="a860919293959c379b315b474ca67ed43" args="(T &amp;angle, Vec3D&lt; T &gt; &amp;axis) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#a860919293959c379b315b474ca67ed43">AngleAxisUnNormalized</a> </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"><em>angle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the angle and an un-normalized axis that represent this quaternion's rotation. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">angle</td><td>The rotation angle in radians. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">axis</td><td>The rotation axis in un-normalized vector form. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afcd3afaf7e586faaf7558263a1035aad"></a><!-- doxytag: member="Quat3D::FromAngleToPosX" ref="afcd3afaf7e586faaf7558263a1035aad" args="(const Vec3D&lt; T &gt; &amp;RotateFrom)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#afcd3afaf7e586faaf7558263a1035aad">FromAngleToPosX</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>RotateFrom</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Overwrites this quaternion with the calculated rotation that would transform the specified RotateFrom vector to point in the positve X direction. Note: function changes this quaternion. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">RotateFrom</td><td>An arbitrary direction vector. Does not need to be normalized. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a355af3122e85190f73b22037ca440403"></a><!-- doxytag: member="Quat3D::FromRotationVector" ref="a355af3122e85190f73b22037ca440403" args="(const Vec3D&lt; T &gt; &amp;VecIn)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#a355af3122e85190f73b22037ca440403">FromRotationVector</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>VecIn</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Overwrites this quaternion with values from the specified rotation vector. Adapted from <a href="http://physicsforgames.blogspot.com/2010/02/quaternions.html">http://physicsforgames.blogspot.com/2010/02/quaternions.html</a>. Note: function changes this quaternion. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">VecIn</td><td>A rotation vector to calculate this quaternion from. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a257e60875271dce37ce623509db49704"></a><!-- doxytag: member="Quat3D::RotateVec3D" ref="a257e60875271dce37ce623509db49704" args="(const Vec3D&lt; T &gt; &amp;f) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt;T&gt; <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#a257e60875271dce37ce623509db49704">RotateVec3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector representing the specified vector "f" rotated by this quaternion. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>The vector to transform. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5c760c01510dc6c02f5242952c3bf8df"></a><!-- doxytag: member="Quat3D::RotateVec3D" ref="a5c760c01510dc6c02f5242952c3bf8df" args="(const Vec3D&lt; U &gt; &amp;f) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+<div class="memtemplate">
+template&lt;typename U &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt;U&gt; <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#a257e60875271dce37ce623509db49704">RotateVec3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector representing the specified vector "f" rotated by this quaternion. Mixed template parameter version. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>The vector to transform. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae160789428f366ca31df71a945b31761"></a><!-- doxytag: member="Quat3D::RotateVec3DInv" ref="ae160789428f366ca31df71a945b31761" args="(const Vec3D&lt; T &gt; &amp;f) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt;T&gt; <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#ae160789428f366ca31df71a945b31761">RotateVec3DInv</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector representing the specified vector "f" rotated by the inverse of this quaternion. This is the opposite of RotateVec3D. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>The vector to transform. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0c70632071169cc412dab81575f5856e"></a><!-- doxytag: member="Quat3D::RotateVec3DInv" ref="a0c70632071169cc412dab81575f5856e" args="(const Vec3D&lt; U &gt; &amp;f) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = double&gt; </div>
+<div class="memtemplate">
+template&lt;typename U &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt;U&gt; <a class="el" href="class_quat3_d.html">Quat3D</a>&lt; T &gt;::<a class="el" href="class_quat3_d.html#ae160789428f366ca31df71a945b31761">RotateVec3DInv</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_vec3_d.html">Vec3D</a>&lt; U &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a vector representing the specified vector "f" rotated by the inverse of this quaternion. This is the opposite of RotateVec3D. Mixed template parameter version. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>The vector to transform. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_quat3_d_8h_source.html">Quat3D.h</a></li>
 </ul>
@@ -209,7 +604,7 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -221,7 +616,7 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>z</b></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

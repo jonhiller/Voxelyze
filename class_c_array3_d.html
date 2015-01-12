@@ -84,56 +84,521 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="CArray3D" -->
+<p>A generic 3D multi-size array template.  
+ <a href="class_c_array3_d.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_array3_d_8h_source.html">Array3D.h</a>&gt;</code></p>
+
 <p><a href="class_c_array3_d-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad894d28bfa6e02de7f336366c31341c6"></a><!-- doxytag: member="CArray3D::CArray3D" ref="ad894d28bfa6e02de7f336366c31341c6" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ad894d28bfa6e02de7f336366c31341c6">CArray3D</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af829c16b82b637d08c4d2dcb314040b7"></a><!-- doxytag: member="CArray3D::~CArray3D" ref="af829c16b82b637d08c4d2dcb314040b7" args="(void)" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#af829c16b82b637d08c4d2dcb314040b7">~CArray3D</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1dcaee0a8b645169ff136eabb254596e"></a><!-- doxytag: member="CArray3D::CArray3D" ref="a1dcaee0a8b645169ff136eabb254596e" args="(const CArray3D &amp;rArray)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>CArray3D</b> (const <a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;rArray)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a1dcaee0a8b645169ff136eabb254596e">CArray3D</a> (const <a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;rArray)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a319343bd727a2578a874e6e43543a88b"></a><!-- doxytag: member="CArray3D::operator=" ref="a319343bd727a2578a874e6e43543a88b" args="(const CArray3D &amp;rArray)" -->
-<a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;rArray)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3bac37e86d6ff53d56bc80da3cfdb809"></a><!-- doxytag: member="CArray3D::operator[]" ref="a3bac37e86d6ff53d56bc80da3cfdb809" args="(const index3D i3D) const " -->
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (const <a class="el" href="structindex3_d.html">index3D</a> i3D) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa087bceafdd858a4b77c717a643d9d74"></a><!-- doxytag: member="CArray3D::operator[]" ref="aa087bceafdd858a4b77c717a643d9d74" args="(const index3D i3D)" -->
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (const <a class="el" href="structindex3_d.html">index3D</a> i3D)</td></tr>
+<a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a319343bd727a2578a874e6e43543a88b">operator=</a> (const <a class="el" href="class_c_array3_d.html">CArray3D</a> &amp;rArray)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator "=" overload. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab42bea53d2fe58bbefe555ae49b13bbe"></a><!-- doxytag: member="CArray3D::operator[]" ref="ab42bea53d2fe58bbefe555ae49b13bbe" args="(const Index3D i3D) const " -->
+const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ab42bea53d2fe58bbefe555ae49b13bbe">operator[]</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator "[]" overload (takes an <a class="el" href="struct_index3_d.html" title="A generic three-integer index container (for X, Y, Z) for use with the CArray3D class.">Index3D</a>) const version. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1584f1a27f83ae8b473e62d225024335"></a><!-- doxytag: member="CArray3D::operator[]" ref="a1584f1a27f83ae8b473e62d225024335" args="(const Index3D i3D)" -->
+T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a1584f1a27f83ae8b473e62d225024335">operator[]</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> i3D)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator "[]" overload (takes an <a class="el" href="struct_index3_d.html" title="A generic three-integer index container (for X, Y, Z) for use with the CArray3D class.">Index3D</a>) <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adfe0c0a1b3d66300ac018ea9c173281b"></a><!-- doxytag: member="CArray3D::operator()" ref="adfe0c0a1b3d66300ac018ea9c173281b" args="(int i, int j, int k) const " -->
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (int i, int j, int k) const </td></tr>
+const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#adfe0c0a1b3d66300ac018ea9c173281b">operator()</a> (int i, int j, int k) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator "()" overloads (takes individual x, y, z indices) const verison. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a698bcf077901c337795fb290bec03ca0"></a><!-- doxytag: member="CArray3D::operator()" ref="a698bcf077901c337795fb290bec03ca0" args="(int i, int j, int k)" -->
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (int i, int j, int k)</td></tr>
+T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a698bcf077901c337795fb290bec03ca0">operator()</a> (int i, int j, int k)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator "()" overloads (takes individual x, y, z indices) <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9af0d876bc885ece0c9520e63c396dd"></a><!-- doxytag: member="CArray3D::clear" ref="af9af0d876bc885ece0c9520e63c396dd" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2effb2a6fc401ee491cc8d9d2ec8848"></a><!-- doxytag: member="CArray3D::setDefaultValue" ref="ae2effb2a6fc401ee491cc8d9d2ec8848" args="(T newDefaultValue)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDefaultValue</b> (T newDefaultValue)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3495de90967b2c821aa9a06a23ea9126"></a><!-- doxytag: member="CArray3D::minIndices" ref="a3495de90967b2c821aa9a06a23ea9126" args="() const " -->
-<a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>minIndices</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc597bbccc9967fa29d297f9c50b617a"></a><!-- doxytag: member="CArray3D::maxIndices" ref="abc597bbccc9967fa29d297f9c50b617a" args="() const " -->
-<a class="el" href="structindex3_d.html">index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>maxIndices</b> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6506c6d1757cdaa9dcf624257f26473"></a><!-- doxytag: member="CArray3D::at" ref="ab6506c6d1757cdaa9dcf624257f26473" args="(const index3D &amp;i3D) const " -->
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5656a31cc6a606cabf41001747956de3"></a><!-- doxytag: member="CArray3D::at" ref="a5656a31cc6a606cabf41001747956de3" args="(int i, int j, int k) const " -->
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (int i, int j, int k) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5b16a9932a7f979218a7bd48a703ab4"></a><!-- doxytag: member="CArray3D::at" ref="aa5b16a9932a7f979218a7bd48a703ab4" args="(const index3D &amp;i3D)" -->
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;i3D)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01d30476268bcd62bfc9e7d371e74b8d"></a><!-- doxytag: member="CArray3D::at" ref="a01d30476268bcd62bfc9e7d371e74b8d" args="(int i, int j, int k)" -->
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (int i, int j, int k)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31f3ff30291fa32c1dfff259a8ed9d17"></a><!-- doxytag: member="CArray3D::resize" ref="a31f3ff30291fa32c1dfff259a8ed9d17" args="(const index3D &amp;newSize, const index3D &amp;newOffset=index3D(0, 0, 0))" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;newSize, const <a class="el" href="structindex3_d.html">index3D</a> &amp;newOffset=<a class="el" href="structindex3_d.html">index3D</a>(0, 0, 0))</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1a086ffd05b1e5ceac0092a5cb2cdda"></a><!-- doxytag: member="CArray3D::resize" ref="ae1a086ffd05b1e5ceac0092a5cb2cdda" args="(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>resize</b> (int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#af9af0d876bc885ece0c9520e63c396dd">clear</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all data from the array and frees up all memory. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ae2effb2a6fc401ee491cc8d9d2ec8848">setDefaultValue</a> (T newDefaultValue)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the value to which all new allocations default to.  <a href="#ae2effb2a6fc401ee491cc8d9d2ec8848"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b6f0a432cd613b49028d760b8e6ae3f"></a><!-- doxytag: member="CArray3D::minIndices" ref="a2b6f0a432cd613b49028d760b8e6ae3f" args="() const " -->
+<a class="el" href="struct_index3_d.html">Index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a2b6f0a432cd613b49028d760b8e6ae3f">minIndices</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the minimum i, j, and k indices utilized by any element in the array. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7e44e94380b517cd8058391defd100f"></a><!-- doxytag: member="CArray3D::maxIndices" ref="ae7e44e94380b517cd8058391defd100f" args="() const " -->
+<a class="el" href="struct_index3_d.html">Index3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ae7e44e94380b517cd8058391defd100f">maxIndices</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum i, j, and k indices utilized by any element in the array. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353">at</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;i3D) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value at the specified 3d index or the default value otherwise. Const version.  <a href="#a669f3520b205854d5ff654c7cb50c353"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a5656a31cc6a606cabf41001747956de3">at</a> (int i, int j, int k) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value at the specified 3d index or the default value otherwise. Const version.  <a href="#a5656a31cc6a606cabf41001747956de3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a4f1743019689f3ec654d3ae03218f95b">at</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;i3D)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value at the specified 3d index or the default value otherwise.  <a href="#a4f1743019689f3ec654d3ae03218f95b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a01d30476268bcd62bfc9e7d371e74b8d">at</a> (int i, int j, int k)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value at the specified 3d index or the default value otherwise.  <a href="#a01d30476268bcd62bfc9e7d371e74b8d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#aef8c8621a87f09c264000ed2e60c1791">resize</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;newSize, const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;newOffset=<a class="el" href="struct_index3_d.html">Index3D</a>(0, 0, 0))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the internal data allocation to new specified size and offset. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from newOffset to newOffset+newsize.  <a href="#aef8c8621a87f09c264000ed2e60c1791"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ae1a086ffd05b1e5ceac0092a5cb2cdda">resize</a> (int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the internal data allocation to new specified sizes and offsets in i j and k. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from iOffset to iOffset+iSize (and the same for j and k.  <a href="#ae1a086ffd05b1e5ceac0092a5cb2cdda"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a137e1f96aaae2d3b96f9be8febfa54bd"></a><!-- doxytag: member="CArray3D::shrink_to_fit" ref="a137e1f96aaae2d3b96f9be8febfa54bd" args="()" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>shrink_to_fit</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a473f8ca6dd728c35412f611c8a45f459"></a><!-- doxytag: member="CArray3D::addValue" ref="a473f8ca6dd728c35412f611c8a45f459" args="(const index3D &amp;index, T value)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>addValue</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;index, T value)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af25b774485c87b48aff9d82f6fdd147d"></a><!-- doxytag: member="CArray3D::addValue" ref="af25b774485c87b48aff9d82f6fdd147d" args="(int i, int j, int k, T value)" -->
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>addValue</b> (int i, int j, int k, T value)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a425f255a5a7f62c209fa273d5d7f1575"></a><!-- doxytag: member="CArray3D::removeValue" ref="a425f255a5a7f62c209fa273d5d7f1575" args="(const index3D &amp;index)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeValue</b> (const <a class="el" href="structindex3_d.html">index3D</a> &amp;index)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a489ae7eb00cc8d0d845b9f2c31b49a62"></a><!-- doxytag: member="CArray3D::removeValue" ref="a489ae7eb00cc8d0d845b9f2c31b49a62" args="(int i, int j, int k)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeValue</b> (int i, int j, int k)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a137e1f96aaae2d3b96f9be8febfa54bd">shrink_to_fit</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates as much memory as possible by reducing the allocated area to minimum span of existing elements. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ae76806372a99f91eb8372bdcd5b05c6d">addValue</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;index, T value)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it.  <a href="#ae76806372a99f91eb8372bdcd5b05c6d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#af25b774485c87b48aff9d82f6fdd147d">addValue</a> (int i, int j, int k, T value)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it.  <a href="#af25b774485c87b48aff9d82f6fdd147d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#ae4216360aa87a97f63433eb0d1fdd013">removeValue</a> (const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;index)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use <a class="el" href="class_c_array3_d.html#a137e1f96aaae2d3b96f9be8febfa54bd" title="Deallocates as much memory as possible by reducing the allocated area to minimum span of existing ele...">shrink_to_fit()</a> to try to reduce the memory usage after removing element(s).  <a href="#ae4216360aa87a97f63433eb0d1fdd013"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_array3_d.html#a489ae7eb00cc8d0d845b9f2c31b49a62">removeValue</a> (int i, int j, int k)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use <a class="el" href="class_c_array3_d.html#a137e1f96aaae2d3b96f9be8febfa54bd" title="Deallocates as much memory as possible by reducing the allocated area to minimum span of existing ele...">shrink_to_fit()</a> to try to reduce the memory usage after removing element(s). Use removeValue to remove it.  <a href="#a489ae7eb00cc8d0d845b9f2c31b49a62"></a><br/></td></tr>
 </table>
-<h3>template&lt;typename T = float&gt;<br/>
- class CArray3D&lt; T &gt;</h3>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T = float&gt;<br/>
+class CArray3D&lt; T &gt;</h3>
 
+<p>A generic 3D multi-size array template. </p>
+<p>An array template with a user-definable default value that is returned for any 3D index not specified otherwise. Otherwise the functions will be generally familiar to anyone used to the standard library containers.</p>
+<p>There are three dimensions of indices, referred to i, j, and k. In many uses these will be synonomous with x, y, and z.</p>
+<p>Memory allocation is managed internally and totally abstracted from the user. Whenever addvalue is called the internal array is smartly resized if the index falls outside of the currently allocated area. If the dimensions are known in advance, <a class="el" href="class_c_array3_d.html#aef8c8621a87f09c264000ed2e60c1791" title="Resize the internal data allocation to new specified size and offset. Any data ouside the new range i...">resize()</a> may be called once to reduce costly memory reallocations.</p>
+<p>The value of an element can be accesed with [], (), or <a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353" title="Returns the value at the specified 3d index or the default value otherwise. Const version...">at()</a>. Empty elements (or elements outside the allocated area) are synonomous with the element being defaultValue. </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ae76806372a99f91eb8372bdcd5b05c6d"></a><!-- doxytag: member="CArray3D::addValue" ref="ae76806372a99f91eb8372bdcd5b05c6d" args="(const Index3D &amp;index, T value)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#ae76806372a99f91eb8372bdcd5b05c6d">addValue</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index to add this value at. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>The value to add. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="af25b774485c87b48aff9d82f6fdd147d"></a><!-- doxytag: member="CArray3D::addValue" ref="af25b774485c87b48aff9d82f6fdd147d" args="(int i, int j, int k, T value)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#ae76806372a99f91eb8372bdcd5b05c6d">addValue</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>The i index to add this value at. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>The j index to add this value at. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>The k index to add this value at. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>The value to add. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a669f3520b205854d5ff654c7cb50c353"></a><!-- doxytag: member="CArray3D::at" ref="a669f3520b205854d5ff654c7cb50c353" args="(const Index3D &amp;i3D) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const T&amp; <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353">at</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>i3D</em></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the value at the specified 3d index or the default value otherwise. Const version. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i3D</td><td>the 3D index (i,j,k) in question. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5656a31cc6a606cabf41001747956de3"></a><!-- doxytag: member="CArray3D::at" ref="a5656a31cc6a606cabf41001747956de3" args="(int i, int j, int k) const " -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const T&amp; <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353">at</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the value at the specified 3d index or the default value otherwise. Const version. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>the i index in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>the j index in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>the k index in question. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4f1743019689f3ec654d3ae03218f95b"></a><!-- doxytag: member="CArray3D::at" ref="a4f1743019689f3ec654d3ae03218f95b" args="(const Index3D &amp;i3D)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T&amp; <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353">at</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>i3D</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the value at the specified 3d index or the default value otherwise. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i3D</td><td>the 3D index (i,j,k) in question. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a01d30476268bcd62bfc9e7d371e74b8d"></a><!-- doxytag: member="CArray3D::at" ref="a01d30476268bcd62bfc9e7d371e74b8d" args="(int i, int j, int k)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T&amp; <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#a669f3520b205854d5ff654c7cb50c353">at</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the value at the specified 3d index or the default value otherwise. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>the i index in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>the j index in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>the k index in question. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae4216360aa87a97f63433eb0d1fdd013"></a><!-- doxytag: member="CArray3D::removeValue" ref="ae4216360aa87a97f63433eb0d1fdd013" args="(const Index3D &amp;index)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#ae4216360aa87a97f63433eb0d1fdd013">removeValue</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use <a class="el" href="class_c_array3_d.html#a137e1f96aaae2d3b96f9be8febfa54bd" title="Deallocates as much memory as possible by reducing the allocated area to minimum span of existing ele...">shrink_to_fit()</a> to try to reduce the memory usage after removing element(s). </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index to remove a value from if it exists. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a489ae7eb00cc8d0d845b9f2c31b49a62"></a><!-- doxytag: member="CArray3D::removeValue" ref="a489ae7eb00cc8d0d845b9f2c31b49a62" args="(int i, int j, int k)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#ae4216360aa87a97f63433eb0d1fdd013">removeValue</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use <a class="el" href="class_c_array3_d.html#a137e1f96aaae2d3b96f9be8febfa54bd" title="Deallocates as much memory as possible by reducing the allocated area to minimum span of existing ele...">shrink_to_fit()</a> to try to reduce the memory usage after removing element(s). Use removeValue to remove it. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>The i index to remove a value from if it exists. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>The j index to remove a value from if it exists. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>The k index to remove a value from if it exists. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aef8c8621a87f09c264000ed2e60c1791"></a><!-- doxytag: member="CArray3D::resize" ref="aef8c8621a87f09c264000ed2e60c1791" args="(const Index3D &amp;newSize, const Index3D &amp;newOffset=Index3D(0, 0, 0))" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#aef8c8621a87f09c264000ed2e60c1791">resize</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>newSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_index3_d.html">Index3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>newOffset</em> = <code><a class="el" href="struct_index3_d.html">Index3D</a>(0,0,0)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Resize the internal data allocation to new specified size and offset. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from newOffset to newOffset+newsize. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">newSize</td><td>the number of elements in i, j, and k to allocate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newOffset</td><td>the offset in i, j, and k of the allocated elements. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae1a086ffd05b1e5ceac0092a5cb2cdda"></a><!-- doxytag: member="CArray3D::resize" ref="ae1a086ffd05b1e5ceac0092a5cb2cdda" args="(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#aef8c8621a87f09c264000ed2e60c1791">resize</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iOffset</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jOffset</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kOffset</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Resize the internal data allocation to new specified sizes and offsets in i j and k. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from iOffset to iOffset+iSize (and the same for j and k. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">iSize</td><td>the number of elements in i. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">jSize</td><td>the number of elements in j. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kSize</td><td>the number of elements in k. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iOffset</td><td>the offset of allocated i elements. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">jOffset</td><td>the offset of allocated j elements. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kOffset</td><td>the offset of allocated k elements. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae2effb2a6fc401ee491cc8d9d2ec8848"></a><!-- doxytag: member="CArray3D::setDefaultValue" ref="ae2effb2a6fc401ee491cc8d9d2ec8848" args="(T newDefaultValue)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_c_array3_d.html">CArray3D</a>&lt; T &gt;::<a class="el" href="class_c_array3_d.html#ae2effb2a6fc401ee491cc8d9d2ec8848">setDefaultValue</a> </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>newDefaultValue</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the value to which all new allocations default to. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">newDefaultValue</td><td>the value returned from any index that has not been set otherwise. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/Code/VoxCad/Voxelyze/include/<a class="el" href="_array3_d_8h_source.html">Array3D.h</a></li>
 </ul>
@@ -143,7 +608,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeValue</b> (int 
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -155,7 +620,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeValue</b> (int 
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 8 2015 19:03:25 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 12 2015 11:22:01 for Voxelyze by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
