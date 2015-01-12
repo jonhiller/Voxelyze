@@ -24,7 +24,7 @@ VOXELYZE_SRC = \
 	src/VX_MaterialLink.cpp \
 	src/VX_Collision.cpp \
 	src/VX_LinearSolver.cpp \
-	src/VX_Mesh.cpp 
+	src/VX_MeshRender.cpp 
 
 VOXELYZE_OBJS = \
 	src/Voxelyze.o \
@@ -36,7 +36,7 @@ VOXELYZE_OBJS = \
 	src/VX_MaterialLink.o \
 	src/VX_Collision.o \
 	src/VX_LinearSolver.o \
-	src/VX_Mesh.o
+	src/VX_MeshRender.o
 		
 	
 .PHONY: clean all
@@ -59,7 +59,7 @@ $(VOXELYZE_LIB_VERSION):	$(VOXELYZE_OBJS)
 
 
 clean:
-	rm -rf *.o */*.o *.d */*.d $(VOXELYZE_LIB_VERSION)
+	rm -rf *.o */*.o *.d */*.d lib/$(VOXELYZE_LIB_VERSION)
 
 
 ##################################################
