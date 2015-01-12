@@ -1,4 +1,4 @@
-#include "../VX_MaterialLink.h"
+#include "../include/VX_MaterialLink.h"
 
 TEST(CVX_MaterialLink, combineLinearMaterials){
 	//neither with failure stress

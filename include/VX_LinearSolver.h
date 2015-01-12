@@ -23,17 +23,28 @@ extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, doub
 extern "C" void pardiso (void* pt, int* maxfct, int* mnum, int* mtype, int* phase, int* n, double* a, int* ia, int* ja, int* perm, int* nrhs, int* iparm, int* msglvl, double* b, double* x, int* error, double* dparm);
 #endif
 
+//! A linear solver for Voxelyze.
+/*!
+Although voxelyze is fundamentally a dynamic non-linear materials simulator, sometimes a linear solution is still appropriate for a given problem. This class provides the means to do a one-time linear solve of the system in far less time than the equivalent doTimeStep() sequence.
+
+The simulation is currently always linearized about the voxels' nominal positions, so only the elastic modulus of materials is used. Density, poissons ratio, etc. are all disregarded.
+
+Currently only the pardiso solver is supported, although other more permissive solvers are in the works. See www.pardiso-project.com for the appropriate license (free for academic use) and libraries. Define PARDISO_5 in the preprocessor to compile in this pardiso support.
+
+Because solver execution time can be lengthy, a rudimentary set of status variables is maintained during the solve process. They can be accessed safely while the process is running. Likewise cancelFlag can be set to true and the solver will abort execution as soon as it can. Note that this can still be a lengthy wait.
+*/
 class CVX_LinearSolver
 {
-
-public: //variables and flags to be interacted with
-	CVX_LinearSolver(CVoxelyze* voxelyze);
-	bool solve(); //formulates and solves system!
+public:
+	CVX_LinearSolver(CVoxelyze* voxelyze); //!< Links to a voxelyze object and initializes the solver. The pointer to the voxelyze object must remain valid for the lifetime of this object. @param[in] voxelyze pointer to the voxelyze object to simulate.
+	bool solve(); //!< Formulates and solves the linear system and writes the resulting voxel positions and angles back to the linked voxelyze object. Returns false if the solver errors out. (check errorMsg for the reason). NOTE: calling this function modifies the state of the linked voxelyze object! This function may take a while if there are a large number of voxels.
 
 	//parameters to get information during the solving process
-	int progressTick, progressMaxTick;
-	std::string progressMsg, errorMsg;
-	bool cancelFlag;
+	int progressTick; //!< An arbitrary progress number somewhere between zero and progressMaxTick to be used updating a progress bar.
+	int progressMaxTick; //!< An arbitrary maximum for progress bars.
+	std::string progressMsg; //!< A message indicating the current status of the solver
+	std::string errorMsg; //!< If an error occurs the reason will be found here.
+	bool cancelFlag; //!< A user-settable flag to indicate to the solver that an abort has been request during a solve process. May still not stop immediately, though.
 
 private: //off limits variable and functions (internal)
 	CVoxelyze* vx;

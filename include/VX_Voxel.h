@@ -22,15 +22,12 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 
 
-
-
-
 //!Defines a specific instance of a voxel and holds its current state.
 /*!The voxel class contains all information about a voxel's physical characteristics, state, and CVX_Link's to other adjacent voxels.
 
 A voxel needs a CVX_MaterialVoxel to be created and define its physical properties. Later, these can be accessed by material().
 
-A voxel can be fixed with any combination of degrees of freedom using setFixed() or setAllFixed(). External forces and moments can also be applied using setForce() or setMoment().
+A voxel can have external forced or prescribed displacements applied by accessing its CVX_External object using the external() function. To save memory allocation the CVX_External object is not created until the first time external() is called. Use externalExists() to determine if this voxel has any externals applied.
 
 The state of the voxel includes it position(), size(), orientation(), velocity(), etc.
 
@@ -40,7 +37,8 @@ A voxel has a local coordinate system (LCS) that always stays centered on the ce
 class CVX_Voxel
 {
 public:
-	enum linkDirection {	//!< Defines the direction of a link relative to a given voxel.
+	//! Defines the direction of a link relative to a given voxel.
+	enum linkDirection {	
 		X_POS=0,			//!< Positive X direction
 		X_NEG=1,			//!< Negative X direction
 		Y_POS=2,			//!< Positive Y direction
@@ -48,6 +46,7 @@ public:
 		Z_POS=4,			//!< Positive Z direction
 		Z_NEG=5				//!< Negative Z direction
 	}; 
+	//! Defines each of 8 corners of a voxel.
 	enum voxelCorner {
 		NNN = 0, //0b000
 		NNP = 1, //0b001
@@ -57,39 +56,30 @@ public:
 		PNP = 5, //0b101
 		PPN = 6, //0b110
 		PPP = 7  //0b111
-	};
+	}; 
 
-	//enum voxelInfoType : unsigned char {
-	//	KINETIC_ENERGY, //!< The current kinetic energy of this voxel in Joules. 
-	//	DISPLACEMENT, //!< displacement from inital position, in meters.
-	//	VELOCITY_MAGNITUDE, //!< Strain energy
-	//	ANGULAR_VELOCITY_MAGNITUDE, //!< Color coded engineering srain, or internal deformation percent.
-	//	VOLUMETRIC_STRAIN, //!< 
-	//	PRESSURE //!< volumetric pressure
-	//};
+	CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, short indexZ); //!< Default constuctor. @param [in] material Links this CVX_Material to define the physical properties for this voxel. @param[in] indexX The global X index of this voxel. @param[in] indexY The global Y index of this voxel. @param[in] indexZ The global Z index of this voxel.
+	~CVX_Voxel(); //!< Destructor
+	void reset(); //!< Resets this voxels to its original position, orientation, temperature, etc. and zeros its momentum. Does not affect any externals.
 
-	CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, short indexZ); //!< Default constuctor. @param [in] material Links this CVX_Material to define the physical properties for this voxel.
-	~CVX_Voxel(); //!<destructor
-	void reset();
-
-	CVX_Link* link(linkDirection direction) const {return links[direction];}
-	int linkCount() const {int retVal =0; for (int i=0; i<6; i++) if (links[i]) retVal++; return retVal;}
-	CVX_Voxel* adjacentVoxel(linkDirection direction) const; //!<Returns a pointer to the voxel in the specified direction if one exists, or NULL otherwise. @param[in] direction Positive or negative X, Y, or Z direction according to the linkDirection enum.
-	short indexX() {return ix;}
-	short indexY() {return iy;}
-	short indexZ() {return iz;}
+	CVX_Link* link(linkDirection direction) const {return links[direction];} //!< Returns a pointer to the link object in the specified direction if it exists. Returns null if a link does not exist in this direction.
+	int linkCount() const {int retVal =0; for (int i=0; i<6; i++) if (links[i]) retVal++; return retVal;} //!< Returns the number of links present for this voxel out of a total 6 possible.
+	CVX_Voxel* adjacentVoxel(linkDirection direction) const; //!< Returns a pointer to the voxel in the specified direction if one exists, or NULL otherwise. @param[in] direction Positive or negative X, Y, or Z direction according to the linkDirection enum.
+	short indexX() {return ix;} //!< Returns the global X index of this voxel.
+	short indexY() {return iy;} //!< Returns the global Y index of this voxel.
+	short indexZ() {return iz;} //!< Returns the global Z index of this voxel.
 
 	CVX_MaterialVoxel* material() {return mat;} //!<Returns the linked material object containing the physical properties of this voxel.
 	
-	bool externalExists() {return ext?true:false;}
-	CVX_External* external() {if (!ext) ext = new CVX_External(); return ext;} //creates empty one if it doesn't exist
+	bool externalExists() {return ext?true:false;} //!< Returns true if this voxel has had its CVX_External object created. This does not mecessarily imply that this external object actually contains any fixes or forces.
+	CVX_External* external() {if (!ext) ext = new CVX_External(); return ext;} //!< Returns a pointer to this voxel's unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn't already exist. Use externalExists() to determine if external() has been previously called at any time.
 
 
 	void timeStep(float dt); //!< Advances this voxel's state according to all forces and moments acting on it. Large timesteps will cause instability. Use CVoxelyze::recommendedTimeStep() to get the recommended largest stable timestep. @param[in] dt Timestep (in second) to advance.
 
 	//physical location
 	Vec3D<double> position() const {return pos;} //!< Returns the center position of this voxel in meters (GCS). This is the origin of the local coordinate system (LCS).
-	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);}
+	Vec3D<double> originalPosition() const {double s=mat->nominalSize(); return Vec3D<double>(ix*s, iy*s, iz*s);} //!< Returns the initial (nominal) position of this voxel.
 	Vec3D<double> displacement() const {return (pos - originalPosition());} //!< Returns the 3D displacement of this voxel from its original location in meters (GCS)/
 	Vec3D<float> size() const {return cornerOffset(PPP)-cornerOffset(NNN);} //!< Returns the current deformed size of this voxel in the local voxel coordinates system (LCS). If asymmetric forces are acting on this voxel, the voxel may not be centered on position(). Use cornerNegative() and cornerPositive() to determine this information.
 	Vec3D<float> cornerPosition(voxelCorner corner) const; //!< Returns the deformed location of the voxel corner in the specified corner in the global coordinate system (GCS). Essentially cornerOffset() with the voxel's current global position/rotation applied.
@@ -105,8 +95,8 @@ public:
 	float orientationAngle() const {return (float)orient.Angle();} //!< Use with orientationAxis() to get the orientation of this voxel in angle/axis form. Returns the angle in radians.
 	Vec3D<double> orientationAxis() const {return orient.Axis();} //!< Use with orientationAngle() to get the orientation of this voxel in angle/axis form. Returns a unit vector in the global coordinate system (GCS).
 
-	float displacementMagnitude() const {return (float)displacement().Length();}
-	float angularDisplacementMagnitude() const {return (float)orient.Angle();}
+	float displacementMagnitude() const {return (float)displacement().Length();} //!< Returns the distance (magnitude of displacement) this voxel has moved from its initial nominal position. (GCS)
+	float angularDisplacementMagnitude() const {return (float)orient.Angle();} //!< Returns the angle (magnitude of angular displacement) this voxel has rotated from its initial nominal orientation. (GCS)
 	Vec3D<double> velocity() const {return linMom*mat->_massInverse;} //!< Returns the 3D velocity of this voxel in m/s (GCS)
 	float velocityMagnitude() const {return (float)(linMom.Length()*mat->_massInverse);} //!< Returns the velocity of this voxel in m/s.
 	Vec3D<double> angularVelocity() const {return angMom*mat->_momentInertiaInverse;} //!< Returns the 3D angular velocity of this voxel in rad/s (GCS)
@@ -165,11 +155,11 @@ public:
 	float dampingMultiplier() {return 2*mat->_sqrtMass*mat->zetaInternal/previousDt;} //!< Returns the damping multiplier for this voxel. This would normally be called only internally for the internal damping calculations.
 
 	//a couple global convenience functions to have wherever the link enums are used
-	static inline CVX_Link::linkAxis toAxis(linkDirection direction) {return (CVX_Link::linkAxis)((int)direction/2);}
-	static inline linkDirection toDirection(CVX_Link::linkAxis axis, bool positiveDirection) {return (linkDirection)(2*((int)axis) + positiveDirection?0:1);}
-	static inline bool isNegative(linkDirection direction) {return direction%2==1;}
-	static inline bool isPositive(linkDirection direction) {return direction%2==0;}
-	static inline linkDirection toOpposite(linkDirection direction) {return (linkDirection)(direction-direction%2 + (direction+1)%2);}
+	static inline CVX_Link::linkAxis toAxis(linkDirection direction) {return (CVX_Link::linkAxis)((int)direction/2);} //!< Returns the link axis of the specified link direction.
+	static inline linkDirection toDirection(CVX_Link::linkAxis axis, bool positiveDirection) {return (linkDirection)(2*((int)axis) + positiveDirection?0:1);} //!< Returns the link direction of the specified link axis and sign.
+	static inline bool isNegative(linkDirection direction) {return direction%2==1;} //!< Returns true if the specified link direction is negative.
+	static inline bool isPositive(linkDirection direction) {return direction%2==0;} //!< Returns true if the specified link direction is positive.
+	static inline linkDirection toOpposite(linkDirection direction) {return (linkDirection)(direction-direction%2 + (direction+1)%2);} //!< Returns the opposite (negated) link direction of the specified direction.
 
 
 

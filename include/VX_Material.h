@@ -30,14 +30,13 @@ If a function returns unsuccessfully, check lastError() for the cause.
 */
 class CVX_Material {
 	public:
-	CVX_Material(float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor. @Param[in] TODO
-	CVX_Material(rapidjson::Value& mat) {readJSON(mat);} //!< rapidjson::Value* pR
-	//CVX_Material(CVX_Material* mat1, CVX_Material* mat2); //!< Constructs this material from two constituent materials. The materials are combined such that the properties are the "best approximation" of a link material between two dissimilar adjacent voxel material (i.e half mat1, half mat2). As an illustration the stiffness (Young's Modulus) is set according to two springs in series (instead of a straight average) to account for the simulated material division in the middle of the link.
-	virtual ~CVX_Material(void) {}; //!< Destructor. //Virtual so we can just keep track of generic material pointers for voxel and link materials.
+	CVX_Material(float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor. @param[in] youngsModulus The Young's Modulus (stiffness) of this material in Pascals. @param[in] density The density of this material in Kg/m^3
+	CVX_Material(rapidjson::Value& mat) {readJSON(mat);}  //!< Constructs this CVX_Material object from a rapidjson parser node that contains valid "materials" sub-nodes. @param[in] mat pointer to a rapidjson Value that contains material information. See rapidjson documentation and the *.vxl.json format info in the voxelyze user guide.
+	virtual ~CVX_Material(void) {}; //!< Destructor. Specified as virtual so we can just keep track of generic material pointers for voxel and link materials.
 	CVX_Material(const CVX_Material& vIn) {*this = vIn;} //!< Copy constructor
 	virtual CVX_Material& operator=(const CVX_Material& vIn); //!< Equals operator
 
-	void clear();
+	void clear(); //!< Resets all material information to default.
 	const char* lastError() const {return error.c_str();} //!< Returns the last error encountered for this object.
 
 	void setName(const char* name) {myName = std::string(name);} //!< Adds an optional name to the material. @param[in] name Desired name. 
@@ -78,7 +77,7 @@ class CVX_Material {
 	float bulkModulus() const {return E/(3*(1-2*nu));} //!< Calculates the bulk modulus from Young's modulus and Poisson's ratio.
 	float lamesFirstParameter() const {return (E*nu)/((1+nu)*(1-2*nu));} //!< Calculates Lame's first parameter from Young's modulus and Poisson's ratio.
 	float shearModulus() const {return E/(2*(1+nu));} //!< Calculates the shear modulus from Young's modulus and Poisson's ratio.
-	bool isConstantArea() const {return nu==0.0f;} //needs rename?
+	bool isXyzIndependent() const {return nu==0.0f;} //!< Returns true if poisson's ratio is zero - i.e. deformations in each dimension are independent of those in other dimensions.
 
 	//other material properties
 	void setDensity(float density); //!< Defines the density for the material in Kg/m^3. @param [in] density Desired density (0, INF)
@@ -116,49 +115,53 @@ class CVX_Material {
 
 protected:
 	//CVX_Material *vox1Mat, *vox2Mat; //if a combined material, the two source materials
-	std::string error; //records the last error encountered
-	std::string myName; //default is "" (empty)
-	int r, g, b, a; //defaults are -1
+	std::string error; //!< The last error encountered
+	std::string myName; //!< The name of this material. Default is "".
+	int r; //!< Red color value of this material from 0-255. Default is -1 (invalid/not set).
+	int g; //!< Green color value of this material from 0-255. Default is -1 (invalid/not set).
+	int b; //!< Blue color value of this material from 0-255. Default is -1 (invalid/not set).
+	int a; //!< Alpha value of this material from 0-255. Default is -1 (invalid/not set).
 
 	//material model
-	bool linear;
-	float E; //youngs modulus
-	float sigmaYield; //yield stress
-	float sigmaFail; //failure stress
-	float epsilonYield; //yield strain (internal use only for now)
-	float epsilonFail; //failure strain (internal use only for now)
-	std::vector<float> strainData; //strain data points
-	std::vector<float> stressData; //stress data points
-	float nu; //poissonsRatio
-	float rho; //density in Kg/m^3
-	float alphaCTE; //CTE
-	float muStatic; //static coefficient of friction
-	float muKinetic; //kinetic coefficient of friction
-	float zetaInternal; //internal damping ratio
-	float zetaGlobal; //global damping ratio
-	float zetaCollision; //collision damping ratio
+	bool linear; //!< Set to true if this material is specified as linear.
+	float E; //!< Young's modulus (stiffness) in Pa.
+	float sigmaYield; //!< Yield stress in Pa.
+	float sigmaFail; //!< Failure stress in Pa
+	std::vector<float> strainData; //!< strain data points
+	std::vector<float> stressData; //!< stress data points
+	float nu; //!< Poissonss Ratio
+	float rho; //!< Density in Kg/m^3
+	float alphaCTE; //!< Coefficient of thermal expansion (CTE)
+	float muStatic; //!< Static coefficient of friction
+	float muKinetic; //!< Kinetic coefficient of friction
+	float zetaInternal; //!< Internal damping ratio
+	float zetaGlobal; //!< Global damping ratio
+	float zetaCollision; //!< Collision damping ratio
 
-	//the nominal size is needed to calculate mass, etc.
-	Vec3D<double> extScale; //default of (1,1,1) - prescribed scaling
+	Vec3D<double> extScale; //!< A prescribed scaling factor. default of (1,1,1) is no scaling.
 
 	//derived quantities to cache
-	virtual bool updateAll() {return false;} //updates/recalculates eveything possible (used by inherited classed)
-	virtual bool updateDerived(); //updates all the derived quantities cache (based on density, size and elastic modulus
-	float _eHat; // = E unless poissons ratio is non-zero.
+	virtual bool updateAll() {return false;} //!< Updates and recalculates eveything possible (used by inherited classed when material properties have changed)
+	virtual bool updateDerived(); //!< Updates all the derived quantities cached as member variables for this and derived classes. (Especially if density, size or elastic modulus changes.)
+	float _eHat; //!< Cached effective elastic modulus for materials with non-zero Poisson's ratio.
 
-	//private methods
-	bool setYieldFromData(float percentStrainOffset=0.2); //sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStr are set correctly.
-	float strain(float stress); //returns a simple reverse lookup of the first strain that yields this stress from data point lookup
 
 	//Future parameters:
 	//piezo?
 	//compressive strength? (/compressive data)
 	//heat conduction
 
-	std::vector<CVX_Material*> dependentMaterials; //any materials in this list will have updateDerived() called whenever it's called for this material. For updatng link materials when one or both voxel materials change)
+	std::vector<CVX_Material*> dependentMaterials; //!< Any materials in this list will have updateDerived() called whenever it's called for this material. For example, in Voxelyze this is used for updatng link materials when one or both voxel materials change
 
-	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
-	bool readJSON(rapidjson::Value& mat);
+	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w); //!< Writes this material's data to the rapidjson writing object.
+	bool readJSON(rapidjson::Value& mat); //!< reads this material data from the rapidjson Value.
+
+private:
+	float epsilonYield; //!< Yield strain
+	float epsilonFail; //!< Failure strain
+	
+	bool setYieldFromData(float percentStrainOffset=0.2); //sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStr are set correctly.
+	float strain(float stress); //returns a simple reverse lookup of the first strain that yields this stress from data point lookup
 
 	friend class CVoxelyze; //give the main simulation class full access
 	friend class CVX_Voxel; //give our voxel class direct access to all the members for quick access};

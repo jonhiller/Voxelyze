@@ -65,5 +65,8 @@
     <ClInclude Include="tVX_MaterialVoxel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tArray3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

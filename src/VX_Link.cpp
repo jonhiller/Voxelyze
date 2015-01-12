@@ -188,7 +188,7 @@ void CVX_Link::updateForces()
 	Vec3D<double> dAngle2 = 0.5*(angle2v-oldAngle2v);
 	
 	//if volume effects...
-	if (!mat->isConstantArea() || currentTransverseStrainSum != 0) updateTransverseInfo(); //currentTransverseStrainSum != 0 catches when we disable poissons mid-simulation
+	if (!mat->isXyzIndependent() || currentTransverseStrainSum != 0) updateTransverseInfo(); //currentTransverseStrainSum != 0 catches when we disable poissons mid-simulation
 	//updateTransverseInfo();
 
 	_stress = updateStrain((float)(pos2.x/currentRestLength));
@@ -291,7 +291,7 @@ float CVX_Link::strainEnergy() const
 }
 
 float CVX_Link::axialStiffness() {
-	if (mat->isConstantArea()) return mat->_a1;
+	if (mat->isXyzIndependent()) return mat->_a1;
 	else {
 		updateRestLength();
 		updateTransverseInfo();

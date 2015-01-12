@@ -8,7 +8,7 @@ Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
-#include "VX_Mesh.h"
+#include "VX_MeshRender.h"
 #include "VX_Voxel.h"
 
 //for file output
@@ -49,10 +49,8 @@ void CVX_MeshRender::generateMesh()
 {
 	vertices.clear();
 	vertexLinks.clear();
-	//offsets.clear();
 	quads.clear();
 	quadColors.clear();
-	//quadLinks.clear();
 	quadVoxIndices.clear();
 	quadNormals.clear();
 	lines.clear();
@@ -75,12 +73,12 @@ void CVX_MeshRender::generateMesh()
 		CVX_Voxel* pV = vx->voxel(k);
 		int x=pV->indexX(), y=pV->indexY(), z=pV->indexZ();
 
-		index3D thisVox(x, y, z);
+		Index3D thisVox(x, y, z);
 		for (int i=0; i<6; i++){ //for each direction that a quad face could exist
 			if (pV->adjacentVoxel((CVX_Voxel::linkDirection)i)) continue;
 			for (int j=0; j<4; j++){ //for each corner of the (exposed) face in this direction
 				CVX_Voxel::voxelCorner thisCorner = CwLookup[i][j];
-				index3D thisVertInd3D = thisVox + index3D(thisCorner&(1<<2)?1:0, thisCorner&(1<<1)?1:0, thisCorner&(1<<0)?1:0);
+				Index3D thisVertInd3D = thisVox + Index3D(thisCorner&(1<<2)?1:0, thisCorner&(1<<1)?1:0, thisCorner&(1<<0)?1:0);
 				int thisInd = vIndMap[thisVertInd3D];
 
 
@@ -102,7 +100,7 @@ void CVX_MeshRender::generateMesh()
 	for (int z=minZ; z<minZ+sizeZ+1; z++){ //for each in vIndMap, now.
 		for (int y=minY; y<minY+sizeY+1; y++){
 			for (int x=minX; x<minX+sizeX+1; x++){
-				int thisInd = vIndMap[index3D(x,y,z)];
+				int thisInd = vIndMap[Index3D(x,y,z)];
 				if (thisInd == -1) continue;
 
 				//backwards links
@@ -114,7 +112,7 @@ void CVX_MeshRender::generateMesh()
 				//lines
 				for (int i=0; i<3; i++){ //look in positive x, y, and z directions
 					int isX = (i==0?1:0), isY = (i==1?1:0), isZ = (i==2?1:0);
-					int p2Ind = vIndMap[index3D(x+isX, y+isY, z+isZ)];
+					int p2Ind = vIndMap[Index3D(x+isX, y+isY, z+isZ)];
 					if (p2Ind != -1){ //for x: voxel(x,y,z) (x,y-1,z) (x,y-1,z-1) (x,y,z-1) -- y: voxel(x,y,z) (x-1,y,z) (x-1,y,z-1) (x,y,z-1) -- z: voxel(x,y,z) (x,y-1,z) (x-1,y-1,z) (x-1,y,z)
 						if (vx->voxel(x,			y,			z) ||
 							vx->voxel(x-isY,		y-isX-isZ,	z) ||
@@ -140,7 +138,7 @@ void CVX_MeshRender::generateMesh()
 }
 
 //updates all the modal properties: offsets, quadColors, quadNormals.
-void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring)
+void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoType stateType)
 {
 	//location
 	int vCount = vertices.size()/3;
@@ -163,22 +161,15 @@ void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring
 
 	//Find a maximum if necessary:
 	float minVal = 0, maxVal = 0;
-	if (view == STATE_INFO){
-		maxVal = vx->stateInfo(coloring, CVoxelyze::MAX);
-		minVal = vx->stateInfo(coloring, CVoxelyze::MIN);
-		if (coloring == CVoxelyze::PRESSURE){ //pressure max and min are equal pos/neg
+	if (colorScheme == STATE_INFO){
+		maxVal = vx->stateInfo(stateType, CVoxelyze::MAX);
+		minVal = vx->stateInfo(stateType, CVoxelyze::MIN);
+		if (stateType == CVoxelyze::PRESSURE){ //pressure max and min are equal pos/neg
 			maxVal = maxVal>-minVal ? maxVal : -minVal;
 			minVal = -maxVal;
 		}
 
 	}
-	//float maxVal = maxColorValue(color);
-	//float minVal = minColorValue(color);
-
-	//if (color == PRESSURE){ //pressure max and min are equal pos/neg
-	//	maxVal = maxVal>-minVal ? maxVal : -minVal;
-	//	minVal = -maxVal;
-	//}
 
 	//color + normals (for now just pick three vertices, assuming it will be very close to flat...)
 	int qCount = quads.size()/4;
@@ -194,7 +185,7 @@ void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring
 
 		float r=1.0f, g=1.0f, b=1.0f;
 		float jetValue = -1.0f;
-		switch (view){
+		switch (colorScheme){
 			case MATERIAL:
 				r = ((float)vx->voxel(quadVoxIndices[i])->material()->red())/255.0f;
 				g = ((float)vx->voxel(quadVoxIndices[i])->material()->green())/255.0f;
@@ -205,9 +196,9 @@ void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring
 				else if (vx->voxel(quadVoxIndices[i])->isYielded()){b=0.0f;}
 				break;
 			case STATE_INFO:
-				switch (coloring) {
+				switch (stateType) {
 				case CVoxelyze::KINETIC_ENERGY: jetValue = vx->voxel(quadVoxIndices[i])->kineticEnergy()/maxVal; break;
-				case CVoxelyze::STRAIN_ENERGY: case CVoxelyze::ENG_STRAIN: case CVoxelyze::ENG_STRESS: jetValue = linkMaxColorValue(vx->voxel(quadVoxIndices[i]), coloring) / maxVal; break;
+				case CVoxelyze::STRAIN_ENERGY: case CVoxelyze::ENG_STRAIN: case CVoxelyze::ENG_STRESS: jetValue = linkMaxColorValue(vx->voxel(quadVoxIndices[i]), stateType) / maxVal; break;
 				case CVoxelyze::DISPLACEMENT: jetValue = vx->voxel(quadVoxIndices[i])->displacementMagnitude()/maxVal; break;
 				case CVoxelyze::PRESSURE: jetValue = 0.5-vx->voxel(quadVoxIndices[i])->pressure()/(2*maxVal); break;
 				default: jetValue = 0;
@@ -226,59 +217,6 @@ void CVX_MeshRender::updateMesh(viewType view, CVoxelyze::stateInfoType coloring
 		quadColors[i*3+2] = b;
 	}
 }
-//
-//float CVX_MeshRender::maxColorValue(viewColor color)
-//{
-//	float max = -FLT_MAX;
-//
-//	if (color==KINETIC_ENERGY || color==DISPLACEMENT || color==PRESSURE){ //voxel properties
-//		for (std::vector<CVX_Voxel*>::const_iterator it = vx->voxelList()->begin(); it!=vx->voxelList()->end(); it++){ //for each voxel
-//			float thisVal = 0;
-//			switch (color){
-//				case KINETIC_ENERGY: thisVal = (*it)->kineticEnergy();break;
-//				case DISPLACEMENT: thisVal = (*it)->displacementMagnitude(); break;
-//				case PRESSURE: thisVal = (*it)->pressure(); break;
-//			}
-//			if (thisVal > max) max = thisVal; 
-//		}
-//
-//	}
-//	else if (color == STRAIN_ENERGY || color==ENG_STRESS || color==ENG_STRAIN){
-//		for (std::vector<CVX_Link*>::const_iterator it = vx->linkList()->begin(); it!=vx->linkList()->end(); it++){ //for each voxel
-//			float thisVal = 0;
-//			switch (color){
-//				case STRAIN_ENERGY: thisVal = (*it)->strainEnergy();break;
-//				case ENG_STRESS: thisVal = (*it)->axialStress(); break;
-//				case ENG_STRAIN: thisVal = (*it)->axialStrain(); break;
-//			}
-//			if (thisVal > max) max = thisVal; 
-//		}
-//	}
-//	else max = 0;
-//
-//	return max;
-//
-//}
-//
-//float CVX_MeshRender::minColorValue(viewColor color)
-//{
-//	float min = FLT_MAX;
-//
-//	if (color==PRESSURE){ //voxel properties
-//		for (std::vector<CVX_Voxel*>::const_iterator it = vx->voxelList()->begin(); it!=vx->voxelList()->end(); it++){ //for each voxel
-//			float thisVal = 0;
-//			switch (color){
-//				case PRESSURE: thisVal = (*it)->pressure(); break;
-//			}
-//			if (thisVal < min) min = thisVal; 
-//		}
-//
-//	}
-//	else min = 0;
-//
-//	return min;
-//}
-
 float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType coloring)
 {
 	float voxMax = -FLT_MAX;

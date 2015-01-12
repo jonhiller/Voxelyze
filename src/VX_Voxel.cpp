@@ -57,22 +57,8 @@ CVX_Voxel::~CVX_Voxel(void)
 
 void CVX_Voxel::reset()
 {
-//	double myNominalSize = mat->nominalSize();
 	pos = originalPosition(); //mat->nominalSize()*Vec3D<double>(ix, iy, iz);
 	orient = Quat3D<double>();
-
-//	if (!isFixed(X_TRANSLATE)) pos.x = ix*myNominalSize;
-//	if (!isFixed(Y_TRANSLATE)) pos.y = iy*myNominalSize;
-//	if (!isFixed(Z_TRANSLATE)) pos.z = iz*myNominalSize;
-//	if (!isFixed(X_ROTATE)) orient.x = 0;
-//	if (!isFixed(Y_ROTATE)) orient.y = 0;
-//	if (!isFixed(Z_ROTATE)) orient.z = 0;
-	
-//	if (orient.x == 0 && orient.y == 0 && orient.z == 0) orient.w = 1.0;
-//	else orient.Normalize(); //no angular displacement
-
-//	assert(!(orient.w != orient.w));
-
 	haltMotion(); //zeros linMom and angMom
 	setFloorStaticFriction(true);
 	temp=0.0f;

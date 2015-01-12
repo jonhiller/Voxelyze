@@ -25,15 +25,15 @@
 #define MPZ Vec3D<float>(0,0,1e-9f)
 #define MNZ Vec3D<float>(0,0,-1e-9f)
 
-Vec3D<> toOffset(linkDirection dir){
+Vec3D<> toOffset(CVX_Voxel::linkDirection dir){
 	Vec3D<> off;
 	switch (dir){
-	case X_POS: off = Vec3D<>(1,0,0);  break;
-	case X_NEG: off = Vec3D<>(-1,0,0); break;
-	case Y_POS: off = Vec3D<>(0,1,0);  break;
-	case Y_NEG: off = Vec3D<>(0,-1,0); break;
-	case Z_POS: off = Vec3D<>(0,0,1);  break;
-	case Z_NEG: off = Vec3D<>(0,0,-1); break;
+	case CVX_Voxel::X_POS: off = Vec3D<>(1,0,0);  break;
+	case CVX_Voxel::X_NEG: off = Vec3D<>(-1,0,0); break;
+	case CVX_Voxel::Y_POS: off = Vec3D<>(0,1,0);  break;
+	case CVX_Voxel::Y_NEG: off = Vec3D<>(0,-1,0); break;
+	case CVX_Voxel::Z_POS: off = Vec3D<>(0,0,1);  break;
+	case CVX_Voxel::Z_NEG: off = Vec3D<>(0,0,-1); break;
 	default: off = Vec3D<>(0,0,0);
 	}
 	return off;
@@ -60,7 +60,7 @@ float calcPeriod(double timestep, std::vector<double> data){ //detects zero cros
 	return (float)(acc/numAcc*2);
 }
 
-int test2Vox(bool v1Fixed, linkDirection dir, Vec3D<float> force, Vec3D<float> moment, dofObject dof, int maxTimeSteps, float expectedValue, unsigned char returnData, std::string fileOutName = ""){
+int test2Vox(bool v1Fixed, CVX_Voxel::linkDirection dir, Vec3D<float> force, Vec3D<float> moment, dofObject dof, int maxTimeSteps, float expectedValue, unsigned char returnData, std::string fileOutName = ""){
 	std::ofstream file;
 	if (fileOutName != "") file.open("output-CVoxelyze-" + fileOutName + ".txt");
 
@@ -141,60 +141,60 @@ TEST(CVoxelyze, simpleSetup){
 
 TEST(CVoxelyze, singleBondFixedFree){
 	//apply force, look at translations
-	EXPECT_GT(150, test2Vox(true, X_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,	TX));
-	EXPECT_GT(150, test2Vox(true, X_POS, FNX, cNNN, dof(false, true, true, true, true, true), 1000, -1e-6f,	TX));
-	EXPECT_GT(150, test2Vox(true, X_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,	TY));
-	EXPECT_GT(150, test2Vox(true, X_POS, FNY, cNNN, dof(true, false, true, true, true, true), 1000, -1e-6f,	TY));
-	EXPECT_GT(150, test2Vox(true, X_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,	TZ));
-	EXPECT_GT(150, test2Vox(true, X_POS, FNZ, cNNN, dof(true, true, false, true, true, true), 1000, -1e-6f,	TZ));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,	TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FNX, cNNN, dof(false, true, true, true, true, true), 1000, -1e-6f,	TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,	TY));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FNY, cNNN, dof(true, false, true, true, true, true), 1000, -1e-6f,	TY));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,	TZ));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_POS, FNZ, cNNN, dof(true, true, false, true, true, true), 1000, -1e-6f,	TZ));
 
 	//test an axial and transverse for each other (instead of 6 each)
-	EXPECT_GT(150, test2Vox(true, X_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
-	EXPECT_GT(150, test2Vox(true, X_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
-	EXPECT_GT(150, test2Vox(true, Y_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
-	EXPECT_GT(150, test2Vox(true, Y_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
-	EXPECT_GT(150, test2Vox(true, Y_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
-	EXPECT_GT(150, test2Vox(true, Y_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
-	EXPECT_GT(150, test2Vox(true, Z_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
-	EXPECT_GT(150, test2Vox(true, Z_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,  TZ));
-	EXPECT_GT(150, test2Vox(true, Z_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
-	EXPECT_GT(150, test2Vox(true, Z_NEG, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,  TZ));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::X_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Y_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Y_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Y_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Y_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 1e-6f,  TY));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Z_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Z_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,  TZ));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Z_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 1e-6f,  TX));
+	EXPECT_GT(150, test2Vox(true, CVX_Voxel::Z_NEG, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 1e-6f,  TZ));
 
 	//apply moment, look at rotations
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 1.2e-5f,	RX));
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MNX, dof(true, true, true, false, true, true), 1000, -1.2e-5f,RX, "singleBondFixedFree"));
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 3e-6f,	RY));
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MNY, dof(true, true, true, true, false, true), 1000, -3e-6f,	RY));
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 3e-6f,	RZ));
-	EXPECT_GT(200, test2Vox(true, X_POS, cNNN, MNZ, dof(true, true, true, true, true, false), 1000, -3e-6f,	RZ));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 1.2e-5f,	RX));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MNX, dof(true, true, true, false, true, true), 1000, -1.2e-5f,RX, "singleBondFixedFree"));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 3e-6f,	RY));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MNY, dof(true, true, true, true, false, true), 1000, -3e-6f,	RY));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 3e-6f,	RZ));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_POS, cNNN, MNZ, dof(true, true, true, true, true, false), 1000, -3e-6f,	RZ));
 	
 	//in a few other orientations
-	EXPECT_GT(200, test2Vox(true, X_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 1.2e-5f,	RX));
-	EXPECT_GT(100,  test2Vox(true, X_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 3e-6f,	RY)); //this one is actually really good compared to others...
-	EXPECT_GT(200, test2Vox(true, Y_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 1.2e-5f,	RY));
-	EXPECT_GT(200, test2Vox(true, Y_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
-	EXPECT_GT(200, test2Vox(true, Y_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 1.2e-5f,	RY));
-	EXPECT_GT(100,  test2Vox(true, Y_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
-	EXPECT_GT(200, test2Vox(true, Z_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 1.2e-5f,	RZ));
-	EXPECT_GT(200, test2Vox(true, Z_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
-	EXPECT_GT(200, test2Vox(true, Z_NEG, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 1.2e-5f,	RZ));
-	EXPECT_GT(100,  test2Vox(true, Z_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::X_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 1.2e-5f,	RX));
+	EXPECT_GT(100,  test2Vox(true, CVX_Voxel::X_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 3e-6f,	RY)); //this one is actually really good compared to others...
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Y_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 1.2e-5f,	RY));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Y_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Y_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 1.2e-5f,	RY));
+	EXPECT_GT(100,  test2Vox(true, CVX_Voxel::Y_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Z_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 1.2e-5f,	RZ));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Z_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
+	EXPECT_GT(200, test2Vox(true, CVX_Voxel::Z_NEG, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 1.2e-5f,	RZ));
+	EXPECT_GT(100,  test2Vox(true, CVX_Voxel::Z_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 3e-6f,	RX));
 
 	//apply moment, look at translation
-	EXPECT_GT(10,  test2Vox(true, X_POS, cNNN, MPX, dof(false, true, true, false, true, true), 1000, 0.0f,	TX));
-	EXPECT_GT(10,  test2Vox(true, X_POS, cNNN, MNX, dof(false, true, true, false, true, true), 1000, 0.0f,	TX));
-	EXPECT_GT(300, test2Vox(true, X_POS, cNNN, MPY, dof(true, true, false, true, false, true), 1000, -6e-9f,	TZ));
-	EXPECT_GT(300, test2Vox(true, X_POS, cNNN, MNY, dof(true, true, false, true, false, true), 1000, 6e-9f,	TZ));
-	EXPECT_GT(300, test2Vox(true, X_POS, cNNN, MPZ, dof(true, false, true, true, true, false), 1000, 6e-9f,	TY));
-	EXPECT_GT(300, test2Vox(true, X_POS, cNNN, MNZ, dof(true, false, true, true, true, false), 1000, -6e-9f,	TY));
+	EXPECT_GT(10,  test2Vox(true, CVX_Voxel::X_POS, cNNN, MPX, dof(false, true, true, false, true, true), 1000, 0.0f,	TX));
+	EXPECT_GT(10,  test2Vox(true, CVX_Voxel::X_POS, cNNN, MNX, dof(false, true, true, false, true, true), 1000, 0.0f,	TX));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, cNNN, MPY, dof(true, true, false, true, false, true), 1000, -6e-9f,	TZ));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, cNNN, MNY, dof(true, true, false, true, false, true), 1000, 6e-9f,	TZ));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, cNNN, MPZ, dof(true, false, true, true, true, false), 1000, 6e-9f,	TY));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, cNNN, MNZ, dof(true, false, true, true, true, false), 1000, -6e-9f,	TY));
 
 	//apply force, look at rotation
-	EXPECT_GT(10,  test2Vox(true, X_POS, FPX, cNNN, dof(false, true, true, false, true, true), 1000, 0.0f,	RX));
-	EXPECT_GT(10,  test2Vox(true, X_POS, FNX, cNNN, dof(false, true, true, false, true, true), 1000, 0.0f,	RX));
-	EXPECT_GT(300, test2Vox(true, X_POS, FPY, cNNN, dof(true, false, true, true, true, false), 1000, 6e-3f,	RZ));
-	EXPECT_GT(300, test2Vox(true, X_POS, FNY, cNNN, dof(true, false, true, true, true, false), 1000, -6e-3f,	RZ));
-	EXPECT_GT(300, test2Vox(true, X_POS, FPZ, cNNN, dof(true, true, false, true, false, true), 1000, -6e-3f,	RY));
-	EXPECT_GT(300, test2Vox(true, X_POS, FNZ, cNNN, dof(true, true, false, true, false, true), 1000, 6e-3f,	RY));
+	EXPECT_GT(10,  test2Vox(true, CVX_Voxel::X_POS, FPX, cNNN, dof(false, true, true, false, true, true), 1000, 0.0f,	RX));
+	EXPECT_GT(10,  test2Vox(true, CVX_Voxel::X_POS, FNX, cNNN, dof(false, true, true, false, true, true), 1000, 0.0f,	RX));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, FPY, cNNN, dof(true, false, true, true, true, false), 1000, 6e-3f,	RZ));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, FNY, cNNN, dof(true, false, true, true, true, false), 1000, -6e-3f,	RZ));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, FPZ, cNNN, dof(true, true, false, true, false, true), 1000, -6e-3f,	RY));
+	EXPECT_GT(300, test2Vox(true, CVX_Voxel::X_POS, FNZ, cNNN, dof(true, true, false, true, false, true), 1000, 6e-3f,	RY));
 }
 
 
@@ -202,44 +202,44 @@ TEST(CVoxelyze, singleBondFixedFree){
 TEST(CVoxelyze, singleBondFreeFree)
 {
 	//apply force, look at translations
-	EXPECT_GT(100, test2Vox(false, X_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f,  TX, "singleBondFreeFree"));
-	EXPECT_GT(100, test2Vox(false, X_POS, FNX, cNNN, dof(false, true, true, true, true, true), 1000, -5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, X_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
-	EXPECT_GT(100, test2Vox(false, X_POS, FNY, cNNN, dof(true, false, true, true, true, true), 1000, -5e-7f, TY));
-	EXPECT_GT(100, test2Vox(false, X_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f,  TZ));
-	EXPECT_GT(100, test2Vox(false, X_POS, FNZ, cNNN, dof(true, true, false, true, true, true), 1000, -5e-7f, TZ));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f,  TX, "singleBondFreeFree"));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FNX, cNNN, dof(false, true, true, true, true, true), 1000, -5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FNY, cNNN, dof(true, false, true, true, true, true), 1000, -5e-7f, TY));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f,  TZ));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_POS, FNZ, cNNN, dof(true, true, false, true, true, true), 1000, -5e-7f, TZ));
 
 	//test an axial and transverse for each other (instead of 6 each)
-	EXPECT_GT(100, test2Vox(false, X_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, X_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
-	EXPECT_GT(100, test2Vox(false, Y_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, Y_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
-	EXPECT_GT(100, test2Vox(false, Y_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, Y_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
-	EXPECT_GT(100, test2Vox(false, Z_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, Z_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f, TZ));
-	EXPECT_GT(100, test2Vox(false, Z_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
-	EXPECT_GT(100, test2Vox(false, Z_NEG, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f, TZ));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::X_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Y_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Y_POS, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Y_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Y_NEG, FPY, cNNN, dof(true, false, true, true, true, true), 1000, 5e-7f, TY));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Z_POS, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Z_POS, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f, TZ));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Z_NEG, FPX, cNNN, dof(false, true, true, true, true, true), 1000, 5e-7f, TX));
+	EXPECT_GT(100, test2Vox(false, CVX_Voxel::Z_NEG, FPZ, cNNN, dof(true, true, false, true, true, true), 1000, 5e-7f, TZ));
 
 	//apply moment, look at rotations
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,  RX));
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MNX, dof(true, true, true, false, true, true), 1000, -6e-6f, RX));
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,  RY));
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MNY, dof(true, true, true, true, false, true), 1000, -6e-6f, RY));
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,  RZ));
-	EXPECT_GT(150, test2Vox(false, X_POS, cNNN, MNZ, dof(true, true, true, true, true, false), 1000, -6e-6f, RZ));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,  RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MNX, dof(true, true, true, false, true, true), 1000, -6e-6f, RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,  RY));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MNY, dof(true, true, true, true, false, true), 1000, -6e-6f, RY));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,  RZ));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_POS, cNNN, MNZ, dof(true, true, true, true, true, false), 1000, -6e-6f, RZ));
 	
 	//in a few other orientations
-	EXPECT_GT(150, test2Vox(false, X_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	 RX));
-	EXPECT_GT(150, test2Vox(false, X_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	 RY));
-	EXPECT_GT(150, test2Vox(false, Y_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	 RY));
-	EXPECT_GT(150, test2Vox(false, Y_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
-	EXPECT_GT(150, test2Vox(false, Y_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	RY));
-	EXPECT_GT(150, test2Vox(false, Y_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
-	EXPECT_GT(150, test2Vox(false, Z_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,	RZ));
-	EXPECT_GT(150, test2Vox(false, Z_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
-	EXPECT_GT(150, test2Vox(false, Z_NEG, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,	RZ));
-	EXPECT_GT(150, test2Vox(false, Z_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	 RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::X_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	 RY));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Y_POS, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	 RY));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Y_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Y_NEG, cNNN, MPY, dof(true, true, true, true, false, true), 1000, 6e-6f,	RY));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Y_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Z_POS, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,	RZ));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Z_POS, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Z_NEG, cNNN, MPZ, dof(true, true, true, true, true, false), 1000, 6e-6f,	RZ));
+	EXPECT_GT(150, test2Vox(false, CVX_Voxel::Z_NEG, cNNN, MPX, dof(true, true, true, false, true, true), 1000, 6e-6f,	RX));
 
 }
 
@@ -271,7 +271,7 @@ TEST(CVoxelyze, internalDamping)
 	pV1->external()->setForce(1e-6f, 1e-6f, 1e-6f);
 
 	for (int i=0; i<6; i++){
-		Vec3D<> off = toOffset((linkDirection)i);
+		Vec3D<> off = toOffset((CVX_Voxel::linkDirection)i);
 		CVX_Voxel* pV = Sim.setVoxel(pMat1, (int)off.x, (int)off.y, (int)off.z);
 		pV->external()->setFixedAll();
 	}
@@ -299,7 +299,7 @@ TEST(CVoxelyze, globalDamping)
 	pV1->external()->setForce(1e-6f, 1e-6f, 1e-6f);
 
 	for (int i=0; i<6; i++){
-		Vec3D<> off = toOffset((linkDirection)i);
+		Vec3D<> off = toOffset((CVX_Voxel::linkDirection)i);
 		CVX_Voxel* pV = Sim.setVoxel(pMat1, (int)off.x, (int)off.y, (int)off.z);
 		pV->external()->setFixedAll();
 	}
@@ -459,7 +459,7 @@ TEST(CVoxelyze, largeDeformationDamping)
 	pV1->external()->setFixedAll();
 
 	//apply force, look at translations
-	CVX_Link* pL = Sim.link(0, 0, 0, X_POS);
+	CVX_Link* pL = Sim.link(0, 0, 0, CVX_Voxel::X_POS);
 	pV2->external()->setForce(-0.2f, 0.0f, 0.2f);
 	for (int k=0; k<200; k++){
 		Sim.doTimeStep(ts);
@@ -493,7 +493,7 @@ TEST(CVoxelyze, largeDeformation)
 	//apply force, look at translations
 	for (int i=0; i<100; i++){ //several forces.
 		pV2->external()->setForce(0, 0, i*2e-3f);
-		CVX_Link* pL = Sim.link(0, 0, 0, X_POS);
+		CVX_Link* pL = Sim.link(0, 0, 0, CVX_Voxel::X_POS);
 		for (int k=0; k<100; k++){
 			Sim.doTimeStep(ts);
 			if (i==20) file << pV2->position().z << "\n";

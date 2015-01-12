@@ -31,7 +31,9 @@ Information pertaining to one voxel or the other is indicated by the boolean par
 */
 class CVX_Link {
 	public:
-	enum linkAxis {			//!< Defines an axis
+
+	//! Defines an axis (X, Y, or Z)
+	enum linkAxis {			
 		X_AXIS = 0,			//!< X Axis
 		Y_AXIS = 1,			//!< Y Axis
 		Z_AXIS = 2			//!< Z Axis
@@ -39,7 +41,7 @@ class CVX_Link {
 
 
 
-	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, CVX_Voxel::linkDirection direction*/); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link @param[in] direction The linkDirection from voxel1 to voxel2.
+	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link.
 	void reset(); //!< Resets all current state information about this link to the initial value.
 
 	CVX_Voxel* voxel(bool positiveEnd) const {return positiveEnd?pVPos:pVNeg;} //!< Returns a pointer to one of the two voxels that compose this link. @param[in] positiveEnd Specifies which voxel is desired.

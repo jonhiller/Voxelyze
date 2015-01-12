@@ -1,6 +1,9 @@
 
 #include "gtest/gtest.h"
+#include "tArray3D.h"
 #include "tVX_Material.h"
+#include "tVX_MaterialLink.h"
+#include "tVX_MaterialVoxel.h"
 #include "tVX_Voxel.h"
 #include "tVoxelyze.h"
 

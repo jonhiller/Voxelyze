@@ -99,6 +99,7 @@
     <ClCompile Include="VoxelyzeUnitTests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="tArray3D.h" />
     <ClInclude Include="tVoxelyze.h" />
     <ClInclude Include="tVX_Material.h" />
     <ClInclude Include="tVX_MaterialLink.h" />

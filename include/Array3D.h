@@ -13,7 +13,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #define ARRAY3D_H
 
 //#include "XML_Rip.h"
-#include <assert.h>
+//#include <assert.h>
 #include <vector>
 #include <limits.h>
 //#include <fstream>
@@ -22,43 +22,58 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #define LOCALMIN(a,b) (((a)<(b))?(a):(b))
 #define LOCALMAX(a,b) (((a)>(b))?(a):(b))
 
-#define INDEX_INVALID -32767 //guaranteed very negative number within range of int on all platforms
+#define INDEX_INVALID -2147483647 //guaranteed very negative number within range of int on any common platform
 
-
-struct index3D {
-	index3D(){x=y=z=INDEX_INVALID;}
-	index3D(int inX, int inY, int inZ){x=inX; y=inY; z=inZ;}
-	index3D(const index3D& i3D) {x=i3D.x; y=i3D.y; z=i3D.z;}
-	index3D& operator=(const index3D& i3D) {x=i3D.x; y=i3D.y; z=i3D.z; return *this;}; //overload equals
-	const index3D operator+(const index3D &i3D) const {return index3D(x+i3D.x, y+i3D.y, z+i3D.z);}
-	const index3D operator-(const index3D &i3D) const {return index3D(x-i3D.x, y-i3D.y, z-i3D.z);}
-	bool operator==(const index3D& i3D) const {return (x==i3D.x && y==i3D.y && z==i3D.z);} //Is equal
-	bool operator!=(const index3D& i3D) const {return (x!=i3D.x || y!=i3D.y || z!=i3D.z);} //Is not equal
-	bool Valid(){return !(x==INDEX_INVALID || y==INDEX_INVALID || z==INDEX_INVALID);}
-	int x, y, z;
+//! A generic three-integer index container (for X, Y, Z) for use with the CArray3D class.
+/*!
+Indices do not have a default and can be invalid. If any indices are invalid valid() will return false.
+*/
+struct Index3D {
+	Index3D(){x=y=z=INDEX_INVALID;} //!< Default constructor. Indices will be invalid until set.
+	Index3D(int inX, int inY, int inZ){x=inX; y=inY; z=inZ;} //!< Constructs with the specified indices
+	Index3D(const Index3D& i3D) {x=i3D.x; y=i3D.y; z=i3D.z;} //!< Copy constructor
+	Index3D& operator=(const Index3D& i3D) {x=i3D.x; y=i3D.y; z=i3D.z; return *this;} //!< Overload equals.
+	const Index3D operator+(const Index3D &i3D) const {return Index3D(x+i3D.x, y+i3D.y, z+i3D.z);} //!< Adds an Index3D to this one. Indices are added individually.
+	const Index3D operator-(const Index3D &i3D) const {return Index3D(x-i3D.x, y-i3D.y, z-i3D.z);} //!< Subtracts an Index3D from this one. Indices are subtracted individually.
+	bool operator==(const Index3D& i3D) const {return (x==i3D.x && y==i3D.y && z==i3D.z);} //!< Two index3Ds are equal only if all indices are equal.
+	bool operator!=(const Index3D& i3D) const {return (x!=i3D.x || y!=i3D.y || z!=i3D.z);} //!< Two index3Ds are not equal if any indices are not equal.
+	bool valid(){return !(x==INDEX_INVALID || y==INDEX_INVALID || z==INDEX_INVALID);} //!< Returns true if all indices are valid.
+	int x; //!< Current X index.
+	int y; //!< Current Y index.
+	int z; //!< Current Z index.
 };
 
-//!<a general 3d array. Empty elements are synonomous with the element being defaultValue. Therefore any element that has not been set otherwise will return as defaultValue (empty)
+//!A generic 3D multi-size array template.
+/*!
+An array template with a user-definable default value that is returned for any 3D index not specified otherwise. Otherwise the functions will be generally familiar to anyone used to the standard library containers.
+
+There are three dimensions of indices, referred to i, j, and k. In many uses these will be synonomous with x, y, and z. 
+
+Memory allocation is managed internally and totally abstracted from the user. Whenever addvalue is called the internal array is smartly resized if the index falls outside of the currently allocated area. If the dimensions are known in advance, resize() may be called once to reduce costly memory reallocations.
+
+The value of an element can be accesed with [], (), or at(). Empty elements (or elements outside the allocated area) are synonomous with the element being defaultValue.
+
+*/
 template <typename T = float>
 class CArray3D
 {
 public:
-	//Constructor
+	//!Constructor
 	CArray3D(){
 		defaultValue = 0;
 		clear();
 	}
 
-	//Destructor
+	//!Destructor
 	~CArray3D(void){
 	}
 
-	//Copy constructor
+	//!Copy constructor
 	CArray3D(const CArray3D& rArray){
 		*this = rArray;
 	}
 
-	//Operator "=" overload
+	//!Operator "=" overload
 	CArray3D& operator=(const CArray3D& rArray){
 		defaultValue = rArray.defaultValue;
 		data = rArray.data;
@@ -69,51 +84,47 @@ public:
 		return *this;
 	}
 
-	//Operator "[]" overloads
-//	const T& operator [](int i) const { return data[i]; } //overload index operator
-//		  T& operator [](int i)       { return data[i]; }
-  	const T& operator [](const index3D i3D) const { return at(i3D);} //overload index operator
-		  T& operator [](const index3D i3D) { return at(i3D);}
+  	const T& operator [](const Index3D i3D) const   { return at(i3D);} //!< Operator "[]" overload (takes an Index3D) const version
+		  T& operator [](const Index3D i3D)			{ return at(i3D);}  //!< Operator "[]" overload (takes an Index3D)
 
+	const T& operator ()(int i, int j, int k) const {return at(Index3D(i, j, k));} //!< Operator "()" overloads (takes individual x, y, z indices) const verison
+		  T& operator ()(int i, int j, int k)		{return at(Index3D(i, j, k));} //!< Operator "()" overloads (takes individual x, y, z indices)
 
-	//Operator "()" overloads
-	const T& operator ()(int i, int j, int k) const {return at(index3D(i, j, k));}
-	T& operator ()(int i, int j, int k) {return at(index3D(i, j, k));}
-
-	void clear(){ //sets array to zero-size
-		aSize = aOff = index3D(0,0,0);
-		cMin = index3D(INT_MAX, INT_MAX, INT_MAX);
-		cMax = index3D(INT_MIN, INT_MIN, INT_MIN);
+	//!Clears all data from the array and frees up all memory.
+	void clear(){ 
+		aSize = aOff = Index3D(0,0,0);
+		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
+		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 		data.clear();
 	}
 
-	//set the value to which all new allocations default to:
+	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
 	void setDefaultValue(T newDefaultValue){
 		int linSize = data.size();
 		for (int i=0; i<linSize; i++) if (data[i]==defaultValue) data[i] = newDefaultValue; //replace all old defaults with new default
 		defaultValue = newDefaultValue; //remember new default
 	}
 
-	//return the minimum/maximum x, y, and z indices utilized by any element in the array
-	index3D minIndices() const {return cMin;}
-	index3D maxIndices() const {return cMax;}
+	Index3D minIndices() const {return cMin;} //!< Returns the minimum i, j, and k indices utilized by any element in the array
+	Index3D maxIndices() const {return cMax;} //!< Returns the maximum i, j, and k indices utilized by any element in the array
 
-	//returns the value at the specified 3d index or default value otherwise
-	const T& at(const index3D& i3D) const {
+	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
+	const T& at(const Index3D& i3D) const { 
 		int i = getIndex(i3D);
 		return i == -1 ? defaultValue : data[i];
 	} 
-	const T& at(int i, int j, int k) const {return at(index3D(i,j,k));}
+	const T& at(int i, int j, int k) const {return at(Index3D(i,j,k));} //!< Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i the i index in question. @param[in] j the j index in question. @param[in] k the k index in question.
 
-	T& at(const index3D& i3D) {
+	//! Returns the value at the specified 3d index or the default value otherwise.  @param[in] i3D the 3D index (i,j,k) in question.
+	T& at(const Index3D& i3D) {
 		int i = getIndex(i3D);
 		return i == -1 ? defaultValue : data[i];
 	} 
-	T& at(int i, int j, int k) {return at(index3D(i,j,k));}
+	T& at(int i, int j, int k) {return at(Index3D(i,j,k));} //!< Returns the value at the specified 3d index or the default value otherwise. @param[in] i the i index in question. @param[in] j the j index in question. @param[in] k the k index in question.
 
 
-	//resize to new specified size and offset. data ouside the new range is discarded.
-	bool resize(const index3D& newSize, const index3D& newOffset=index3D(0,0,0)){
+	//! Resize the internal data allocation to new specified size and offset. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from newOffset to newOffset+newsize. @param[in] newSize the number of elements in i, j, and k to allocate @param[in] newOffset the offset in i, j, and k of the allocated elements.
+	bool resize(const Index3D& newSize, const Index3D& newOffset=Index3D(0,0,0)){
 		if (newSize==aSize && newOffset==aOff) return true;
 		int newLinearSize = newSize.x*newSize.y*newSize.z;
 		if (newLinearSize == 0){clear(); return true;}
@@ -123,10 +134,9 @@ public:
 		catch (std::bad_alloc&){return false;} //couldn't get the memory
 
 		//iterate through overlapping region
-		index3D oldMin = aOff, oldMax=aOff+aSize, newMin=newOffset, newMax=newOffset+newSize; //for readability: old and new min and max indices
-		index3D minOverlap(LOCALMAX(oldMin.x, newMin.x), LOCALMAX(oldMin.y, newMin.y), LOCALMAX(oldMin.z, newMin.z)); //minimum of overlapping range
-		index3D maxOverlap(LOCALMIN(oldMax.x, newMax.x), LOCALMIN(oldMax.y, newMax.y), LOCALMIN(oldMax.z, newMax.z)); //maximum of overlapping range
-//		index3D OverlapSize = maxOverlap - minOverlap;
+		Index3D oldMin = aOff, oldMax=aOff+aSize, newMin=newOffset, newMax=newOffset+newSize; //for readability: old and new min and max indices
+		Index3D minOverlap(LOCALMAX(oldMin.x, newMin.x), LOCALMAX(oldMin.y, newMin.y), LOCALMAX(oldMin.z, newMin.z)); //minimum of overlapping range
+		Index3D maxOverlap(LOCALMIN(oldMax.x, newMax.x), LOCALMIN(oldMax.y, newMax.y), LOCALMIN(oldMax.z, newMax.z)); //maximum of overlapping range
 		for (int k=minOverlap.z; k<maxOverlap.z; k++){
 			for (int j=minOverlap.y; j<maxOverlap.y; j++){
 				for (int i=minOverlap.x; i<maxOverlap.x; i++){ //optimize out this loop with memcpy if it's too slow
@@ -150,15 +160,15 @@ public:
 
 		return true;
 	}
-	bool resize(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0){return resize(index3D(iSize, jSize, kSize), index3D(iOffset, jOffset, kOffset));}
+	bool resize(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0){return resize(Index3D(iSize, jSize, kSize), Index3D(iOffset, jOffset, kOffset));} //!< Resize the internal data allocation to new specified sizes and offsets in i j and k. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from iOffset to iOffset+iSize (and the same for j and k. @param[in] iSize the number of elements in i. @param[in] jSize the number of elements in j. @param[in] kSize the number of elements in k. @param[in] iOffset the offset of allocated i elements. @param[in] jOffset the offset of allocated j elements. @param[in] kOffset the offset of allocated k elements.
 
-
+	//! Deallocates as much memory as possible by reducing the allocated area to minimum span of existing elements.
 	bool shrink_to_fit(){
-		return resize(cMax-cMin+index3D(1,1,1), cMin);
+		return resize(cMax-cMin+Index3D(1,1,1), cMin);
 	}
 
-	//Adds a value and updates the min/max if appropriate. Allocates more space if needed in a (semi smart) manner.
-	bool addValue(const index3D& index, T value){
+	//!Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] index the index to add this value at. @param[in] value The value to add.
+	bool addValue(const Index3D& index, T value){
 		if (value==defaultValue){ //catch if adding default value (equivalent to removeValue). Call removeValue to keep min and max up-to-date
 			removeValue(index);
 			return true;
@@ -181,12 +191,12 @@ public:
 				case 6: return false;
 				}
 
-				index3D aNewMin=aOff;
-				index3D aNewMax=aOff+aSize;
+				Index3D aNewMin=aOff;
+				Index3D aNewMax=aOff+aSize;
 
 				if (aNewMin==aNewMax){ //if no allocated space, start with +/- 2 in all dimensions
-					aNewMin = index-index3D(2,2,2);
-					aNewMax = index+index3D(2,2,2);
+					aNewMin = index-Index3D(2,2,2);
+					aNewMax = index+Index3D(2,2,2);
 				}
 				else { //if there's some allocated space, double the size (or keep going if we added a point way out...)
 					while (index.x<=aNewMin.x) aNewMin.x -= aSize.x/scaleDivisor;
@@ -215,33 +225,21 @@ public:
 		if (index.z > cMax.z) cMax.z = index.z;
 		return true;
 	}
-	bool addValue(int i, int j, int k, T value){return addValue(index3D(i,j,k), value);}
+	bool addValue(int i, int j, int k, T value){return addValue(Index3D(i,j,k), value);} //!< Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] i The i index to add this value at. @param[in] j The j index to add this value at. @param[in] k The k index to add this value at. @param[in] value The value to add.
 
 
-	//removes the value (sets its location to the default value) and updates max/min as appropriate
-	void removeValue(const index3D& index){
+	//! Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use shrink_to_fit() to try to reduce the memory usage after removing element(s). @param[in] index the index to remove a value from if it exists.
+	void removeValue(const Index3D& index){
 		int ThisIndex = getIndex(index);
 		if (ThisIndex == -1 || data[ThisIndex] == defaultValue) return; //already not there...
 		data[ThisIndex] = defaultValue;
 		UpdateMinMax();
 	}
-	void removeValue(int i, int j, int k){removeValue(index3D(i,j,k));}
-
-
-
-//	void WriteXML(CXML_Rip* pXML);
-//	void ReadXML(CXML_Rip* pXML);
-
+	void removeValue(int i, int j, int k){removeValue(Index3D(i,j,k));} //!< Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use shrink_to_fit() to try to reduce the memory usage after removing element(s). Use removeValue to remove it. @param[in] i The i index to remove a value from if it exists. @param[in] j The j index to remove a value from if it exists. @param[in] k The k index to remove a value from if it exists.
 
 private:
 
-
-//	void IniSpace(int x, int y, int z, float IniVal = 0.0f);
-//	void ResetSpace(float IniVal = 0.0f);
-//	void DeleteSpace();
-//	float GetMaxValue(); //returns the maximum value anywhere in the array.
-
-	int getIndex(const index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
+	int getIndex(const Index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
 		if (i3D.x<aOff.x || i3D.x >= aOff.x+aSize.x || i3D.y<aOff.y || i3D.y >= aOff.y+aSize.y || i3D.z<aOff.z || i3D.z >= aOff.z+aSize.z) return -1; //if this XYZ is out of the area
 		else return (i3D.x-aOff.x) + aSize.x*(i3D.y-aOff.y) + aSize.x*aSize.y*(i3D.z-aOff.z);
 	}
@@ -250,8 +248,8 @@ private:
 	}
 
 	void UpdateMinMax(){ //slow, but easy to start. optimized versions can come if needed.
-		cMin = index3D(INT_MAX, INT_MAX, INT_MAX);
-		cMax = index3D(INT_MIN, INT_MIN, INT_MIN);
+		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
+		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 
 		for (int k=aOff.z; k<aSize.z+aOff.z; k++){
 			for (int j=aOff.y; j<aSize.y+aOff.y; j++){
@@ -268,119 +266,13 @@ private:
 			}
 		}
 
-		//account for offsets
-//		cMin = cMin+aOff;
-//		cMax = cMax+aOff;
 	}
-	
-
-
-	//int findMinX(){
-	//	for (int i=aMin.x; i<=aMax.x; i++){
-	//		for (int j=aMin.y; j<=aMax.y; j++){
-	//			for (int k=aMin.z; k<=aMax.z; k++){
-	//				int Index = getIndexFast(i,j,k);
-	//				if (data[Index] != defaultValue)
-	//			}
-	//		}
-	//	}
-	//}
-
-	//int getIndexFast(int x, int y, int z) const { //returns the 1D index. NO safety checks!
-	//	return x + aSize.x*y + aSize.x*aSize.y*z;
-	//}
-	//int getIndexFast(int x, int y, int z, ) const { //returns the 1D index. NO safety checks!
-	//	return x + aSize.x*y + aSize.x*aSize.y*z;
-	//}
-//	bool GetXYZ(int* x, int* y, int* z, int Index); //returns the xyz indicies
-//	int GetFullSize(void) {return FullSize;};
-//	int GetXSize(void) {return XSize;};
-//	int GetYSize(void) {return YSize;};
-//	int GetZSize(void) {return ZSize;};
-
 
 	T defaultValue; //value to fill newly initialized space with
 	std::vector<T> data;
-	index3D aSize, aOff; //allocated size and offset
-	index3D cMin, cMax; //current minimum and maximum values in x/y/x currently in 
+	Index3D aSize, aOff; //allocated size and offset
+	Index3D cMin, cMax; //current minimum and maximum values in x/y/x currently in 
 
 };
-
-#ifdef DEBUG
-	//testing function. A sequence of operations that SHOULD fully test the array class.
-static void TestArray3D(){
-	//To test: copy constructor, equals oper, (), [], at, shrink_to_fit, addValue,
-	//removeValue, resize, at, minIndices, maxIndicies, setDefaultValue
-	//test with pointers, floats, ints, more?
-
-	//test addValue, minIndeices, maxIndices, at().
-	CArray3D<float> T1;
-	assert(T1.at(index3D(0,0,0)) != 0);
-	assert(T1.at(index3D(5000,-7024,21)) != 0);
-
-	assert(!T1.addValue(index3D(1,2,3), 1.0f));
-	assert(T1.minIndices() != index3D(1,2,3));
-	assert(T1.maxIndices() != index3D(1,2,3));
-	assert(T1.at(index3D(1,2,3)) != 1.0);
-
-	assert(!T1.addValue(index3D(0,0,0), 10.0f));
-	assert(!T1.addValue(index3D(-3,-2,-1), 1000.0f));
-	assert(!T1.addValue(index3D(-3,-2,-1), 100.0f)); //should just overwrite
-
-	assert(T1.minIndices() != index3D(-3,-2,-1));
-	assert(T1.maxIndices() != index3D(1,2,3));
-	assert(T1.at(index3D(-3,-2,-1)) != 100.0);
-
-	//test removeValue
-	T1.removeValue(index3D(1,2,3));
-	assert(T1.at(index3D(1,2,3)) != 0.0);
-	assert(T1.minIndices() != index3D(-3,-2,-1));
-	assert(T1.maxIndices() != index3D(0,0,0));
-
-	T1.removeValue(index3D(-1,-1,-1)); //no value inside range
-	T1.removeValue(index3D(3200, 42, 19876)); //outside range
-
-	//test shrink_to_fit and resize()
-	assert(!T1.shrink_to_fit());
-	assert(T1.at(index3D(-3,-2,-1)) != 100.0);
-	assert(!T1.resize(index3D(4,4,4), index3D(-3, -3, -3)));
-	assert(T1.at(index3D(-3,-2,-1)) != 100.0);
-	assert(!T1.resize(index3D(3,3,3)));
-	assert(T1.at(index3D(-3,-2,-1)) != 0.0);
-
-	T1.removeValue(index3D(0,0,0)); //remove last value;
-	assert(T1.maxIndices() == index3D(0,0,0));
-	assert(T1.maxIndices() == index3D(0,0,0));
-
-	T1.addValue(index3D(0,0,0), 4.3f);
-	T1.addValue(index3D(0,0,0), 0.0f);
-	assert(T1.maxIndices() == index3D(0,0,0));
-	assert(T1.maxIndices() == index3D(0,0,0));
-
-	T1.addValue(index3D(0,0,0), 10.0f);
-
-	assert(!T1.addValue(index3D(4,4,4), -40.0));
-
-	//defaultValue
-	T1.setDefaultValue(-2.0f);
-	assert(T1.at(index3D(0,0,0)) != 10.0);
-	assert(T1.at(index3D(1,1,1)) != -2.0f);
-	assert(T1.at(index3D(10,10,10)) != -2.0f);
-
-	T1.addValue(index3D(2,2,2), -2.0f);
-	T1.setDefaultValue(0.0f);
-	assert(T1.at(index3D(2,2,2)) != 0.0f);
-
-	//equals
-	CArray3D<float> T2 = T1;
-	assert(T2.minIndices() != index3D(0,0,0));
-	assert(T2.maxIndices() != index3D(4,4,4));
-	assert(T2.at(index3D(4,4,4)) != -40.0);
-	assert(T2.at(index3D(-5,5,-5)) != -0.0);
-
-	//large allocation failure
-	assert(!T2.resize(index3D(1000,1000,1000)));
-}
-#endif
 
 #endif
