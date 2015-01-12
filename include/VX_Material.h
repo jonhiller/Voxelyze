@@ -31,7 +31,7 @@ If a function returns unsuccessfully, check lastError() for the cause.
 class CVX_Material {
 	public:
 	CVX_Material(float youngsModulus=1e6f, float density=1e3f); //!< Default Constructor. @param[in] youngsModulus The Young's Modulus (stiffness) of this material in Pascals. @param[in] density The density of this material in Kg/m^3
-	CVX_Material(rapidjson::Value& mat) {readJSON(mat);}  //!< Constructs this CVX_Material object from a rapidjson parser node that contains valid "materials" sub-nodes. @param[in] mat pointer to a rapidjson Value that contains material information. See rapidjson documentation and the *.vxl.json format info in the voxelyze user guide.
+	CVX_Material(rapidjson::Value& mat) {readJSON(mat);} //!< Constructs this CVX_Material object from a rapidjson parser node that contains valid "materials" sub-nodes. @param[in] mat pointer to a rapidjson Value that contains material information. See rapidjson documentation and the *.vxl.json format info in the voxelyze user guide.
 	virtual ~CVX_Material(void) {}; //!< Destructor. Specified as virtual so we can just keep track of generic material pointers for voxel and link materials.
 	CVX_Material(const CVX_Material& vIn) {*this = vIn;} //!< Copy constructor
 	virtual CVX_Material& operator=(const CVX_Material& vIn); //!< Equals operator
