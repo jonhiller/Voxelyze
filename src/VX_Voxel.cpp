@@ -32,19 +32,19 @@ CVX_Voxel::CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, sh
 //	orient = Quat3D<>();
 	//dofFixed = 
 	boolStates = 0;
-	setFloorStaticFriction(true);
-	temp = 0.0f;
+//	setFloorStaticFriction(true);
+//	temp = 0.0f;
 //	gravAccel = 0.0f;
-	previousDt = 0;
+//	previousDt = 0;
 
-	poissonsStrainInvalid = true;
+//	poissonsStrainInvalid = true;
 	//...etc
 
 	lastColWatchPosition=NULL;
 	colWatch=NULL;
 	nearby=NULL;
 
-
+	reset();
 }
 
 CVX_Voxel::~CVX_Voxel(void)

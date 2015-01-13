@@ -27,33 +27,7 @@ CVX_Material::CVX_Material(float youngsModulus, float density)
 	rho = density;
 	setModelLinear(youngsModulus);
 	updateDerived();
-//
-////	vox1Mat = vox2Mat = NULL;
-//
-//	r = -1;
-//	g = -1;
-//	b = -1;
-//	a = -1;
-////	linear = true; //set by "setModelLinear()" below.
-////	E = youngsModulus;
-////	sigmaYield = -1.0f;
-////	sigmaFail = -1.0f;
-////	epsilonYield = -1.0f;
-////	epsilonFail = -1.0f;
-//	nu = 0.0f;
-//	rho = density;
-//	alphaCTE = 0.0f;
-//	muStatic = 0.0f;
-//	muKinetic = 0.0f;
-//	zetaInternal = 1.0f;
-//	zetaGlobal = 0.0f;
-//	zetaCollision = 0.0f;
-//
-////	nomSize=nominalSize;
-//	extScale=Vec3D<>(1.0, 1.0, 1.0);
-//
-//	setModelLinear(youngsModulus);
-//	updateDerived();
+
 }
 
 CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
@@ -80,16 +54,8 @@ CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
 	zetaInternal = vIn.zetaInternal;
 	zetaGlobal = vIn.zetaGlobal;
 	zetaCollision = vIn.zetaCollision;
-//	nomSize=vIn.nomSize;
+
 	_eHat = vIn._eHat;
-	//_mass=vIn._mass;
-	//_massInverse=vIn._massInverse;
-	//_sqrtMass=-vIn._sqrtMass;
-	//_firstMoment=vIn._firstMoment;
-	//_momentInertia=vIn._momentInertia;
-	//_momentInertiaInverse=vIn._momentInertiaInverse;
-	//_2xSqMxExS=vIn._2xSqMxExS;
-	//_2xSqIxExSxSxS=vIn._2xSqIxExSxSxS;
 
 	return *this;
 }

@@ -48,7 +48,7 @@ public:
 	
 
 	//constructors
-	Quat3D(void) : w(0), x(0), y(0), z(0) {} //!< Constructor. Initialzes w, x, y, z to zero.
+	Quat3D(void) : w(1), x(0), y(0), z(0) {} //!< Constructor. Initialzes w, x, y, z to zero.
 	Quat3D(const T dw, const T dx, const T dy, const T dz) {w=dw; x=dx; y=dy; z=dz;} //!< Constructor with specified individual values.
 	Quat3D(const Quat3D& QuatIn) {w = QuatIn.w; x = QuatIn.x; y = QuatIn.y; z = QuatIn.z;} //!< Copy constructor
 	Quat3D(const Vec3D<T>& VecIn) {FromRotationVector(VecIn);} //!< Constructs this quaternion from rotation vector VecIn. See FromRotationVector(). @param[in] VecIn A rotation vector.

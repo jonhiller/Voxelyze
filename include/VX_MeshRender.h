@@ -18,7 +18,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 /*!
 A simple way to generate a deformed mesh reflecting the current state of a voxelyze object. After constructing with a pointer to the desired voxelyze object the mesh is ready. If the state of the voxelyze object has changed or a different coloring is desired, simply call updateMesh(). If voxels are added or subtracted to the voxelyze object, generateMesh() must be called to regenerate the mesh before calling updateMesh or drawGl().
 
-The mesh can be drawn in an initialized OpenGL window by defining USE_OPENGL in the preprocessor and calling glDraw from within the drawing loop. An obj mesh file can also be generated at any time.
+The mesh can be drawn in an initialized OpenGL window by defining USE_OPEN_GL in the preprocessor and calling glDraw from within the drawing loop. An obj mesh file can also be generated at any time.
 */
 class CVX_MeshRender
 {
@@ -35,7 +35,7 @@ public:
 	void updateMesh(viewColoring colorScheme = MATERIAL, CVoxelyze::stateInfoType stateType = CVoxelyze::DISPLACEMENT); //!< Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme specified by the arguments. @param[in] colorScheme The coloring scheme. @param[in] stateType If colorScheme = STATE_INFO, this argument determines the state to color the object according to. Only kinetic energy, strain energy, displacement, and pressure are currently supported.
 
 	void saveObj(const char* filePath); //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
-	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPENGL is defined.
+	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPEN_GL is defined.
 
 private:
 	CVoxelyze* vx;

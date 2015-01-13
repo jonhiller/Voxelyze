@@ -15,7 +15,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <iostream>
 #include <fstream>
 
-#ifdef USE_OPENGL
+#ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
 		#include <qgl.h>
 	#else
@@ -254,7 +254,7 @@ void CVX_MeshRender::saveObj(const char* filePath)
 
 void CVX_MeshRender::glDraw()
 {
-#ifdef USE_OPENGL
+#ifdef USE_OPEN_GL
 
 	//quads
 	int qCount = quads.size()/4;
