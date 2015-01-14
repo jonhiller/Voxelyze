@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -42,7 +43,6 @@ class CVX_Material {
 	void setName(const char* name) {myName = std::string(name);} //!< Adds an optional name to the material. @param[in] name Desired name. 
 	const char* name() const {return myName.c_str();} //!< Returns the optional material name if one was specifed. Otherwise returns an empty string.
 
-//	float stress(float strain); //!<returns the stress of the material model at the specified strain. @param [in] strain The strain to query.
 	float stress(float strain, float transverseStrainSum=0.0f, bool forceLinear = false); //!<returns the stress of the material model accounting for volumetric strain effects. @param [in] strain The strain to query. The resulting stress in this direction will be returned. @param [in] transverseStrainSum The sum of the two principle normal strains in the plane perpendicular to strain. @param [in] forceLinear If true, the result will be calculated according to the elastic modulus of the material regardless of non-linearities in the model.
 	float modulus(float strain); //!<returns the modulus (slope of the stress/strain curve) of the material model at the specified strain. @param [in] strain The strain to query.
 	bool isYielded(float strain) {return epsilonYield != -1.0f && strain>epsilonYield;} //!< Returns true if the specified strain is past the yield point (if one is specified). @param [in] strain The strain to query.
@@ -98,23 +98,15 @@ class CVX_Material {
 
 
 	//size and scaling
-	//bool setNominalSize(double size); //!< Sets the nominal cubic voxel size in order to calculate mass, moments of inertia, etc of this material. In ordinary circumstances this should be controlled by the overall simulation and never called directly. Use setExternalScaleFactor() if you wish to change the size of voxels of this material. @param[in] size The size of a voxel as measured by its linear outer dimension. (units: meters)
-	//double nominalSize(){return nomSize;} //!< Returns the nominal cubic voxel size in meters.
 	void setExternalScaleFactor(Vec3D<double> factor); //!< Scales all voxels of this material by a specified factor in each dimension (1.0 is no scaling). This allows enables volumetric displacement-based actuation within a structure. As such, mass is unchanged when the external scale factor changes. Actual size is obtained by multiplying nominal size by the provided factor. @param[in] factor Multiplication factor (0, INF) for the size of all voxels of this material in its local x, y, and z axes. (unitless) 
 	void setExternalScaleFactor(double factor) {setExternalScaleFactor(Vec3D<double>(factor, factor, factor));} //!< Convenience function to specify isotropic external scaling factor. See setExternalScaleFactor(Vec3D<> factor). @param[in] factor external scaling factor (0, INF).
 	Vec3D<double> externalScaleFactor() {return extScale;} //!< Returns the current external scaling factor (unitless). See description of setExternalScaleFactor().
-	//Vec3D<double> size() {return nomSize*extScale;} //!< Returns the current nominal size (in meters) of all voxels of this material-including external scaling factors. The size is calculated according to baseSize()*externalScaleFactor(). This represents the nominal size for voxels of this material, and every instantiated voxel may have a different actual size based on the forces acting upon it in context. This value does not include thermal expansions and contractions which may also change the nominal size of a given voxel depending on its CTE and current temperature.
 
 	//thermal expansion
 	void setCte(float cte) {alphaCTE=cte;} //!< Defines the coefficient of thermal expansion. @param [in] cte Desired coefficient of thermal expansion per degree C (-INF, INF)
 	float cte() const {return alphaCTE;} //!< Returns the current coefficient of thermal expansion per degree C.
 
-	//mass and inertia
-	//float mass(){return _mass;} //!<Returns the mass of a voxel of this material in Kg. Mass cannot be specified directly. Mass is indirectly calculated according to setDensity() and setBaseSize().
-	//float momentInertia(){return _momentInertia;} //!<Returns the first moment of inertia of a voxel of this material in kg*m^2. This quantity is indirectly calculated according to setDensity() and setBaseSize().
-
 protected:
-	//CVX_Material *vox1Mat, *vox2Mat; //if a combined material, the two source materials
 	std::string error; //!< The last error encountered
 	std::string myName; //!< The name of this material. Default is "".
 	int r; //!< Red color value of this material from 0-255. Default is -1 (invalid/not set).
@@ -155,7 +147,6 @@ protected:
 
 	bool setYieldFromData(float percentStrainOffset=0.2); //!< Sets sigmaYield and epsilonYield assuming strainData, stressData, E, and failStrain are set correctly.
 	float strain(float stress); //!< Returns a simple reverse lookup of the first strain that yields this stress from data point lookup.
-
 
 	std::vector<CVX_Material*> dependentMaterials; //!< Any materials in this list will have updateDerived() called whenever it's called for this material. For example, in Voxelyze this is used for updatng link materials when one or both voxel materials change
 

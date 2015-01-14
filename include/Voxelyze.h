@@ -1,12 +1,13 @@
-//*******************************************************************************
-//Copyright (c) 2014, Jonathan Hiller (Cornell University)
-//If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
-//
-//This file is part of Voxelyze.
-//Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-//Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-//See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
-//*******************************************************************************/
+/*******************************************************************************
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
+
+This file is part of Voxelyze.
+Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
+*******************************************************************************/
 
 #ifndef VOXELYZE_H
 #define VOXELYZE_H
@@ -75,8 +76,6 @@ public:
 	void clear(); //!< Erases all voxels and materials and restores the voxelyze object to its default (empty) state.
 	bool loadJSON(const char* jsonFilePath); //!< Clears this voxelyze instance and loads fresh from a *.vxl.json file. The details of this file format are available in the Voxelyze user guide. @param[in] jsonFilePath path to the json file
 	bool saveJSON(const char* jsonFilePath); //!< Saves this voxelyze instance to a json file. All voxels are saved at their default locations - the state is not captured. It is recommended to specify the standard *.vxl.json file suffix. @param[in] jsonFilePath path to the desired json file. Will create or overwrite a file at this path.
-
-
 
 	bool doLinearSolve(/*SOLVER thisSolver, float stepPercentage = 1.0f*/); //!< Linearizes the voxelyze object and does a one-time linear solution to set the position and orientation of all voxels. The current state of the voxel object will be discarded. Currently only the pardiso solver is supported. To make use of this feature voxelyze must be built with PARDISO_5 defined in the preprocessor. A valid pardiso 5 license file and library file (i.e libpardiso500-WIN-X86-64.dll for windows) should be obtained from www.pardiso-project.org and placed in the directory your executable will be run from.
 
@@ -153,9 +152,6 @@ private:
 	CVX_MaterialLink* combinedMaterial(CVX_MaterialVoxel* mat1, CVX_MaterialVoxel* mat2); //returns a pointer to a combined material of the two provided materials. if the materials are identical, it just returns that. Otherwise checks if it exists in linkMats at returns that. Otherwise, generates the combined material, adds it to linkMats, and returns a pointer to it.
 	std::list<CVX_MaterialLink*> linkMats; //any generated material combinations
 
-	//	CVX_Voxel* voxel(int xIndex, int yIndex, int zIndex);
-//	CVX_Link* link(int xIndex, int yIndex, int zIndex, linkDirection direction) const;
-	
 	CVX_Voxel* addVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, int yIndex, int zIndex); //creates a new voxel if there isn't one here. Otherwise
 	void removeVoxel(int xIndex, int yIndex, int zIndex);
 	void replaceVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, int yIndex, int zIndex); //replaces the material of this voxel while retaining its position, velocity, etc.
@@ -164,7 +160,6 @@ private:
 	CArray3D<CVX_Voxel*> voxels; //main voxel array 3D lookup
 	std::vector<CVX_Voxel*> voxelsList; //main list of existing voxels (no particular order) (always kept syncd with voxels)
 
-	//maybe don't need this 3D array?
 	CArray3D<CVX_Link*> links[3]; //main link arrays in the X[0], Y[1] and Z[2] directions. (0,0,0) is the bond pointting in the positive direction from voxel (0,0,0)
 	std::vector<CVX_Link*> linksList; //main list of all existing links (no particular order) (always kept syncd with voxels)
 
@@ -177,25 +172,16 @@ private:
 	int xIndexVoxelOffset(CVX_Voxel::linkDirection direction) const {return (direction == CVX_Voxel::X_NEG) ? -1 : ((direction == CVX_Voxel::X_POS) ? 1 : 0);} //the voxel X index offset of a voxel across a link in the specified direction
 	int yIndexVoxelOffset(CVX_Voxel::linkDirection direction) const {return (direction == CVX_Voxel::Y_NEG) ? -1 : ((direction == CVX_Voxel::Y_POS) ? 1 : 0);} //the voxel Y index offset of a voxel across a link in the specified direction
 	int zIndexVoxelOffset(CVX_Voxel::linkDirection direction) const {return (direction == CVX_Voxel::Z_NEG) ? -1 : ((direction == CVX_Voxel::Z_POS) ? 1 : 0);} //the voxel Z index offset of a voxel across a link in the specified direction
-	//updateCollisionList()
 
-	//float envTemp; //environment temperature
-	//bool collisionsInvalid; //set to true if we need to recalculate all collisions from scratch
 	std::vector<CVX_Collision*> collisionsList;
 	bool collisionsStale, nearbyStale; //flags to recalculate collision lists and voxel nearby lists.
 
 	void updateCollisions();
-	//bool collisionsInvalid(float maxDistanceSq); //returns true if any voxels have moved further than maxDistanceSq from the last position collisions were calculated
 	void clearCollisions(); //remove all existing collisions
 	void regenerateCollisions(float threshRadiusSq);
-	//void addConnectedVoxelsToList(CVX_Voxel* pV, std::list<CVX_Voxel*>* pList, Vec3D<>* pBeginLocation, float searchRadiusSq);
-	//convenience only...:
-	//bool isInList(CVX_Voxel* pV, std::list<CVX_Voxel*>* pList) {return std::find(pList->begin(), pList->end(), pV) != pList->end();} //returns true if the specified voxel is in the list
-	//bool isInVector(CVX_Voxel* pV, std::vector<CVX_Voxel*>* pVector) {return std::find(pList->pVector(), pVector->end(), pV) != pVector->end();} //returns true if the specified voxel is in the list
 
 	bool writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
 	bool readJSON(rapidjson::Value& vxl);
-	//void addJSON(rapidjson::Writer* pW);
 
 };
 

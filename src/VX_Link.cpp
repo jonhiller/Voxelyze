@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,28 +18,9 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <iostream>
 #endif
 
-////we can do better...
-//#ifdef PREC_LOW
-//	static const vfloat SA_BOND_BEND_RAD = 0.1; //Amount for small angle bond calculations
-//#elif defined PREC_HIGH
-//	static const vfloat SA_BOND_BEND_RAD = 0.02; //Amount for small angle bond calculations
-//#elif defined PREC_MAX 
-//	static const vfloat SA_BOND_BEND_RAD = 0.002; //Amount for small angle bond calculations
-//#else //defined PREC_MED 
-////	static const vfloat SA_BOND_BEND_RAD = 0.5; //Amount for small angle bond calculations
-//	static const vfloat SA_BOND_BEND_RAD = 0.05; //Amount for small angle bond calculations
-//
-//#endif
-
-
 static const float HYSTERESIS_FACTOR = 1.2f; //Amount for small angle bond calculations
-
 static const float SA_BOND_BEND_RAD = 0.05f; //Amount for small angle bond calculations
-
-
-//static const vfloat SA_BOND_EXT_PERC = 0.10; //Amount for small angle bond calculations
 static const float SA_BOND_EXT_PERC = 0.50f; //Amount for small angle bond calculations
-//end we can do better
 
 
 CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, linkDirection direction*/)
@@ -69,16 +51,6 @@ CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* mater
 
 	if (reverseOrder){ pVNeg=voxel2; pVPos=voxel1; }
 	else { pVNeg=voxel1; pVPos=voxel2; }
-
-	//if (isPositive(direction)){
-	//	pVNeg=voxel1;
-	//	pVPos=voxel2;
-	//}
-	//else {
-	//	pVNeg=voxel2;
-	//	pVPos=voxel1;
-	//}
-	//axis = toAxis(direction);
 
 	mat=material;
 
@@ -149,7 +121,6 @@ Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle
 float CVX_Link::axialStrain(bool positiveEnd) const
 {
 	return positiveEnd ? 2.0f*strain*strainRatio/(1.0f+strainRatio) : 2.0f*strain/(1.0f+strainRatio);
-//	return positiveEnd ? 2.0f*strain/(1.0f+strainRatio) : 2.0f*strain*strainRatio/(1.0f+strainRatio);
 }
 
 
@@ -179,8 +150,6 @@ void CVX_Link::updateForces()
 {
 	Vec3D<double> oldPos2 = pos2, oldAngle1v = angle1v, oldAngle2v = angle2v; //remember the positions/angles from last timestep to calculate velocity
 
-//	double restLength = 0.5*(pVNeg->nominalSize(axis) + pVPos->nominalSize(axis));
-//	Quat3D<double> rotation = 
 	orientLink(/*restLength*/); //sets pos2, angle1, angle2
 
 	Vec3D<double> dPos2 = 0.5*(pos2-oldPos2); //deltas for local damping. velocity at center is half the total velocity
@@ -189,7 +158,6 @@ void CVX_Link::updateForces()
 	
 	//if volume effects...
 	if (!mat->isXyzIndependent() || currentTransverseStrainSum != 0) updateTransverseInfo(); //currentTransverseStrainSum != 0 catches when we disable poissons mid-simulation
-	//updateTransverseInfo();
 
 	_stress = updateStrain((float)(pos2.x/currentRestLength));
 	if (isFailed()){forceNeg = forcePos = momentNeg = momentPos = Vec3D<double>(0,0,0); return;}
@@ -211,8 +179,6 @@ void CVX_Link::updateForces()
 
 	//local damping:
 	if (isLocalVelocityValid()){ //if we don't have the basis for a good damping calculation, don't do any damping.
-//		assert(pVNeg->previousDt == pVPos->previousDt); //in the future this may change, but for now assume synchronous timestep.
-
 		float sqA1=mat->_sqA1, sqA2xIp=mat->_sqA2xIp,sqB1=mat->_sqB1, sqB2xFMp=mat->_sqB2xFMp, sqB3xIp=mat->_sqB3xIp;
 		Vec3D<double> posCalc(	sqA1*dPos2.x,
 								sqB1*dPos2.y - sqB2xFMp*(dAngle1.z+dAngle2.z),

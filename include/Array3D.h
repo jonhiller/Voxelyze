@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2012, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

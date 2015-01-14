@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -40,7 +41,6 @@ class CVX_Link {
 	};
 
 
-
 	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link.
 	void reset(); //!< Resets all current state information about this link to the initial value.
 
@@ -66,10 +66,7 @@ class CVX_Link {
 	void updateTransverseInfo(); //!< Updates information about this voxel pertaining to volumetric deformations. Call this every timestep if the poisson's ratio of the link material is non-zero.
 
 
-
-
 private:
-
 	CVX_Voxel* pVNeg, *pVPos; //voxels in the negative
 	Vec3D<> forceNeg, forcePos;
 	Vec3D<> momentNeg, momentPos;

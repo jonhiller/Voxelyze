@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -11,15 +12,12 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #ifndef VX_VOXEL_H
 #define VX_VOXEL_H
 
-//class CVX_Link;
 #include "Vec3D.h"
 #include "VX_Link.h"
 #include "VX_External.h"
-//#include "VX_Enums.h"
 #include "VX_MaterialVoxel.h" //needed for inline of some "get" functions
 #include "VX_Collision.h"
 #include <list>
-
 
 
 //!Defines a specific instance of a voxel and holds its current state.
@@ -105,8 +103,6 @@ public:
 	float volumetricStrain() const {return (float)(strain(false).x+strain(false).y+strain(false).z);} //!< Returns the volumetric strain of the voxel according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 	float pressure() const {return -mat->youngsModulus()*volumetricStrain()/(3*(1-2*mat->poissonsRatio()));} //!< Returns the engineering internal "pressure" in Pa according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 
-	//float voxelInfo(voxelInfoType type) const;
-
 	//material state
 	bool isYielded() const; //!< Returns true if the stress in this voxel has ever exceeded the yield stress. Technically, this returns true if any of the connected links have yielded since the stress state of the voxel is never expressly calculated.
 	bool isFailed() const; //!< Returns true if the stress in this voxel has ever exceeded the failure stress. Technically, this returns true if any of the connected links have failed since the stress state of the voxel is never expressly calculated.
@@ -115,29 +111,11 @@ public:
 	float temperature() {return temp;} //!< Returns the current temperature of this voxel in degrees Celsius.
 	void setTemperature(float temperature); //!< Specifies the temperature for this voxel. This adds (or subtracts) the correct amount of thermal energy to leave the voxel at ths specified temperature, but this temperature will not be maintaned without subsequent determines the amount of scaling from the temperature
 
-//	void addThermalEnergy(float energy); //adds a fixed amount of energy
-//	void fixTemperature(float temperature); //fixes temperature at the 
-
 	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return any applied external forces. If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
-//	void setExternalForce(const float xForce, const float yForce, const float zForce) {extForce = Vec3D<float>(xForce, yForce, zForce);} //!< Applies forces to this voxel in the global coordinate system. Has no effect in any fixed degrees of freedom. @param xForce Force in the X direction in newtons.  @param yForce Force in the Y direction in newtons.  @param zForce Force in the Z direction in newtons. 
-//	void setExternalForce(const Vec3D<float>& force) {extForce = force;} //!< Convenience function for setExternalForce(float, float, float).
 	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return any applied external moments. If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
-//	void setExternalMoment(const float xMoment, const float yMoment, const float zMoment) {extMoment = Vec3D<float>(xMoment, yMoment, zMoment);}  //!< Applies moments to this voxel in the global coordinate system. All rotations according to the right-hand rule. Has no effect in any fixed degrees of freedom. @param xMoment Moment in the X axis rotation in newton-meters. @param yMoment Moment in the Y axis rotation in newton-meters. @param zMoment Moment in the Z axis rotation in newton-meters. 
-//	void setExternalMoment(const Vec3D<float>& moment) {extMoment = moment;} //!< Convenience function for setExternalMoment(float, float, float).
 
 	void haltMotion(){linMom = angMom = Vec3D<>(0,0,0);} //!< Halts all momentum of this block. Unless fixed the voxel will continue to move in subsequent timesteps.
 
-//	void setFixed(bool xTranslate, bool yTranslate, bool zTranslate, bool xRotate, bool yRotate, bool zRotate); //!< Set the specified true degrees of freedom as fixed for this voxel. (GCS) @param[in] xTranslate Translation in the X direction  @param[in] yTranslate Translation in the Y direction @param[in] zTranslate Translation in the Z direction @param[in] xRotate Rotation about the X axis @param[in] yRotate Rotation about the Y axis @param[in] zRotate Rotation about the Z axis
-//	void setFixed(dofComponent dof, float displacement=0.0f); //!< Sets the specified degree of freedom to fixed and applies the prescribed displacement. @param[in] dof Degree of freedom to fix according to the dofComponent enum. @param[in] displacement The prescribed displacement in meters for translational degrees of freedom and radians for rotational degrees of freedom.
-//	void setFixedAll(const Vec3D<>& translation = Vec3D<>(0,0,0), const Vec3D<>& rotation = Vec3D<>(0,0,0)); //!<Fixes all 6 degrees of freedom for this voxel. @param [in] translation Translation in meters to prescribe (GCS). @param[in] rotation Rotation in radians to prescribe. Applied in the order of X, Y, Z rotation in the global coordinate system.
-//	void setUnfixed(dofComponent dof) {dofSet(dofFixed, dof, false);} //!< Sets the specified degree of freedom to unfixed @param[in] dof Degree of freedom to fix according to the dofComponent enum.
-//	void setUnfixedAll() {dofSetAll(dofFixed, false);} //!< Unfixes all 6 degrees of freedom for this voxel.
-//	bool isFixed(dofComponent dof) const {return dofIsSet(dofFixed, dof);}  //!< Returns true if the specified degree of freedom is fixed for this voxel. @param[in] dof Degree of freedom to query according to the dofComponent enum.
-//	bool isFixedAll() const {return dofIsAllSet(dofFixed);} //!< Returns true if all 6 degrees of freedom are fixed for this voxel.
-
-	//float gravity() const {return gravAccel;}
-	//void setGravityAccel(float gravityAcceleration) {gravAccel = gravityAcceleration;}
-	//bool isGravityEnabled() const {gravAccel != 0.0f;}
 	void enableFloor(bool enabled) {enabled ? boolStates |= FLOOR_ENABLED : boolStates &= ~FLOOR_ENABLED;} //!< Enables this voxel interacting with the floor at Z=0. @param[in] enabled Enable interaction
 	bool isFloorEnabled() const {return boolStates & FLOOR_ENABLED ? true : false;} //!< Returns true of this voxel will interact with the floor at Z=0.
 	bool isFloorStaticFriction() const {return boolStates & FLOOR_STATIC_FRICTION ? true : false;} //!< Returns true if this voxel is in contact with the floor and stationary in the horizontal directions. This corresponds to that voxel being in the mode of static friction (as opposed to kinetic) with the floor.
@@ -145,9 +123,6 @@ public:
 
 	Vec3D<double> force(); //!< Calculates and returns the sum of the current forces on this voxel. This would normally only be called internally, but can be used to query the state of a voxel for visualization or debugging.
 	Vec3D<double> moment(); //!< Calculates and returns the sum of the current moments on this voxel. This would normally only be called internally, but can be used to query the state of a voxel for visualization or debugging.
-
-	//float dynamicStiffness() const;
-
 
 	float transverseArea(CVX_Link::linkAxis axis); //!< Returns the transverse area of this voxel with respect to the specified axis. This would normally be called only internally, but can be used to calculate the correct relationship between force and stress for this voxel if Poisson's ratio is non-zero.
 	float transverseStrainSum(CVX_Link::linkAxis axis); //!< Returns the sum of the current strain of this voxel in the two mutually perpindicular axes to the specified axis. This would normally be called only internally, but can be used to correctly calculate stress for this voxel if Poisson's ratio is non-zero.
@@ -169,9 +144,7 @@ private:
 		SURFACE = 1<<1, //on the surface?
 		FLOOR_ENABLED = 1<<2, //interact with a floor at z=0?
 		FLOOR_STATIC_FRICTION = 1<<3, //is the voxel in a state of static friction with the floor?
-	//	GRAVITY_ENABLED = 1<<4 //should this voxel respond to gravity?
 		COLLISIONS_ENABLED = 1<<5
-//		COLLISIONS_STALE = 1<<6
 	};
 
 	CVX_MaterialVoxel* mat;
@@ -195,15 +168,9 @@ private:
 	voxState boolStates;				//single int to store many boolean state values as bit flags according to 
 	void setFloorStaticFriction(bool active) {active? boolStates |= FLOOR_STATIC_FRICTION : boolStates &= ~FLOOR_STATIC_FRICTION;}
 
-	//dofObject dofFixed;
-	
-	//potential inputs affecting this local voxel
-	//Vec3D<float> extForce, extMoment; //External force, moment applied to this voxel (N, N-m) if relevant DOF are unfixed
-
 	float temp; //0 is no expansion
 
 	void floorForce(float dt, Vec3D<double>* pTotalForce); //modifies pTotalForce to include the object's interaction with a floor. This should be calculated as the last step of sumForce so that pTotalForce is complete.
-
 
 
 	Vec3D<float> strain(bool poissonsStrain) const; //LCS returns voxel strain. if tensionStrain true and no actual tension in that
@@ -212,11 +179,9 @@ private:
 	Vec3D<float> pStrain; //cached poissons strain
 	bool poissonsStrainInvalid; //flag for recomputing poissons strain.
 
-
 	void eulerStep(float dt); //execute an euler time step at the specified dt
 	float previousDt; //remember the duration of the last timestep of this voxel
 
-	//collision - recalculate when
 	void updateSurface();
 	void enableCollisions(bool enabled, float watchRadius = 0.0f); //watchRadius in voxel units
 	bool isCollisionsEnabled() const {return boolStates & COLLISIONS_ENABLED ? true : false;}
@@ -228,9 +193,6 @@ private:
 
 
 	friend class CVoxelyze; //give access to private members directly
-	//friend class CVX_Link;
-	//friend class CVX_Collision;
-
 	friend class CVXS_SimGLView; //TEMPORARY
 	friend class CVX_LinearSolver;
 

@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -20,11 +21,6 @@ CVX_MaterialLink::CVX_MaterialLink(CVX_MaterialVoxel* mat1, CVX_MaterialVoxel* m
 	updateAll();
 
 }
-
-//CVX_MaterialLink::~CVX_MaterialLink(void)
-//{
-//
-//}
 
 CVX_MaterialLink& CVX_MaterialLink::operator=(const CVX_MaterialLink& vIn)
 {
@@ -67,7 +63,6 @@ bool CVX_MaterialLink::updateAll()
 
 	//failure stress (f) is the minimum of the two failure stresses, or if both are -1.0f it should also be -1.0f to denote no failure specified
 	float stressFail=-1.0f, /*strainFail=-1.0f,*/ f1=vox1Mat->sigmaFail, f2=vox2Mat->sigmaFail;
-	//bool foundStrainFail = false;
 	if (f1 == -1.0f) stressFail = f2; //-1.0f or vox2Mat fail
 	else if (f2 == -1.0f) stressFail = f1; //vox1Mat fail
 	else stressFail = f1 < f2 ? f1 : f2; //the lesser stress denotes failure
@@ -119,9 +114,6 @@ bool CVX_MaterialLink::updateAll()
 		float c2 = (tmpEHat-tmpE)/(2*tmpEHat)+0.0625; //nu^2+0.5nu+0.0625 = c2 -> (nu+0.25)^2 = c2
 		nu = sqrt(c2)-0.25; //from solving above
 	}
-
-//	nu = std::max(vox1Mat->nu, vox2Mat->nu); //best guess
-//	nu = 0.5f*(vox1Mat->nu + vox2Mat->nu); //best guess
 
 	return updateDerived();
 }

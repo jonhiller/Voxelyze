@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -14,7 +15,8 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_Material.h"
 
 //!Defines a voxel type of a specific material.
-/*!The only fundamental addition to CVX_Material is the physical size of the voxel, but this allows precomputing of mass, moments of inertia, and therefore all the dynamic properties of these voxels. 
+/*!
+The only fundamental addition to CVX_Material is the physical size of the voxel, but this allows precomputing of mass, moments of inertia, and therefore all the dynamic properties of these voxels. 
 */
 
 class CVX_MaterialVoxel : public CVX_Material {

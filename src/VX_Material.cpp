@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -10,16 +11,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #include "VX_Material.h"
 #include <assert.h>
-
-//if any of these change, it has implications on save files.
-//#define DEFAULT_YOUNGSMODULUS 1000000.0f
-//#define DEFAULT_YIELDSTRESS -1.0f
-//#define DEFAULT_FAILURESTRESS -1.0f
-//#define DEFAULT_POISSONSRATIO 0.0f
-//#define DEFAULT_DENSITY 1000.0f
-//#define DEFAULT_CTE 0.0f;
-//#define DEFAULT_STATICFRICTION 0.0f;
-//#define DEFAULT_KINETICFRICTION 0.0f;
 
 CVX_Material::CVX_Material(float youngsModulus, float density)
 {
@@ -101,8 +92,6 @@ void CVX_Material::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w
 		for (int i=0; i<(int)stressData.size(); i++) w.Double((double)stressData[i]);
 		w.EndArray();
 
-		//if (epsilonYield != -1){ w.Key("epsilonYield");	w.Double((double)epsilonYield);}
-		//if (epsilonFail != -1){	w.Key("epsilonFail");		w.Double((double)epsilonFail);}
 	}
 
 
@@ -172,23 +161,6 @@ bool CVX_Material::readJSON(rapidjson::Value& m)
 
 	return true;
 }
-
-//float CVX_Material::stress(float strain)
-//{
-//	if (isFailed(strain)) return 0.0f; //if a failure point is set and exceeded, we've broken!
-//	if (strain <= strainData[1] || linear) return E*strain; //for compression/first segment and linear materials, simple calculation
-//
-//	int DataCount = modelDataPoints();
-//	for (int i=2; i<DataCount; i++){ //go through each segment in the material model (skipping the first segment because it has already been handled.
-//		if (strain <= strainData[i] || i==DataCount-1){ //if in the segment ending with this point (or if this is the last point extrapolate out
-//			float Perc = (strain-strainData[i-1])/(strainData[i]-strainData[i-1]);
-//			return stressData[i-1] + Perc*(stressData[i]-stressData[i-1]);
-//		}
-//	}
-//
-//	assert(false); //should never reach this point
-//	return 0.0f;
-//}
 
 float CVX_Material::stress(float strain, float transverseStrainSum, bool forceLinear)
 {
@@ -342,7 +314,6 @@ bool CVX_Material::setModel(int dataPointCount, float* pStrainValues, float* pSt
 
 		if (thisStress <= sweepStress){
 			error = "Stress data is not monotonically increasing";
-//			return false;
 		}
 
 		if (i>0 && (thisStress-sweepStress)/(thisStrain-sweepStrain) > tmpStressData[0]/tmpStrainData[0]){
@@ -471,8 +442,6 @@ bool CVX_Material::setYieldFromData(float percentStrainOffset)
 	float oM = E; //the offset line slope (y=Mx+B)
 	float oB = (-percentStrainOffset/100*oM); //offset line intercept (100 factor turns percent into absolute
 
-	//float tmpYieldStr = sigmaFail; //assume yield stress is the failure stress value unless we find a better one...
-	
 	assert(strainData.size() == stressData.size());
 	assert(strainData.size() > 2); // more than 2 data points (more than bilinear)
 	int dataPoints = strainData.size()-1;

@@ -1,6 +1,7 @@
 /*******************************************************************************
-Copyright (c) 2010, Jonathan Hiller (Cornell University)
-If used in publication cite "J. Hiller and H. Lipson "Dynamic Simulation of Soft Heterogeneous Objects" In press. (2011)"
+Copyright (c) 2015, Jonathan Hiller
+To cite academic use of Voxelyze: Jonathan Hiller and Hod Lipson "Dynamic Simulation of Soft Multimaterial 3D-Printed Objects" Soft Robotics. March 2014, 1(1): 88-101.
+Available at http://online.liebertpub.com/doi/pdfplus/10.1089/soro.2013.0010
 
 This file is part of Voxelyze.
 Voxelyze is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -19,14 +20,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 //some static info to reference in the algorithms
 static int blockOff[6][3] = {{0,4,5},{1,3,5},{2,3,4},{1,2,3},{0,2,4},{0,1,5}};
 static dofComponent dofMap[6] = {X_TRANSLATE, Y_TRANSLATE, Z_TRANSLATE, X_ROTATE, Y_ROTATE, Z_ROTATE};
-
-//#ifdef PARDISO_5
-//#ifdef _win32
-//	#pragma comment (lib, "libpardiso500-WIN-X86-64.lib") //link to the Pardiso library
-//#endif
-//extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, double* dparm, int* error);
-//extern "C" void pardiso (void* pt, int* maxfct, int* mnum, int* mtype, int* phase, int* n, double* a, int* ia, int* ja, int* perm, int* nrhs, int* iparm, int* msglvl, double* b, double* x, int* error, double* dparm);
-//#endif
 
 CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 {
@@ -69,7 +62,7 @@ bool CVX_LinearSolver::solve() //formulates and solves system!
 	calculateA();
 	applyBX();
 	convertTo1Base();
-	//OutputMatrices();
+	//OutputMatrices(); //uncomment to output info for small systems
 
 	if (dof == 0){ errorMsg = "No free degrees of freedom found. Aborting.\n"; return false;}
 
