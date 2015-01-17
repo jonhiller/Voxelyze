@@ -45,13 +45,13 @@ TEST(CVX_MaterialLink, combineNonlinearMaterials){
 	CVX_MaterialLink Mat3(&Mat1, &Mat2);
 
 	ASSERT_FLOAT_EQ(4.0f/3.0f, Mat3.youngsModulus());
-	ASSERT_FLOAT_EQ(4.0f/3.0f, Mat3.modulus(0.5));
-	ASSERT_FLOAT_EQ(2.0f/2.5f, Mat3.modulus(1.5));
-	ASSERT_FLOAT_EQ(0.0f, Mat3.modulus(2.5));
-	ASSERT_FLOAT_EQ(0.0f, Mat3.modulus(3.5));
+	ASSERT_FLOAT_EQ(4.0f/3.0f, Mat3.modulus(0.5f));
+	ASSERT_FLOAT_EQ(2.0f/2.5f, Mat3.modulus(1.5f));
+	ASSERT_FLOAT_EQ(0.0f, Mat3.modulus(2.5f));
+	ASSERT_FLOAT_EQ(0.0f, Mat3.modulus(3.5f));
 
-	ASSERT_FALSE(Mat3.isFailed(1.8));
-	ASSERT_TRUE(Mat3.isFailed(1.9));
+	ASSERT_FALSE(Mat3.isFailed(1.8f));
+	ASSERT_TRUE(Mat3.isFailed(1.9f));
 
 	//neither with failure stress
 	CVX_MaterialVoxel Mat4, Mat5;
@@ -60,11 +60,11 @@ TEST(CVX_MaterialLink, combineNonlinearMaterials){
 
 	CVX_MaterialLink Mat6(&Mat4, &Mat5);
 
-	ASSERT_FLOAT_EQ(2.0f/2.5f, Mat6.modulus(1.5));
-	ASSERT_FLOAT_EQ(1.0/1.5f, Mat6.modulus(2.5));
-	ASSERT_FLOAT_EQ(1.0/1.5f, Mat6.modulus(3.5));
+	ASSERT_FLOAT_EQ(2.0f/2.5f, Mat6.modulus(1.5f));
+	ASSERT_FLOAT_EQ(1.0f/1.5f, Mat6.modulus(2.5f));
+	ASSERT_FLOAT_EQ(1.0f/1.5f, Mat6.modulus(3.5f));
 
-	ASSERT_FALSE(Mat6.isFailed(1.8));
-	ASSERT_FALSE(Mat6.isFailed(1.9));
-	ASSERT_FALSE(Mat6.isFailed(3.5));
+	ASSERT_FALSE(Mat6.isFailed(1.8f));
+	ASSERT_FALSE(Mat6.isFailed(1.9f));
+	ASSERT_FALSE(Mat6.isFailed(3.5f));
 }

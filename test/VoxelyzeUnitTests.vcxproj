@@ -87,6 +87,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Mesh3D.cpp" />
     <ClCompile Include="..\src\Voxelyze.cpp" />
     <ClCompile Include="..\src\VX_Collision.cpp" />
     <ClCompile Include="..\src\VX_External.cpp" />
@@ -100,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tArray3D.h" />
+    <ClInclude Include="tMesh3D.h" />
     <ClInclude Include="tVoxelyze.h" />
     <ClInclude Include="tVX_Material.h" />
     <ClInclude Include="tVX_MaterialLink.h" />

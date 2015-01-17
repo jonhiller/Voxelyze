@@ -36,6 +36,7 @@ public:
 	//Constructors
 	Vec3D() :x(0), y(0), z(0) {} //!< Constructor. Initialzes x, y, z to zero.
 	Vec3D(const T dx, const T dy, const T dz) {x = dx; y = dy; z = dz;} //!< Constructor with specified individual values.
+	Vec3D(const T * pBegin) {x = *pBegin; y = *(pBegin+1); z = *(pBegin+2);} //!< Constructor to create a Vec3D from three values in consectutive memory locations (i.e. in a vector). @param[in] pBegin pointer to the x value. Must be followed immediately in memory by y and z.
 	Vec3D(const Vec3D& s) {x = s.x; y = s.y; z = s.z;} //!< Copy constructor.
 
 #ifdef WIN32

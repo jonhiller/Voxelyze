@@ -1,8 +1,8 @@
-#include "../VX_MaterialVoxel.h"
+#include "../include/VX_MaterialVoxel.h"
 
 
 TEST(CVX_MaterialVoxel, sizes){
-	CVX_Material mat;
+	CVX_MaterialVoxel mat;
 	mat.setNominalSize(0.002);
 	mat.setDensity(100.0f);
 	EXPECT_FLOAT_EQ(mat.mass(), 8e-7f);
