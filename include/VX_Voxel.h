@@ -100,6 +100,7 @@ public:
 	Vec3D<double> angularVelocity() const {return angMom*mat->_momentInertiaInverse;} //!< Returns the 3D angular velocity of this voxel in rad/s (GCS)
 	float angularVelocityMagnitude() const {return (float)(angMom.Length()*mat->_momentInertiaInverse);} //!< Returns the angular velocity of this voxel in rad/s.
 	float kineticEnergy() const {return (float)(0.5*(mat->_massInverse*linMom.Length2() + mat->_momentInertiaInverse*angMom.Length2()));} //!< Returms the kinetic energy of this voxel in Joules.
+	float strainEnergy() const; //!<Returns an approximation of the strain energy contained in this voxels.
 	float volumetricStrain() const {return (float)(strain(false).x+strain(false).y+strain(false).z);} //!< Returns the volumetric strain of the voxel according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 	float pressure() const {return -mat->youngsModulus()*volumetricStrain()/(3*(1-2*mat->poissonsRatio()));} //!< Returns the engineering internal "pressure" in Pa according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 

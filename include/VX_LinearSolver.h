@@ -65,7 +65,7 @@ private: //off limits variable and functions (internal)
 	void calculateA(); //calculates the a (stiffness) matrix!
 	void addAValue(int row, int column, float value);
 	void consolidateA(); //gets rid of all the zeros for solving!
-	void applyBX(); //apply forces and fixe boundary conditions
+	void applyBX(); //apply forces and fixed boundary conditions
 	void convertTo1Base(); //convert to 1-based indices for pardiso:
 	void postResults(); //overwrites state of voxelyze object with the results
 	void OutputMatrices(); //for debugging small system only!!

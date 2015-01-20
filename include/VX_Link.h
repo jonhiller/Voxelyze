@@ -58,6 +58,7 @@ class CVX_Link {
 	bool isFailed() const; //!< Returns true if the stress on this bond has ever exceeded its failure stress
 
 	float strainEnergy() const; //!< Calculates and return the strain energy of this link according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
+	float strainEnergy(bool positiveEnd) const; //!< Calculates and return the strain energy of the half of the link contained in the specified voxel according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
 	float axialStiffness(); //!< Calculates and returns the current linear axial stiffness of this link at it's current strain.
 
 	void updateForces(); //!< Called every timestep to calculate the forces and moments acting between the two constituent voxels in their current relative positions and orientations.
@@ -96,7 +97,7 @@ private:
 
 
 	CVX_MaterialLink* mat;
-	float strainRatio; //ration of Epos to Eneg (EPos/Eneg)
+	float strainRatio; //ratio of Epos to Eneg (EPos/Eneg)
 
 	Vec3D<double> pos2, angle1v, angle2v; //pos1 is always = 0,0,0
 	Quat3D<double> angle1, angle2; //this bond in local coordinates. 

@@ -17,6 +17,7 @@ TEST(Mesh3D, MarchCubeSimple){
 	EXPECT_EQ(mesh.meshMin().z, -0.5f);
 	EXPECT_EQ(mesh.meshMax().z, 0.5f);
 
+	mesh.save("MarchCubeSimple.stl");
 }
 
 TEST(Mesh3D, MarchCubeScale){
@@ -70,5 +71,8 @@ TEST(Mesh3D, MarchCube2){
 	EXPECT_EQ(mesh.meshMax().y, 0.5f);
 	EXPECT_EQ(mesh.meshMin().z, -0.5f);
 	EXPECT_EQ(mesh.meshMax().z, 0.5f);
+
+	mesh.save("MarchCube2.stl");
+
 
 }

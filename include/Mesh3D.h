@@ -88,13 +88,13 @@ class CMesh3D
 {
 public:
 	CMesh3D(void) {clear();}
-	CMesh3D(std::string& filePath); //only stl supported currently
+	CMesh3D(const char* filePath); //only stl supported currently
 	CMesh3D(CArray3D<float>& values, float threshold, float scale = 1.0f);
 	//virtual ~CMesh(){};
 
 	void clear();
-	bool load(std::string& filePath); //stl
-	bool save(std::string& filePath); //stl or obj (color) //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
+	bool load(const char* filePath); //stl
+	bool save(const char* filePath); //stl or obj (color) //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
 
 	void addTriangle(Vec3D<float>& p1, Vec3D<float>& p2, Vec3D<float>& p3); //assummed ccw order
 	int triangleCount() {return triangles.size()/3;}

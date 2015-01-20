@@ -33,7 +33,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #define STL_LABEL_SIZE 80
 
-CMesh3D::CMesh3D(std::string& filePath)
+CMesh3D::CMesh3D(const char* filePath)
 {
 	load(filePath);
 }
@@ -71,18 +71,26 @@ void CMesh3D::meshChanged()
 }
 
 
-bool CMesh3D::load(std::string& filePath)
+bool CMesh3D::load(const char* filePath)
 {
-	std::string fileExt = filePath.substr(filePath.find_last_of(".") + 1);
-	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return loadSTL(filePath);
+	std::string fPath(filePath);
+	std::string fileExt = fPath.substr(fPath.find_last_of(".") + 1);
+	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return loadSTL(fPath);
 	else return false; //unsupported file type
 }
 
-bool CMesh3D::save(std::string& filePath)
+bool CMesh3D::save(const char* filePath)
 {
-	std::string fileExt = filePath.substr(filePath.find_last_of(".") + 1);
-	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return saveSTL(filePath);
-	if (fileExt == "obj" || fileExt == "OBJ" || fileExt == "Obj") return saveOBJ(filePath);
+	std::string fPath(filePath);
+
+	if (faceNormalsStale) calcFaceNormals();
+
+	std::string fileExt = fPath.substr(fPath.find_last_of(".") + 1);
+	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return saveSTL(fPath);
+	if (fileExt == "obj" || fileExt == "OBJ" || fileExt == "Obj"){
+		if (vertexNormalsStale) calcVertNormals();
+		return saveOBJ(fPath);
+	}
 	else return false; //unsupported file type
 }
 
@@ -96,7 +104,7 @@ void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 	if (vertexColors.size() != 0) for (int i=0; i<9; i++) vertexColors.push_back(0);
 	vertexNormalsStale = true;
 
-	for (int i=0; i<3; i++) triangles.push_back(vIndexStart+i);
+	for (int i=0; i<3; i++) triangles.push_back(vIndexStart/3+i);
 	if (triangleColors.size() != 0) for (int i=0; i<3; i++) vertexColors.push_back(0);
 
 //	Vec3D<float> N = ((p1-p0).Cross(p2-p0)).Normalized();
@@ -414,9 +422,12 @@ bool CMesh3D::saveOBJ(std::string& filePath) const
 	for (int i=0; i<(int)(vertices.size()/3); i++){
 		ofile << "v " << vertices[3*i] << " " << vertices[3*i+1] << " " << vertices[3*i+2] << "\n";
 	}
+	for (int i=0; i<(int)(vertices.size()/3); i++){
+		ofile << "vn " << vertexNormals[3*i] << " " << vertexNormals[3*i+1] << " " << vertexNormals[3*i+2] << "\n";
+	}
 
-	for (int i=0; i<(int)(triangles.size()/4); i++){
-		ofile << "f " << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "\n";
+	for (int i=0; i<(int)(triangles.size()/3); i++){
+		ofile << "f " << triangles[3*i]+1 << "//" << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << "//" << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "//" << triangles[3*i+2]+1 << "\n";
 	}
 	ofile.close();
 	return true;
