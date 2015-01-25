@@ -258,8 +258,8 @@ float CVX_Link::strainEnergy() const
 
 float CVX_Link::strainEnergy(bool positiveEnd) const
 {
-	if (positiveEnd) return 1/(1+strainRatio);
-	else return strainRatio/(1+strainRatio);
+	if (positiveEnd) return strainEnergy()/(1+strainRatio);
+	else return strainEnergy()*strainRatio/(1+strainRatio);
 }
 
 

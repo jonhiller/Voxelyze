@@ -97,8 +97,8 @@ public:
 	bool save(const char* filePath); //stl or obj (color) //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
 
 	void addTriangle(Vec3D<float>& p1, Vec3D<float>& p2, Vec3D<float>& p3); //assummed ccw order
-	int triangleCount() {return triangles.size()/3;}
-	int vertexCount() {return vertices.size()/3;}
+	int triangleCount() {return (int)(triangles.size()/3);}
+	int vertexCount() {return (int)(vertices.size()/3);}
 
 
 	bool isInside(Vec3D<float> point);
@@ -140,8 +140,9 @@ protected:
 private:
 	bool normalsByVertex, colorsByVertex; //normals / colors drawn from vertices (vs by facet)
 
-	bool vertexNormalsStale, faceNormalsStale, boundsStale;
+	bool vertexNormalsStale, vertexMergesStale, faceNormalsStale, boundsStale;
 
+	void mergeVertices(int precision = 10); //precision is 2^precision (max 10) divisions in each dimension to count as "close" enough to merge.
 	
 	Vec3D<float> boundsMin, boundsMax; //bounds
 	void updateBounds(void);

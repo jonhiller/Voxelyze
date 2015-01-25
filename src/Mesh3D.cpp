@@ -11,6 +11,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #include "Mesh3D.h"
 #include "MarchCube.h"
+#include <unordered_map>
 
 //for file output
 #include <iostream>
@@ -66,6 +67,7 @@ void CMesh3D::clear()
 void CMesh3D::meshChanged()
 {
 	vertexNormalsStale = true;
+	vertexMergesStale = true;
 	faceNormalsStale = true;
 	boundsStale = true;
 }
@@ -96,7 +98,7 @@ bool CMesh3D::save(const char* filePath)
 
 void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 {
-	int vIndexStart = vertices.size();
+	int vIndexStart = (int)(vertices.size());
 	for (int i=0; i<3; i++) vertices.push_back(p0[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p1[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p2[i]);
@@ -113,6 +115,7 @@ void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 	//stale out other stuff here...
 	boundsStale = true; //we could update here to ease update workload
 	faceNormalsStale = true; //we could update here to ease update workload
+	vertexMergesStale = true;
 }
 
 void CMesh3D::useFaceNormals()
@@ -123,15 +126,13 @@ void CMesh3D::useFaceNormals()
 
 void CMesh3D::useVertexNormals()
 {
-	//Requires smart WeldClose.
-
 	if (vertexNormalsStale) calcVertNormals();
 	normalsByVertex = false;
 }
 
 void CMesh3D::calcFaceNormals() //called to update the face normals...
 {
-	int triCount = triangles.size()/3;
+	int triCount = (int)(triangles.size()/3);
 	triangleNormals.clear();
 	triangleNormals.reserve(triCount*3);
 
@@ -147,10 +148,11 @@ void CMesh3D::calcFaceNormals() //called to update the face normals...
 
 void CMesh3D::calcVertNormals() //called to update the vertex normals (without welding vertices this will be of limited use...)
 { 
+	if (vertexMergesStale) mergeVertices(10);
 	if (faceNormalsStale) calcFaceNormals();
 
-	int triCount = triangles.size()/3;
-	int vertCount = vertices.size()/3;
+	int triCount = (int)(triangles.size()/3);
+	int vertCount = (int)(vertices.size()/3);
 	vertexNormals.clear();
 	vertexNormals.reserve(vertCount*3);
 
@@ -167,6 +169,53 @@ void CMesh3D::calcVertNormals() //called to update the vertex normals (without w
 	}
 
 	vertexNormalsStale = false;
+}
+
+void CMesh3D::mergeVertices(int precision)
+{
+//	assumes 1024 divisions in the maximum mesh dimension is enough resolution to be ok with merging "close" vertices
+//	throws out colors and normals
+	vertexColors.clear();
+	vertexNormals.clear();
+
+	if (precision > 10) precision = 10;
+	else if (precision < 2) precision = 2;
+	int precNum = (1 << precision) -1;
+
+	int vCount = vertexCount();
+	std::vector<int> oldToNew(vCount); //size of # old vertices, values of # new vertices
+	int newVCount = 0; //keep track of how many new vertices added
+
+	Vec3D<float> size = meshSize();
+	Vec3D<float> min = meshMin();
+//	float maxDim = std::max(size.x, std::max(size.y, size.z));
+
+	std::unordered_map<unsigned int, int> map; //key is a hash of the three float values. value is the new vertex index
+
+	for (int i=0; i<vCount; i++){
+		//hash for this vertex: a 32-bit uint
+		unsigned int ix = (unsigned int)(precNum*((vertices[3*i]-min.x)/size.x)); //each range from 0-1024
+		unsigned int iy = (unsigned int)(precNum*((vertices[3*i+1]-min.y)/size.y));
+		unsigned int iz = (unsigned int)(precNum*((vertices[3*i+2]-min.z)/size.z));
+		unsigned int key = ix | (iy << 10) | (iz << 20);
+
+		if (!map.count(key)){
+			oldToNew[i] = newVCount;
+			map[key] = newVCount;
+			for (int j=0; j<3; j++) vertices[3*newVCount+j] = vertices[3*i+j];
+			newVCount++; //added a new vertex
+		}
+		else oldToNew[i] = map[key];  //key exists
+	}
+
+	vertices.resize(3*newVCount); //chop off any unused vertices
+	
+	int tSize = (int)triangles.size();
+	for (int i=0; i<tSize; i++) triangles[i] = oldToNew[triangles[i]];
+
+	faceNormalsStale = true;
+	vertexNormalsStale = true;
+	vertexMergesStale = false;
 }
 
 

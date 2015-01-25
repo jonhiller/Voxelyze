@@ -89,13 +89,13 @@ public:
 
 	bool removeMaterial(CVX_Material* toRemove); //!< Removes the specified material from the voxelyze object and deletes all voxels currently using it. @param[in] toRemove pointer to a material to remove from this voxelyze object. 
 	bool replaceMaterial(CVX_Material* replaceMe, CVX_Material* replaceWith); //!< Replaces all voxels of one material with another material. @param[in] replaceMe material to be replaced @param[in] replaceWith material to replace with. This material must already be a part of the simulation - the pointer will have originated from addMaterial() or material().
-	int materialCount() {return voxelMats.size();} //!< Returns the number of materials currently in this voxelyze object.
+	int materialCount() {return (int)(voxelMats.size());} //!< Returns the number of materials currently in this voxelyze object.
 	CVX_Material* material(int materialIndex) {return (CVX_Material*)voxelMats[materialIndex];} //!< Returns a pointer to a material that has been added to this voxelyze object. CVX_Material public member functions can be safely called on this pointer to modify the material. A given index may or may not always return the same material - Use material pointers to keep permanent handles to specific materials. This function is primarily used while iterating through all materials in conjuntion with materialCount(). @param[in] materialIndex the current index of a material. Valid range from 0 to materialCount()-1.
 
 
 	CVX_Voxel* setVoxel(CVX_Material* material, int xIndex, int yIndex, int zIndex); //!< Adds a voxel made of material at the specified index. If a voxel already exists here it is replaced. The returned pointer can be safely modified by calling any CVX_Voxel public member function on it. @param[in] material material this voxel is made from. This material must already be a part of the simulation - the pointer will have originated from addMaterial() or material(). @param[in] xIndex the X index of this voxel. @param[in] yIndex the Y index of this voxel. @param[in] zIndex the Z index of this voxel.
 	CVX_Voxel* voxel(int xIndex, int yIndex, int zIndex) const {return voxels(xIndex, yIndex, zIndex);} //!< Returns a pointer to the voxel at this location if one exists, or null otherwise. The returned pointer can be safely modified by calling any CVX_Voxel public member function on it. @param[in] xIndex the X index to query. @param[in] yIndex the Y index to query. @param[in] zIndex the Z index to query.
-	int voxelCount() const {return voxelsList.size();} //!< Returns the number of voxels currently in this voxelyze object.
+	int voxelCount() const {return (int)(voxelsList.size());} //!< Returns the number of voxels currently in this voxelyze object.
 	CVX_Voxel* voxel(int voxelIndex) const {return voxelsList[voxelIndex];} //!< Returns a pointer to a voxel that has been added to this voxelyze object. CVX_Voxel public member functions can be safely called on this pointer to query or modify the voxel. A given index may or may not always return the same voxel - Use voxel pointers to keep permanent handles to specific voxels. This function is primarily used while iterating through all voxels in conjuntion with voxelCount(). @param[in] voxelIndex the current index of a voxel. Valid range from 0 to voxelCount()-1.
 	const std::vector<CVX_Voxel*>* voxelList() const {return &voxelsList;} //!< Returns a pointer to the internal list of voxels in this voxelyze object. In some situations where all voxels must be iterated over quickly there may be performance gains from iterating directly on the underlying std::vector container accessed with this function.
 
@@ -108,7 +108,7 @@ public:
 	int indexMaxZ() const {return voxels.maxIndices().z;} //!< The maximum Z index of any voxel in this voxelyze object. Use to determine limits.
 
 	CVX_Link* link(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction) const; //!< Returns a pointer to the link at this voxel location in the direction indicated if one exists, or null otherwise. The returned pointer can be safely modified by calling any CVX_Link public member function on it. @param[in] xIndex the X index of the voxel to query. @param[in] yIndex the Y index of the voxel to query. @param[in] zIndex the Z index of the voxel to query. @param direction the direction from the specified voxel to look for a link.
-	int linkCount() const {return linksList.size();} //!< Returns the number of links currently in this voxelyze object.
+	int linkCount() const {return (int)(linksList.size());} //!< Returns the number of links currently in this voxelyze object.
 	CVX_Link* link(int linkIndex) {return linksList[linkIndex];} //!< Returns a pointer to a link that is a part of this voxelyze object. CVX_Link public member functions can be safely called on this pointer to query the link. A given index may or may not always return the same link - Use link pointers to keep permanent handles to specific voxels. This function is primarily used while iterating through all links in conjuntion with linkCount(). @param[in] linkIndex the current index of a link. Valid range from 0 to linkCount()-1.
 	const std::vector<CVX_Link*>* linkList() const {return &linksList;}  //!< Returns a pointer to the internal list of links in this voxelyze object. In some situations where all links must be iterated over quickly there may be performance gains from iterating directly on the underlying std::vector container accessed with this function.
 
@@ -165,6 +165,7 @@ private:
 
 	CVX_Link* addLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction); //adds a link (if one isn't already present) and updates parameters
 	void removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDirection direction); //removes just the link and all references to it in connected voxels
+	void updateLink(CVX_Link* pLink); //call whenever one constituent voxel material or the other changes (needs to update linkMats)
 
 	int xIndexLinkOffset(CVX_Voxel::linkDirection direction) const {return (direction == CVX_Voxel::X_NEG) ? -1 : 0;} //the link X index offset from a voxel index and link direction
 	int yIndexLinkOffset(CVX_Voxel::linkDirection direction) const {return (direction == CVX_Voxel::Y_NEG) ? -1 : 0;} //the link Y index offset from a voxel index and link direction
@@ -183,6 +184,7 @@ private:
 	bool writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
 	bool readJSON(rapidjson::Value& vxl);
 
+	CVX_LinearSolver* pSolver;
 };
 
 

@@ -15,6 +15,8 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 class CVoxelyze;
 #include <string>
 #include <vector>
+#include <unordered_map>
+
 
 #ifdef PARDISO_5
 #ifdef _WIN32
@@ -23,6 +25,8 @@ class CVoxelyze;
 extern "C" void pardisoinit (void* pt, int* mtype, int* solver, int* iparm, double* dparm, int* error);
 extern "C" void pardiso (void* pt, int* maxfct, int* mnum, int* mtype, int* phase, int* n, double* a, int* ia, int* ja, int* perm, int* nrhs, int* iparm, int* msglvl, double* b, double* x, int* error, double* dparm);
 #endif
+
+class CVX_Voxel; //fwd declare
 
 //! A linear solver for Voxelyze.
 /*!
@@ -38,7 +42,7 @@ class CVX_LinearSolver
 {
 public:
 	CVX_LinearSolver(CVoxelyze* voxelyze); //!< Links to a voxelyze object and initializes the solver. The pointer to the voxelyze object must remain valid for the lifetime of this object. @param[in] voxelyze pointer to the voxelyze object to simulate.
-	bool solve(); //!< Formulates and solves the linear system and writes the resulting voxel positions and angles back to the linked voxelyze object. Returns false if the solver errors out. (check errorMsg for the reason). NOTE: calling this function modifies the state of the linked voxelyze object! This function may take a while if there are a large number of voxels.
+	bool solve(bool structureUnchanged = false); //!< Formulates and solves the linear system and writes the resulting voxel positions and angles back to the linked voxelyze object. Returns false if the solver errors out. (check errorMsg for the reason). NOTE: calling this function modifies the state of the linked voxelyze object! This function may take a while if there are a large number of voxels.
 
 	//parameters to get information during the solving process
 	int progressTick; //!< An arbitrary progress number somewhere between zero and progressMaxTick to be used updating a progress bar.
@@ -48,10 +52,14 @@ public:
 	bool cancelFlag; //!< A user-settable flag to indicate to the solver that an abort has been request during a solve process. May still not stop immediately, though.
 
 private: //off limits variable and functions (internal)
+	int iteration;
 	CVoxelyze* vx;
 	int dof; //degrees of freedom in the problem
 	std::vector<double> a, b, x;
 	std::vector<int> ia, ja; //row index (1 based!), columns each value is in (1-based!)
+	std::unordered_map<CVX_Voxel*, int> v2i;
+	std::vector<int> aToZero; //list of "a" matrix indices to set to zero at the end.
+	std::vector<bool> fixed; //any fixed degrees of freedom
 
 	//Pardiso variables:
 	int mtype; //defines matrix type
@@ -67,6 +75,7 @@ private: //off limits variable and functions (internal)
 	void consolidateA(); //gets rid of all the zeros for solving!
 	void applyBX(); //apply forces and fixed boundary conditions
 	void convertTo1Base(); //convert to 1-based indices for pardiso:
+	void convertFrom1Base(); //convert to 0-based indices for pardiso:
 	void postResults(); //overwrites state of voxelyze object with the results
 	void OutputMatrices(); //for debugging small system only!!
 

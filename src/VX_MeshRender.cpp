@@ -138,7 +138,7 @@ void CVX_MeshRender::generateMesh()
 	}
 
 	//the rest... allocate space, but updateMesh will fill them in.
-	int triCount = triangles.size()/3;
+	int triCount = (int)(triangles.size()/3);
 	triangleColors.resize(triCount*3);
 	triangleNormals.resize(triCount*3);
 
@@ -149,7 +149,7 @@ void CVX_MeshRender::generateMesh()
 void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoType stateType)
 {
 	//location
-	int vCount = vertices.size()/3;
+	int vCount = (int)(vertices.size()/3);
 	if (vCount == 0) return;
 	for (int i=0; i<vCount; i++){ //for each vertex...
 		Vec3D<float> avgPos;
@@ -180,7 +180,7 @@ void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoTy
 	}
 
 	//color + normals 
-	int tCount = triangles.size()/3;
+	int tCount = (int)(triangles.size()/3);
 	if (tCount == 0) return;
 	for (int i=0; i<tCount; i++){
 		Vec3D<float> v[3];

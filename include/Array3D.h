@@ -101,7 +101,7 @@ public:
 
 	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
 	void setDefaultValue(T newDefaultValue){
-		int linSize = data.size();
+		int linSize = (int)(data.size());
 		for (int i=0; i<linSize; i++) if (data[i]==defaultValue) data[i] = newDefaultValue; //replace all old defaults with new default
 		defaultValue = newDefaultValue; //remember new default
 	}

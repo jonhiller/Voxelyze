@@ -44,6 +44,7 @@ class CVX_Link {
 	CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material); //!< Constructs a link object between two adjacent voxels that represents a solid material connection. The order of voxel1 and voxel2 is unimportant, but the specified linkDirection is interpreted as the originating from voxel1 and pointing to voxel2. A CVX_LinkMaterial representing the desired combination of the two voxel materials must be precomputed and passed as a parameter as well. @param[in] voxel1 One voxel @param[in] voxel2 The other voxel @param[in] material The material properties for this link.
 	void reset(); //!< Resets all current state information about this link to the initial value.
 
+
 	CVX_Voxel* voxel(bool positiveEnd) const {return positiveEnd?pVPos:pVNeg;} //!< Returns a pointer to one of the two voxels that compose this link. @param[in] positiveEnd Specifies which voxel is desired.
 	Vec3D<> force(bool positiveEnd) const {return positiveEnd?forcePos:forceNeg;} //!< Returns the current force acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
 	Vec3D<> moment(bool positiveEnd) const {return positiveEnd?momentPos:momentNeg;} //!< Returns the current moment acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
@@ -95,7 +96,7 @@ private:
 	float b2() const;
 	float b3() const;
 
-
+	void replaceMaterial(CVX_MaterialLink* newMaterial){mat = newMaterial; reset();} //replaces with a new link material. Assumes voxel materials already updated.
 	CVX_MaterialLink* mat;
 	float strainRatio; //ratio of Epos to Eneg (EPos/Eneg)
 
