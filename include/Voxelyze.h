@@ -26,6 +26,7 @@ class CVX_Material;
 class CVX_MaterialVoxel;
 class CVX_MaterialLink;
 class CVX_Collision;
+class CVX_LinearSolver;
 
 //! Defines and simulates a configuration of voxels.
 /*!

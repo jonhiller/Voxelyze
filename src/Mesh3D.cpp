@@ -9,6 +9,7 @@ Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
+#include <string>
 #include "Mesh3D.h"
 #include "MarchCube.h"
 #include <unordered_map>
@@ -16,7 +17,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 //for file output
 #include <iostream>
 #include <fstream>
-#include <string>
 
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
@@ -248,12 +248,12 @@ bool CMesh3D::loadSTL(std::string& filePath)
 	/* Check for binary or ASCII file */
 	bool binary=false;
 	fseek(fp, 0, SEEK_END);
-	int facenum, file_size = ftell(fp);
+	unsigned int facenum, file_size = ftell(fp);
 	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
-	fread(&facenum, sizeof(int), 1, fp);
+	if (fread(&facenum, sizeof(int), 1, fp) == 0) return false;
 	if(file_size == (STL_LABEL_SIZE + 4 + (sizeof(short)+12*sizeof(float) )*facenum) ) binary = true; //expected file size
 	unsigned char tmpbuf[128];
-	fread(tmpbuf,sizeof(tmpbuf),1,fp);
+	if (fread(tmpbuf,sizeof(tmpbuf),1,fp) == 0) return false;
 	for(unsigned int i = 0; i < sizeof(tmpbuf); i++){ if(tmpbuf[i] > 127) binary=true; }
 
 	//now we know binary vs ascii. reset file pointer to beginning of data
@@ -263,10 +263,10 @@ bool CMesh3D::loadSTL(std::string& filePath)
 		fseek(fp, STL_LABEL_SIZE + sizeof(int), SEEK_SET); //STL_LABEL_SIZE + facenum
 		short attr;
 
-		for(int i=0;i<facenum;++i) { // For each triangle read the normal, the three coords and a short set to zero
-			fread(&N,3*sizeof(float),1,fp); //We end up throwing this out and recalculating because... we don't trust it!!!
-			fread(&P,3*sizeof(float),3,fp);
-			fread(&attr,sizeof(short),1,fp);
+		for(int i=0;i<(int)facenum;++i) { // For each triangle read the normal, the three coords and a short set to zero
+			if (fread(&N,3*sizeof(float),1,fp) == 0) return false; //We end up throwing this out and recalculating because... we don't trust it!!!
+			if (fread(&P,3*sizeof(float),3,fp) == 0) return false;
+			if (fread(&attr,sizeof(short),1,fp) == 0) return false;
 			for (int j=0; j<9; j++) vertices.push_back(P[j]);
 		}
 	}
@@ -274,10 +274,10 @@ bool CMesh3D::loadSTL(std::string& filePath)
 		fseek(fp,0,SEEK_SET);
 		
 		while(getc(fp) != '\n'){}	// Skip the first line of the file 
-		int cnt=0, lineCnt=0, ret;
+		int /*cnt=0, */lineCnt=0, ret;
 		
 		while(!feof(fp)){ // Read a single facet from an ASCII .STL file 
-			ret=fscanf_s(fp, "%*s %*s %f %f %f\n", &N[0], &N[1], &N[2]); // --> "facet normal 0 0 0" (We throw this out and recalculate based on vertices)
+			ret=fscanf(fp, "%*s %*s %f %f %f\n", &N[0], &N[1], &N[2]); // --> "facet normal 0 0 0" (We throw this out and recalculate based on vertices)
 			if(ret!=3){	// we could be in the case of a multiple solid object, where after a endfacet instead of another facet we have to skip two lines:
 				lineCnt++;			//  |     endloop
 				continue;			//  |	 endfacet
@@ -285,15 +285,15 @@ bool CMesh3D::loadSTL(std::string& filePath)
 									//  |solid ascii  <- and this one.
 									//  |   facet normal 0.000000e+000 7.700727e-001 -6.379562e-001
 			}
-			ret=fscanf_s(fp, "%*s %*s"); // --> "outer loop"
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[0],  &P[1],  &P[2]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %*s"); // --> "outer loop"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[0],  &P[1],  &P[2]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[3],  &P[4],  &P[5]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[3],  &P[4],  &P[5]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[6],  &P[7],  &P[8]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[6],  &P[7],  &P[8]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s"); // --> "endloop"
-			ret=fscanf_s(fp, "%*s"); // --> "endfacet"
+			ret=fscanf(fp, "%*s"); // --> "endloop"
+			ret=fscanf(fp, "%*s"); // --> "endfacet"
 			lineCnt+=7;
 			if(feof(fp)) break;
 
