@@ -161,7 +161,6 @@ void CMesh3D::calcVertNormals() //called to update the vertex normals (without w
 	vertexNormalsStale = false;
 }
 
-
 void CMesh3D::updateBounds(void)
 {
 	if (vertices.size() == 0) {boundsMin = Vec3D<float>(); boundsMax = Vec3D<float>(); return;} 
@@ -253,106 +252,6 @@ bool CMesh3D::loadSTL(std::string& filePath)
 
 
 
-//
-//bool CMesh3D::loadBinarySTL(std::string& filePath)
-//{
-//	FILE *fp;
-//	
-//#ifdef WIN32
-//	fopen_s(&fp, filePath.c_str(), "rb"); //secure version. preferred on windows platforms...
-//#else
-//	fp = fopen(filePath.c_str(), "rb");
-//#endif
-//
-//
-//	if(fp == NULL) return false;
-//
-//	int facenum;
-//	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
-//	fread(&facenum, sizeof(int), 1, fp);
-//
-//	clear();
-//
-//	// For each triangle read the normal, the three coords and a short set to zero
-//	float N[3];
-//	float P[9];
-//	short attr;
-//
-//	for(int i=0;i<facenum;++i) {
-//		fread(&N,3*sizeof(float),1,fp); //We end up throwing this out and recalculating because... we don't trust it!!!
-//		fread(&P,3*sizeof(float),3,fp);
-//		fread(&attr,sizeof(short),1,fp);
-//		AddFacet(Vec3D<>(P[0], P[1], P[2]), Vec3D<>(P[3], P[4], P[5]), Vec3D<>(P[6], P[7], P[8]));
-//	}
-//	fclose(fp);
-//
-//	CalcFaceNormals();
-//
-//	return true;
-//}
-//
-//bool CMesh3D::loadAsciiSTL(std::string& filePath)
-//{
-//	FILE *fp;
-//
-//#ifdef WIN32
-//	fopen_s(&fp, filePath.c_str(), "r"); //secure version. preferred on windows platforms...
-//#else
-//	fp = fopen(filePath.c_str(), "r");
-//#endif
-//
-//	if(fp == NULL) return false;
-//
-//	long currentPos = ftell(fp);
-//	fseek(fp,0L,SEEK_END);
-////	long fileLen = ftell(fp);
-//	fseek(fp,currentPos,SEEK_SET);
-//
-//	clear();
-//
-//	/* Skip the first line of the file */
-//	while(getc(fp) != '\n') { }
-//
-//	float N[3];
-//	float P[9];
-//	int cnt=0;
-//	int lineCnt=0;
-//	int ret;
-//	/* Read a single facet from an ASCII .STL file */
-//	while(!feof(fp)){
-//		ret=fscanf(fp, "%*s %*s %f %f %f\n", &N[0], &N[1], &N[2]); // --> "facet normal 0 0 0" (We throw this out and recalculate based on vertices)
-//		if(ret!=3){
-//			// we could be in the case of a multiple solid object, where after a endfaced instead of another facet we have to skip two lines:
-//			//     endloop
-//			//	 endfacet
-//			//endsolid     <- continue on ret==0 will skip this line
-//			//solid ascii  <- and this one.
-//			//   facet normal 0.000000e+000 7.700727e-001 -6.379562e-001
-//			lineCnt++;
-//			continue; 
-//		}
-//		ret=fscanf(fp, "%*s %*s"); // --> "outer loop"
-//		ret=fscanf(fp, "%*s %f %f %f\n", &P[0],  &P[1],  &P[2]); // --> "vertex x y z"
-//		if(ret!=3) return false;
-//		ret=fscanf(fp, "%*s %f %f %f\n", &P[3],  &P[4],  &P[5]); // --> "vertex x y z"
-//		if(ret!=3) return false;
-//		ret=fscanf(fp, "%*s %f %f %f\n", &P[6],  &P[7],  &P[8]); // --> "vertex x y z"
-//		if(ret!=3) return false;
-//		ret=fscanf(fp, "%*s"); // --> "endloop"
-//		ret=fscanf(fp, "%*s"); // --> "endfacet"
-//		lineCnt+=7;
-//		if(feof(fp)) break;
-//
-//		AddFacet(Vec3D<>(P[0], P[1], P[2]), Vec3D<>(P[3], P[4], P[5]), Vec3D<>(P[6], P[7], P[8]));
-//
-//	}
-//	fclose(fp);
-//
-//	CalcFaceNormals();
-//
-//	return true;
-//}
-//
 
 bool CMesh3D::saveSTL(std::string& filePath, bool binary) const { //writes ascii stl file...
 
