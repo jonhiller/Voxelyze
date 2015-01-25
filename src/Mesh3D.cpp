@@ -9,13 +9,14 @@ Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
+#include <string>
 #include "Mesh3D.h"
 #include "MarchCube.h"
+#include <unordered_map>
 
 //for file output
 #include <iostream>
 #include <fstream>
-#include <string>
 
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
@@ -33,7 +34,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #define STL_LABEL_SIZE 80
 
-CMesh3D::CMesh3D(std::string& filePath)
+CMesh3D::CMesh3D(const char* filePath)
 {
 	load(filePath);
 }
@@ -66,29 +67,38 @@ void CMesh3D::clear()
 void CMesh3D::meshChanged()
 {
 	vertexNormalsStale = true;
+	vertexMergesStale = true;
 	faceNormalsStale = true;
 	boundsStale = true;
 }
 
 
-bool CMesh3D::load(std::string& filePath)
+bool CMesh3D::load(const char* filePath)
 {
-	std::string fileExt = filePath.substr(filePath.find_last_of(".") + 1);
-	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return loadSTL(filePath);
+	std::string fPath(filePath);
+	std::string fileExt = fPath.substr(fPath.find_last_of(".") + 1);
+	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return loadSTL(fPath);
 	else return false; //unsupported file type
 }
 
-bool CMesh3D::save(std::string& filePath)
+bool CMesh3D::save(const char* filePath)
 {
-	std::string fileExt = filePath.substr(filePath.find_last_of(".") + 1);
-	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return saveSTL(filePath);
-	if (fileExt == "obj" || fileExt == "OBJ" || fileExt == "Obj") return saveOBJ(filePath);
+	std::string fPath(filePath);
+
+	if (faceNormalsStale) calcFaceNormals();
+
+	std::string fileExt = fPath.substr(fPath.find_last_of(".") + 1);
+	if (fileExt == "stl" || fileExt == "STL" || fileExt == "Stl") return saveSTL(fPath);
+	if (fileExt == "obj" || fileExt == "OBJ" || fileExt == "Obj"){
+		if (vertexNormalsStale) calcVertNormals();
+		return saveOBJ(fPath);
+	}
 	else return false; //unsupported file type
 }
 
 void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 {
-	int vIndexStart = vertices.size();
+	int vIndexStart = (int)(vertices.size());
 	for (int i=0; i<3; i++) vertices.push_back(p0[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p1[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p2[i]);
@@ -96,7 +106,7 @@ void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 	if (vertexColors.size() != 0) for (int i=0; i<9; i++) vertexColors.push_back(0);
 	vertexNormalsStale = true;
 
-	for (int i=0; i<3; i++) triangles.push_back(vIndexStart+i);
+	for (int i=0; i<3; i++) triangles.push_back(vIndexStart/3+i);
 	if (triangleColors.size() != 0) for (int i=0; i<3; i++) vertexColors.push_back(0);
 
 //	Vec3D<float> N = ((p1-p0).Cross(p2-p0)).Normalized();
@@ -105,6 +115,7 @@ void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 	//stale out other stuff here...
 	boundsStale = true; //we could update here to ease update workload
 	faceNormalsStale = true; //we could update here to ease update workload
+	vertexMergesStale = true;
 }
 
 void CMesh3D::useFaceNormals()
@@ -115,15 +126,13 @@ void CMesh3D::useFaceNormals()
 
 void CMesh3D::useVertexNormals()
 {
-	//Requires smart WeldClose.
-
 	if (vertexNormalsStale) calcVertNormals();
 	normalsByVertex = false;
 }
 
 void CMesh3D::calcFaceNormals() //called to update the face normals...
 {
-	int triCount = triangles.size()/3;
+	int triCount = (int)(triangles.size()/3);
 	triangleNormals.clear();
 	triangleNormals.reserve(triCount*3);
 
@@ -139,10 +148,11 @@ void CMesh3D::calcFaceNormals() //called to update the face normals...
 
 void CMesh3D::calcVertNormals() //called to update the vertex normals (without welding vertices this will be of limited use...)
 { 
+	if (vertexMergesStale) mergeVertices(10);
 	if (faceNormalsStale) calcFaceNormals();
 
-	int triCount = triangles.size()/3;
-	int vertCount = vertices.size()/3;
+	int triCount = (int)(triangles.size()/3);
+	int vertCount = (int)(vertices.size()/3);
 	vertexNormals.clear();
 	vertexNormals.reserve(vertCount*3);
 
@@ -159,6 +169,53 @@ void CMesh3D::calcVertNormals() //called to update the vertex normals (without w
 	}
 
 	vertexNormalsStale = false;
+}
+
+void CMesh3D::mergeVertices(int precision)
+{
+//	assumes 1024 divisions in the maximum mesh dimension is enough resolution to be ok with merging "close" vertices
+//	throws out colors and normals
+	vertexColors.clear();
+	vertexNormals.clear();
+
+	if (precision > 10) precision = 10;
+	else if (precision < 2) precision = 2;
+	int precNum = (1 << precision) -1;
+
+	int vCount = vertexCount();
+	std::vector<int> oldToNew(vCount); //size of # old vertices, values of # new vertices
+	int newVCount = 0; //keep track of how many new vertices added
+
+	Vec3D<float> size = meshSize();
+	Vec3D<float> min = meshMin();
+//	float maxDim = std::max(size.x, std::max(size.y, size.z));
+
+	std::unordered_map<unsigned int, int> map; //key is a hash of the three float values. value is the new vertex index
+
+	for (int i=0; i<vCount; i++){
+		//hash for this vertex: a 32-bit uint
+		unsigned int ix = (unsigned int)(precNum*((vertices[3*i]-min.x)/size.x)); //each range from 0-1024
+		unsigned int iy = (unsigned int)(precNum*((vertices[3*i+1]-min.y)/size.y));
+		unsigned int iz = (unsigned int)(precNum*((vertices[3*i+2]-min.z)/size.z));
+		unsigned int key = ix | (iy << 10) | (iz << 20);
+
+		if (!map.count(key)){
+			oldToNew[i] = newVCount;
+			map[key] = newVCount;
+			for (int j=0; j<3; j++) vertices[3*newVCount+j] = vertices[3*i+j];
+			newVCount++; //added a new vertex
+		}
+		else oldToNew[i] = map[key];  //key exists
+	}
+
+	vertices.resize(3*newVCount); //chop off any unused vertices
+	
+	int tSize = (int)triangles.size();
+	for (int i=0; i<tSize; i++) triangles[i] = oldToNew[triangles[i]];
+
+	faceNormalsStale = true;
+	vertexNormalsStale = true;
+	vertexMergesStale = false;
 }
 
 void CMesh3D::updateBounds(void)
@@ -190,12 +247,12 @@ bool CMesh3D::loadSTL(std::string& filePath)
 	/* Check for binary or ASCII file */
 	bool binary=false;
 	fseek(fp, 0, SEEK_END);
-	int facenum, file_size = ftell(fp);
+	unsigned int facenum, file_size = ftell(fp);
 	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
-	fread(&facenum, sizeof(int), 1, fp);
+	if (fread(&facenum, sizeof(int), 1, fp) == 0) return false;
 	if(file_size == (STL_LABEL_SIZE + 4 + (sizeof(short)+12*sizeof(float) )*facenum) ) binary = true; //expected file size
 	unsigned char tmpbuf[128];
-	fread(tmpbuf,sizeof(tmpbuf),1,fp);
+	if (fread(tmpbuf,sizeof(tmpbuf),1,fp) == 0) return false;
 	for(unsigned int i = 0; i < sizeof(tmpbuf); i++){ if(tmpbuf[i] > 127) binary=true; }
 
 	//now we know binary vs ascii. reset file pointer to beginning of data
@@ -205,10 +262,10 @@ bool CMesh3D::loadSTL(std::string& filePath)
 		fseek(fp, STL_LABEL_SIZE + sizeof(int), SEEK_SET); //STL_LABEL_SIZE + facenum
 		short attr;
 
-		for(int i=0;i<facenum;++i) { // For each triangle read the normal, the three coords and a short set to zero
-			fread(&N,3*sizeof(float),1,fp); //We end up throwing this out and recalculating because... we don't trust it!!!
-			fread(&P,3*sizeof(float),3,fp);
-			fread(&attr,sizeof(short),1,fp);
+		for(int i=0;i<(int)facenum;++i) { // For each triangle read the normal, the three coords and a short set to zero
+			if (fread(&N,3*sizeof(float),1,fp) == 0) return false; //We end up throwing this out and recalculating because... we don't trust it!!!
+			if (fread(&P,3*sizeof(float),3,fp) == 0) return false;
+			if (fread(&attr,sizeof(short),1,fp) == 0) return false;
 			for (int j=0; j<9; j++) vertices.push_back(P[j]);
 		}
 	}
@@ -216,10 +273,10 @@ bool CMesh3D::loadSTL(std::string& filePath)
 		fseek(fp,0,SEEK_SET);
 		
 		while(getc(fp) != '\n'){}	// Skip the first line of the file 
-		int cnt=0, lineCnt=0, ret;
+		int /*cnt=0, */lineCnt=0, ret;
 		
 		while(!feof(fp)){ // Read a single facet from an ASCII .STL file 
-			ret=fscanf_s(fp, "%*s %*s %f %f %f\n", &N[0], &N[1], &N[2]); // --> "facet normal 0 0 0" (We throw this out and recalculate based on vertices)
+			ret=fscanf(fp, "%*s %*s %f %f %f\n", &N[0], &N[1], &N[2]); // --> "facet normal 0 0 0" (We throw this out and recalculate based on vertices)
 			if(ret!=3){	// we could be in the case of a multiple solid object, where after a endfacet instead of another facet we have to skip two lines:
 				lineCnt++;			//  |     endloop
 				continue;			//  |	 endfacet
@@ -227,15 +284,15 @@ bool CMesh3D::loadSTL(std::string& filePath)
 									//  |solid ascii  <- and this one.
 									//  |   facet normal 0.000000e+000 7.700727e-001 -6.379562e-001
 			}
-			ret=fscanf_s(fp, "%*s %*s"); // --> "outer loop"
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[0],  &P[1],  &P[2]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %*s"); // --> "outer loop"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[0],  &P[1],  &P[2]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[3],  &P[4],  &P[5]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[3],  &P[4],  &P[5]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s %f %f %f\n", &P[6],  &P[7],  &P[8]); // --> "vertex x y z"
+			ret=fscanf(fp, "%*s %f %f %f\n", &P[6],  &P[7],  &P[8]); // --> "vertex x y z"
 			if(ret!=3) return false;
-			ret=fscanf_s(fp, "%*s"); // --> "endloop"
-			ret=fscanf_s(fp, "%*s"); // --> "endfacet"
+			ret=fscanf(fp, "%*s"); // --> "endloop"
+			ret=fscanf(fp, "%*s"); // --> "endfacet"
 			lineCnt+=7;
 			if(feof(fp)) break;
 
@@ -313,9 +370,12 @@ bool CMesh3D::saveOBJ(std::string& filePath) const
 	for (int i=0; i<(int)(vertices.size()/3); i++){
 		ofile << "v " << vertices[3*i] << " " << vertices[3*i+1] << " " << vertices[3*i+2] << "\n";
 	}
+	for (int i=0; i<(int)(vertices.size()/3); i++){
+		ofile << "vn " << vertexNormals[3*i] << " " << vertexNormals[3*i+1] << " " << vertexNormals[3*i+2] << "\n";
+	}
 
-	for (int i=0; i<(int)(triangles.size()/4); i++){
-		ofile << "f " << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "\n";
+	for (int i=0; i<(int)(triangles.size()/3); i++){
+		ofile << "f " << triangles[3*i]+1 << "//" << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << "//" << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "//" << triangles[3*i+2]+1 << "\n";
 	}
 	ofile.close();
 	return true;

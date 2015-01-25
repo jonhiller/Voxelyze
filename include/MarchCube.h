@@ -311,7 +311,9 @@ const int triTable[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-inline Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {return p1 + ((iso - valp1) / (valp2 - valp1))*(p2-p1);}
+inline Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {
+	return p1 + ((iso - valp1) / (valp2 - valp1))*(p2-p1);
+}
 
 void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMeshOut) //points, vals to beginning of 8-long array
 {

@@ -86,7 +86,28 @@ void CVX_Voxel::replaceMaterial(CVX_MaterialVoxel* newMaterial)
 
 		mat = newMaterial;
 
+
+
 	}
+}
+
+float CVX_Voxel::strainEnergy() const
+{
+	float totalSE = 0;
+	for (int i=0; i<6; i++){
+		if (links[i]) totalSE += links[i]->strainEnergy((i%2==1)?true:false)*0.5f;
+	}
+	return totalSE;
+
+	//float maxSE = 0;
+	//for (int i=0; i<6; i++){
+	//	if (links[i]){
+	//		float thisSe =  links[i]->strainEnergy((i%2==1)?true:false);
+	//		if (thisSe > maxSE) maxSE = thisSe;
+	//	}
+	//}
+	//return maxSE;
+
 }
 
 bool CVX_Voxel::isYielded() const
@@ -398,7 +419,7 @@ void CVX_Voxel::generateNearby(int linkDepth, bool surfaceOnly){
 	
 	int iCurrent = 0;
 	for (int k=0; k<linkDepth; k++){
-		int iPassEnd = allNearby.size();
+		int iPassEnd = (int)(allNearby.size());
 
 		while (iCurrent != iPassEnd){
 			CVX_Voxel* pV = allNearby[iCurrent++];

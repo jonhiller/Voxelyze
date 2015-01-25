@@ -256,6 +256,13 @@ float CVX_Link::strainEnergy() const
 			(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y)/(3.0*mat->_b3); //Bending Y
 }
 
+float CVX_Link::strainEnergy(bool positiveEnd) const
+{
+	if (positiveEnd) return strainEnergy()/(1+strainRatio);
+	else return strainEnergy()*strainRatio/(1+strainRatio);
+}
+
+
 float CVX_Link::axialStiffness() {
 	if (mat->isXyzIndependent()) return mat->_a1;
 	else {

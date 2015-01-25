@@ -24,6 +24,7 @@ VOXELYZE_SRC = \
 	src/VX_MaterialLink.cpp \
 	src/VX_Collision.cpp \
 	src/VX_LinearSolver.cpp \
+	src/Mesh3D.cpp \
 	src/VX_MeshRender.cpp 
 
 VOXELYZE_OBJS = \
@@ -36,6 +37,7 @@ VOXELYZE_OBJS = \
 	src/VX_MaterialLink.o \
 	src/VX_Collision.o \
 	src/VX_LinearSolver.o \
+	src/Mesh3D.o \
 	src/VX_MeshRender.o
 		
 	

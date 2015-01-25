@@ -444,7 +444,7 @@ bool CVX_Material::setYieldFromData(float percentStrainOffset)
 
 	assert(strainData.size() == stressData.size());
 	assert(strainData.size() > 2); // more than 2 data points (more than bilinear)
-	int dataPoints = strainData.size()-1;
+	int dataPoints = (int)(strainData.size()-1);
 	for (int i=1; i<dataPoints-1; i++){
 		float x1=strainData[i];
 		float x2=strainData[i+1];

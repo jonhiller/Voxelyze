@@ -101,13 +101,15 @@ public:
 
 	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
 	void setDefaultValue(T newDefaultValue){
-		int linSize = data.size();
+		int linSize = (int)(data.size());
 		for (int i=0; i<linSize; i++) if (data[i]==defaultValue) data[i] = newDefaultValue; //replace all old defaults with new default
 		defaultValue = newDefaultValue; //remember new default
 	}
 
 	Index3D minIndices() const {return cMin;} //!< Returns the minimum i, j, and k indices utilized by any element in the array
 	Index3D maxIndices() const {return cMax;} //!< Returns the maximum i, j, and k indices utilized by any element in the array
+	Index3D size() const {return aSize;} //!< Returns the currently allocated size of the array
+	Index3D offset() const {return aOff;} //!< Returns the offset (i.e. location of most negative corner) of the currently allocated array
 
 	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
 	const T& at(const Index3D& i3D) const { 

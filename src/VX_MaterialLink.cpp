@@ -90,13 +90,13 @@ bool CVX_MaterialLink::updateAll()
 			float thisModulus = 2.0f*modulus1*modulus2/(modulus1+modulus2);
 
 			//add to the new strain/stress values
-			int lastDataIndex = newStrainValues.size()-1;
+			int lastDataIndex = (int)(newStrainValues.size()-1);
 
 			newStrainValues.push_back(strain);
 			newStressValues.push_back(newStressValues[lastDataIndex] + thisModulus*(strain - newStrainValues[lastDataIndex])); //springs in series equation
 		}
 
-		setModel(newStrainValues.size(), &newStrainValues[0], &newStressValues[0]);
+		setModel((int)(newStrainValues.size()), &newStrainValues[0], &newStressValues[0]);
 
 		//override failure points in case no failure was specified before (as possible in combos of linear and bilinear materials)
 		//yield point is handled correctly in setModel.

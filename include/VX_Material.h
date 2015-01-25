@@ -68,7 +68,7 @@ class CVX_Material {
 	float youngsModulus() const {return E;} //!< Returns Youngs modulus in Pa.
 	float yieldStress() const {return sigmaYield;} //!<Returns the yield stress in Pa or -1 if unspecified.
 	float failureStress() const {return sigmaFail;} //!<Returns the failure stress in Pa or -1 if unspecified.
-	int modelDataPoints() const {return strainData.size();} //!< Returns the number of data points in the current material model data arrays.
+	int modelDataPoints() const {return (int)(strainData.size());} //!< Returns the number of data points in the current material model data arrays.
 	const float* modelDataStrain() const {return &strainData[0];} //!< Returns a pointer to the first strain value data point in a continuous array. The number of values can be determined from modelDataPoints(). The assumed first value of 0 is included.
 	const float* modelDataStress() const {return &stressData[0];} //!< Returns a pointer to the first stress value data point in a continuous array. The number of values can be determined from modelDataPoints(). The assumed first value of 0 is included.
 

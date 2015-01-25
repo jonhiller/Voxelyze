@@ -29,11 +29,14 @@ CVoxelyze::CVoxelyze(double voxelSize)
 {
 	clear();
 	voxSize = voxelSize <= 0 ? DEFAULT_VOXEL_SIZE : voxelSize;
+	pSolver = NULL;
 }
 
 CVoxelyze::~CVoxelyze(void)
 {
 	clear();
+	if (pSolver){ delete pSolver; pSolver = NULL;}
+
 }
 
 CVoxelyze& CVoxelyze::operator=(CVoxelyze& VIn)
@@ -242,8 +245,9 @@ bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
 
 bool CVoxelyze::doLinearSolve() //linearizes at current point and solves
 {
-	CVX_LinearSolver solver(this);
-	solver.solve();
+	if (!pSolver) pSolver = new CVX_LinearSolver(this);
+
+	pSolver->solve(true); //do smart structure changed...
 
 	return true;
 }
@@ -255,7 +259,7 @@ bool CVoxelyze::doTimeStep(float dt)
 
 	//Euler integration:
 	bool Diverged = false;
-	int linkCount = linksList.size();
+	int linkCount = (int)(linksList.size());
 
 #ifdef USE_OMP
 #pragma omp parallel for
@@ -269,7 +273,7 @@ bool CVoxelyze::doTimeStep(float dt)
 	if (Diverged) return false;
 
 	if (collisions) updateCollisions();
-	int voxCount = voxelsList.size();
+	int voxCount = (int)(voxelsList.size());
 
 #ifdef USE_OMP
 #pragma omp parallel for
@@ -492,8 +496,9 @@ void CVoxelyze::replaceVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, in
 
 	//reset all the links involving this voxel
 	for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-		removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i);
-		addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); //adds only if a voxel is found
+		if (pV->links[i]) updateLink(pV->links[i]);
+//		removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i);
+//		addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); //adds only if a voxel is found
 	}
 }
 
@@ -549,11 +554,17 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 		yIndex + yIndexLinkOffset(direction),
 		zIndex + zIndexLinkOffset(direction)); 
 
-	//remove the reference in the list
+	//remove the reference in the list/
+	//also, check all other links and if nobody else uses this CVX_MaterialLink erase that, too.
+	CVX_MaterialLink* thisLinkMat = pL->mat;
+	bool deleteThisLinkMat = true;
 	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++){ //remove from the list
-		if (*it == pL){
-			linksList.erase(it);
-			break;
+		if (*it == pL) { linksList.erase(it++); } //break;}
+		else if ((*it)->mat == thisLinkMat) deleteThisLinkMat = false;
+	}
+	if (deleteThisLinkMat) {
+		for (std::list<CVX_MaterialLink*>::iterator it = linkMats.begin(); it!=linkMats.end(); it++){ //remove from the list
+			if (*it == thisLinkMat){ linkMats.erase(it); break;} //assume there is only one.
 		}
 	}
 	
@@ -574,6 +585,28 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 	delete pL;
 }
 
+void CVoxelyze::updateLink(CVX_Link* pLink)
+{
+	pLink->mat = combinedMaterial(pLink->pVNeg->material(), pLink->pVNeg->material()); //finds it if it exists, or creates it if it doesn't
+	pLink->reset();
+
+
+	////First, find out if anyone else is using this linkMat
+	//bool inUse = false;
+	//for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++){ //remove from the list
+	//	if ((*it) != pLink && (*it)->mat == pLink->mat){inUse = true; break;} //in use by another
+	//}
+
+	//if (!inUse){ //if nobody else is using this linkMat, just update it
+	//	//if this material already exists, use it
+	//	pLink->mat = combinedMaterial(voxel1->material(), voxel2->material());
+	//	pLink->reset();
+	//}
+	//else { //otherwise make a new one.
+
+	//}
+	
+}
 
 bool CVoxelyze::exists(const CVX_MaterialVoxel* toCheck)
 {
@@ -683,7 +716,7 @@ void CVoxelyze::updateCollisions()
 	}
 
 	//check if any voxels have moved far enough to make collisions stale
-	int voxCount = voxelsList.size();
+	int voxCount = (int)(voxelsList.size());
 
 #ifdef USE_OMP
 #pragma omp parallel for
@@ -699,7 +732,7 @@ void CVoxelyze::updateCollisions()
 
 	//update the forces!
 
-	int colCount = collisionsList.size();
+	int colCount = (int)(collisionsList.size());
 #ifdef USE_OMP
 #pragma omp parallel for
 #endif
