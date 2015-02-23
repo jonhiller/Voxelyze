@@ -85,9 +85,6 @@ void CVX_Voxel::replaceMaterial(CVX_MaterialVoxel* newMaterial)
 		poissonsStrainInvalid = true;
 
 		mat = newMaterial;
-
-
-
 	}
 }
 
@@ -166,13 +163,19 @@ Vec3D<float> CVX_Voxel::cornerPosition(voxelCorner corner) const
 
 Vec3D<float> CVX_Voxel::cornerOffset(voxelCorner corner) const
 {
-	Vec3D<> strains;
+	Vec3D<double> strains;
 	for (int i=0; i<3; i++){
 		bool posLink = corner&(1<<(2-i))?true:false;
 		CVX_Link* pL = links[2*i + (posLink?0:1)];
 		if (pL && !pL->isFailed()){
 			strains[i] = (1 + pL->axialStrain(posLink))*(posLink?1:-1);
 		}
+		//else if (!(boolStates & (1<<(TENSION_SHIFT+i)))){
+		//	CVX_Link* pL2 = links[2*i + (!posLink?0:1)];
+		//	if (pL2) strains[i] = (1 + pL2->axialStrain(!posLink))*(posLink?1:-1);
+		//	else strains[i] = posLink?1.0:-1.0;
+
+		//}
 		else strains[i] = posLink?1.0:-1.0;
 	}
 
@@ -184,6 +187,7 @@ void CVX_Voxel::timeStep(float dt)
 {
 	previousDt = dt;
 	if (dt == 0.0f) return;
+	poissonsStrainInvalid = true;
 
 	if (ext && ext->isFixedAll()){
 		pos = originalPosition() + ext->translation();
@@ -191,6 +195,8 @@ void CVX_Voxel::timeStep(float dt)
 		haltMotion();
 		return;
 	}
+
+
 
 	//Translation
 	Vec3D<double> curForce = force();
@@ -223,12 +229,28 @@ void CVX_Voxel::timeStep(float dt)
 	pos += translate;
 
 	//Rotation
-	Vec3D<> curMoment = moment();
+
+	if (ix == 0 && iy == 1 && iz == 2){
+		int stop = 0;
+		if (angMom == Vec3D<double>(0,0,0))
+			int stop = 1;
+	}
+
+	Vec3D<double> curMoment = moment();
+	if (ext) {
+		if (ext->isFixed(X_ROTATE)){ curMoment.x=0;}
+		if (ext->isFixed(Y_ROTATE)){ curMoment.y=0;}
+		if (ext->isFixed(Z_ROTATE)){ curMoment.z=0;}
+	}
+
 	angMom += curMoment*dt;
 
-	orient = Quat3D<>(angMom*(dt*mat->_momentInertiaInverse))*orient; //update the orientation
+	orient = Quat3D<double>(angMom*(dt*mat->_momentInertiaInverse))*orient; //update the orientation
 
 	if (ext){
+		if (iz == 1)
+			int stop = 0;
+
 		double size = mat->nominalSize();
 		if (ext->isFixed(X_TRANSLATE)) {pos.x = ix*size + ext->translation().x; linMom.x=0;}
 		if (ext->isFixed(Y_TRANSLATE)) {pos.y = iy*size + ext->translation().y; linMom.y=0;}
@@ -238,22 +260,22 @@ void CVX_Voxel::timeStep(float dt)
 				orient = ext->rotationQuat();
 				angMom = Vec3D<double>();
 			}
-			else { //partial fixes: slow!
-				Vec3D<double> tmpRotVec = orient.ToRotationVector();
-				if (ext->isFixed(X_ROTATE)){ tmpRotVec.x=0; angMom.x=0;}
-				if (ext->isFixed(Y_ROTATE)){ tmpRotVec.y=0; angMom.y=0;}
-				if (ext->isFixed(Z_ROTATE)){ tmpRotVec.z=0; angMom.z=0;}
-				orient.FromRotationVector(tmpRotVec);
-			}
+			//else { //partial fixes: slow!
+			//	Vec3D<double> tmpRotVec = orient.ToRotationVector();
+			//	if (ext->isFixed(X_ROTATE)){ tmpRotVec.x=0; angMom.x=0;}
+			//	if (ext->isFixed(Y_ROTATE)){ tmpRotVec.y=0; angMom.y=0;}
+			//	if (ext->isFixed(Z_ROTATE)){ tmpRotVec.z=0; angMom.z=0;}
+			//	orient.FromRotationVector(tmpRotVec);
+			//}
 		}
 	}
 
 
-	poissonsStrainInvalid = true;
 }
 
 Vec3D<double> CVX_Voxel::force()
 {
+
 	//forces from internal bonds
 	Vec3D<double> totalForce(0,0,0);
 	for (int i=0; i<6; i++){ 
@@ -272,6 +294,8 @@ Vec3D<double> CVX_Voxel::force()
 			totalForce -= (*it)->contactForce(this);
 		}
 	}
+
+	//strain(true); //added 2-20
 
 	return totalForce;
 }
@@ -318,13 +342,13 @@ void CVX_Voxel::floorForce(float dt, Vec3D<double>* pTotalForce)
 
 }
 
-Vec3D<float> CVX_Voxel::strain(bool poissonsStrain) const
+Vec3D<double> CVX_Voxel::strain(bool poissonsStrain) const
 {
 	//if no connections in the positive and negative directions of a particular axis, strain is zero
 	//if one connection in positive or negative direction of a particular axis, strain is that strain - ?? and force or constraint?
 	//if connections in both the positive and negative directions of a particular axis, strain is the average. 
 	
-	Vec3D<float> intStrRet(0,0,0); //intermediate strain return value. axes according to linkAxis enum
+	Vec3D<double> intStrRet(0,0,0); //intermediate strain return value. axes according to linkAxis enum
 	int numBondAxis[3] = {0}; //number of bonds in this axis (0,1,2). axes according to linkAxis enum
 	bool tension[3] = {false};
 	for (int i=0; i<6; i++){ //cycle through link directions
@@ -337,16 +361,83 @@ Vec3D<float> CVX_Voxel::strain(bool poissonsStrain) const
 	for (int i=0; i<3; i++){ //cycle through axes
 		if (numBondAxis[i]==2) intStrRet[i] *= 0.5f; //average
 		if (poissonsStrain){
-			tension[i] = ((numBondAxis[i]==2) || (ext && (numBondAxis[i]==1 && (ext->isFixed((dofComponent)(1<<i)) || ext->force()[i] != 0)))); //if both sides pulling, or just one side and a fixed or forced voxel...
+			tension[i] = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && ext && (ext->isFixed((dofComponent)(1<<i)) || ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
 		}
 
 	}
 
 	if (poissonsStrain){
+	//	float mu = mat->poissonsRatio();
+	//	intStrRet = Vec3D<float>(0,0,0);
+
+	//	bool px = (links[X_POS] != NULL);
+	//	bool nx = (links[X_NEG] != NULL);
+	//	bool py = (links[Y_POS] != NULL);
+	//	bool ny = (links[Y_NEG] != NULL);
+	//	bool pz = (links[Z_POS] != NULL);
+	//	bool nz = (links[Z_NEG] != NULL);
+
+	//	bool Tx = px && nx || ((px || nx) && (ext && (ext->isFixed(X_TRANSLATE) || ext->force().x != 0))); //if bond on both sides or pulling against a fixed or forced constraint
+	//	bool Ty = py && ny || ((py || ny) && (ext && (ext->isFixed(Y_TRANSLATE) || ext->force().y != 0))); //if bond on both sides or pulling against a fixed or forced constraint
+	//	bool Tz = pz && nz || ((pz || nz) && (ext && (ext->isFixed(Z_TRANSLATE) || ext->force().z != 0))); //if bond on both sides or pulling against a fixed or forced constraint
+	//	
+	//if (ix == 0 && iy == 9 && iz == 2)
+	//	int stop = 0;
+	//if (ix == 0 && iy == 8 && iz == 2)
+	//	int stop = 0;		
+	//	
+	//	
+	//	
+	//	if (Tx)	intStrRet.x = OldGetVoxelStrain(CVX_Link::X_AXIS);
+	//	if (Ty) intStrRet.y = OldGetVoxelStrain(CVX_Link::Y_AXIS);
+	//	if (Tz) intStrRet.z = OldGetVoxelStrain(CVX_Link::Z_AXIS);
+
+	//	if (!Tx && !Ty && !Tz) intStrRet = Vec3D<>(0,0,0); //if nothing pushing or pulling, no strain on this bond!
+	//	else if (!Tx && Ty && Tz) intStrRet.x = pow(1+intStrRet.y + intStrRet.z, -mu)-1;
+	//	else if (Tx && !Ty && Tz) intStrRet.y = pow(1+intStrRet.x + intStrRet.z, -mu)-1; //??
+	//	else if (Tx && Ty && !Tz) intStrRet.z = pow(1+intStrRet.x + intStrRet.y, -mu)-1;
+	//	else if (!Tx && !Ty && Tz) intStrRet.x = intStrRet.y = pow(1+intStrRet.z, -mu)-1;
+	//	else if (!Tx && Ty && !Tz) intStrRet.x = intStrRet.z = pow(1+intStrRet.y, -mu)-1;
+	//	else if (Tx && !Ty && !Tz) intStrRet.y = intStrRet.z = pow(1+intStrRet.x, -mu)-1;
+
+	//	float NominalSize = mat->nominalSize();
+	//	for (int i=0; i<6; i++){
+	//		CVX_Link* pThisLink = links[i];
+	//		if (!pThisLink) continue;
+
+	//		switch (i){
+	//		case 0: //positive X
+	//			pThisLink->TStrainSumNeg = intStrRet.y + intStrRet.z;
+	//			pThisLink->CSAreaNeg = (1+intStrRet.y)*(1+intStrRet.z)*NominalSize*NominalSize;
+	//			break;
+	//		case 1: //negative X
+	//			pThisLink->TStrainSumPos = intStrRet.y + intStrRet.z;
+	//			pThisLink->CSAreaPos = (1+intStrRet.y)*(1+intStrRet.z)*NominalSize*NominalSize;
+	//			break;
+	//		case 2: //positive Y
+	//			pThisLink->TStrainSumNeg = intStrRet.x + intStrRet.z;
+	//			pThisLink->CSAreaNeg = (1+intStrRet.x)*(1+intStrRet.z)*NominalSize*NominalSize;
+	//			break;
+	//		case 3: //negative Y
+	//			pThisLink->TStrainSumPos = intStrRet.x + intStrRet.z;
+	//			pThisLink->CSAreaPos = (1+intStrRet.x)*(1+intStrRet.z)*NominalSize*NominalSize;
+	//			break;
+	//		case 4: //positive Z
+	//			pThisLink->TStrainSumNeg = intStrRet.y + intStrRet.x;
+	//			pThisLink->CSAreaNeg = (1+intStrRet.y)*(1+intStrRet.x)*NominalSize*NominalSize;
+	//			break;
+	//		case 5: //negative Z
+	//			pThisLink->TStrainSumPos = intStrRet.y + intStrRet.x;
+	//			pThisLink->CSAreaPos = (1+intStrRet.y)*(1+intStrRet.x)*NominalSize*NominalSize;
+	//			break;
+	//		}
+	//	}
+
+
 		if (!(tension[0] && tension[1] && tension[2])){ //if at least one isn't in tension
-			float add = 0;
+			double add = 0;
 			for (int i=0; i<3; i++) if (tension[i]) add+=intStrRet[i];
-			float value = pow( 1.0f + add, -mat->poissonsRatio()) - 1.0f;
+			double value = (pow( 1.0f + add, -(double)mat->poissonsRatio()) - 1.0f);
 			for (int i=0; i<3; i++) if (!tension[i]) intStrRet[i]=value;
 		}
 	}
@@ -354,7 +445,7 @@ Vec3D<float> CVX_Voxel::strain(bool poissonsStrain) const
 	return intStrRet;
 }
 
-Vec3D<float> CVX_Voxel::poissonsStrain()
+Vec3D<double> CVX_Voxel::poissonsStrain()
 {
 	if (poissonsStrainInvalid){
 		pStrain = strain(true);
@@ -364,11 +455,12 @@ Vec3D<float> CVX_Voxel::poissonsStrain()
 }
 
 
-float CVX_Voxel::transverseStrainSum(CVX_Link::linkAxis axis)
+double CVX_Voxel::transverseStrainSum(CVX_Link::linkAxis axis)
 {
 	if (mat->poissonsRatio() == 0) return 0;
 	
-	Vec3D<float> psVec = poissonsStrain();
+	Vec3D<double> psVec = poissonsStrain();
+//	Vec3D<float> psVec = strain(false);
 
 	switch (axis){
 	case CVX_Link::X_AXIS: return psVec.y+psVec.z;
@@ -379,26 +471,50 @@ float CVX_Voxel::transverseStrainSum(CVX_Link::linkAxis axis)
 
 }
 
-float CVX_Voxel::transverseArea(CVX_Link::linkAxis axis)
+double CVX_Voxel::transverseArea(CVX_Link::linkAxis axis)
 {
-	float size = (float)mat->nominalSize();
+	double size = (double)mat->nominalSize();
 	if (mat->poissonsRatio() == 0) return size*size;
+	
+	
+	if (ix == 0 && iy == 9 && iz == 2 && axis == CVX_Link::X_AXIS)
+		int stop = 0;
+	if (ix == 0 && iy == 8 && iz == 2 && axis == CVX_Link::X_AXIS)
+		int stop = 0;		
 
-	Vec3D<> psVec = poissonsStrain();
+
+	Vec3D<double> psVec = poissonsStrain();
+//	Vec3D<float> psVec = strain(false);
+
+
 
 	switch (axis){
-	case CVX_Link::X_AXIS: return (float)(size*size*(1+psVec.y)*(1+psVec.z));
-	case CVX_Link::Y_AXIS: return (float)(size*size*(1+psVec.x)*(1+psVec.z));
-	case CVX_Link::Z_AXIS: return (float)(size*size*(1+psVec.x)*(1+psVec.y));
+	case CVX_Link::X_AXIS: return (double)(size*size*(1+psVec.y)*(1+psVec.z));
+	case CVX_Link::Y_AXIS: return (double)(size*size*(1+psVec.x)*(1+psVec.z));
+	case CVX_Link::Z_AXIS: return (double)(size*size*(1+psVec.x)*(1+psVec.y));
 	default: return size*size;
 	}
 }
+
 
 void CVX_Voxel::updateSurface()
 {
 	bool interior = true;
 	for (int i=0; i<6; i++) if (!links[i]) interior = false;
 	interior ? boolStates |= SURFACE : boolStates &= ~SURFACE;
+
+	//tension flags
+	//int numBondAxis[3] = {0}; //number of bonds in this axis (0,1,2). axes according to linkAxis enum
+	//for (int i=0; i<6; i++){ //cycle through link directions
+	//	if (links[i]) numBondAxis[toAxis((linkDirection)i)]++;
+	//}
+	//for (int i=0; i<3; i++){ //cycle through axes
+	//	bool inTension = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && ext && (ext->isFixed((dofComponent)(1<<i)) || ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
+	//	
+	//	if (inTension)
+	//		int stop = 0;
+	//	inTension ? boolStates |= (1<<(TENSION_SHIFT+i)) : boolStates &= ~(1<<(TENSION_SHIFT+i));
+	//}
 }
 
 
@@ -437,3 +553,6 @@ void CVX_Voxel::generateNearby(int linkDepth, bool surfaceOnly){
 		if (pV->isSurface() && pV != this) nearby->push_back(pV);		
 	}
 }
+
+
+

@@ -5,6 +5,7 @@ pardiso.lic
 test/Debug/*
 test/Release/*
 test/*.txt
+test/*.stl
 doc/html
 *~
 *.d

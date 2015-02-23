@@ -228,6 +228,11 @@ void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoTy
 }
 float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType coloring)
 {
+	if (pV->indexX() == 0 && pV->indexY() == 9 && pV->indexZ() == 2)
+		int stop = 0;
+	if (pV->indexX() == 0 && pV->indexY() == 8 && pV->indexZ() == 2)
+		int stop = 0;
+
 	float voxMax = -FLT_MAX;
 	for (int i=0; i<6; i++){
 		float thisVal = -FLT_MAX;

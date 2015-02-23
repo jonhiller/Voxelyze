@@ -12,13 +12,11 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #ifndef VX_LINK_H
 #define VX_LINK_H
 
-//#include "VX_Enums.h"
 #include "Vec3D.h"
 #include "Quat3D.h"
 
 class CVX_Voxel;
 class CVX_MaterialLink;
-
 
 
 //!Defines a solid link between two adjacent voxels and holds its current state
@@ -46,19 +44,19 @@ class CVX_Link {
 
 
 	CVX_Voxel* voxel(bool positiveEnd) const {return positiveEnd?pVPos:pVNeg;} //!< Returns a pointer to one of the two voxels that compose this link. @param[in] positiveEnd Specifies which voxel is desired.
-	Vec3D<> force(bool positiveEnd) const {return positiveEnd?forcePos:forceNeg;} //!< Returns the current force acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
-	Vec3D<> moment(bool positiveEnd) const {return positiveEnd?momentPos:momentNeg;} //!< Returns the current moment acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
+	Vec3D<double> force(bool positiveEnd) const {return positiveEnd?forcePos:forceNeg;} //!< Returns the current force acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
+	Vec3D<double> moment(bool positiveEnd) const {return positiveEnd?momentPos:momentNeg;} //!< Returns the current moment acting on a voxel due to the position and orientation of the other. @param[in] positiveEnd Specifies which voxel information is desired about.
 
 
-	float axialStrain() const {return strain;} //!< returns the current overall axial strain (unitless) between the two voxels.
-	float axialStrain(bool positiveEnd) const; //!< Returns the current calculated axial strain of the half of the link contained in the specified voxel. @param[in] positiveEnd Specifies which voxel information is desired about.
-	float axialStress() const {return _stress;} //!< returns the current overall true axial stress (MPa) between the two voxels.
+	double axialStrain() const {return strain;} //!< returns the current overall axial strain (unitless) between the two voxels.
+	double axialStrain(bool positiveEnd) const; //!< Returns the current calculated axial strain of the half of the link contained in the specified voxel. @param[in] positiveEnd Specifies which voxel information is desired about.
+	double axialStress() const {return _stress;} //!< returns the current overall true axial stress (MPa) between the two voxels.
 
 	bool isSmallAngle() const {return smallAngle;} //!< Returns true if this link is currently operating with a small angle assumption.
 	bool isYielded() const; //!< Returns true if the stress on this bond has ever exceeded its yield stress
 	bool isFailed() const; //!< Returns true if the stress on this bond has ever exceeded its failure stress
 
-	float strainEnergy() const; //!< Calculates and return the strain energy of this link according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
+	float strainEnergy() const {return _strainEnergy;} //!< Calculates and return the strain energy of this link according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
 	float strainEnergy(bool positiveEnd) const; //!< Calculates and return the strain energy of the half of the link contained in the specified voxel according to current forces and moments. (units: Joules, or Kg m^2 / s^2)
 	float axialStiffness(); //!< Calculates and returns the current linear axial stiffness of this link at it's current strain.
 
@@ -67,15 +65,14 @@ class CVX_Link {
 	void updateRestLength(); //!< Updates the rest length of this voxel. Call this every timestep where the nominal size of either voxel may have changed, due to actuation or thermal expansion.
 	void updateTransverseInfo(); //!< Updates information about this voxel pertaining to volumetric deformations. Call this every timestep if the poisson's ratio of the link material is non-zero.
 
-
 private:
 	CVX_Voxel* pVNeg, *pVPos; //voxels in the negative
-	Vec3D<> forceNeg, forcePos;
-	Vec3D<> momentNeg, momentPos;
+	Vec3D<double> forceNeg, forcePos;
+	Vec3D<double> momentNeg, momentPos;
 
-	float strain;
-	float maxStrain, /*maxStrainRatio,*/ strainOffset; //keep track of the maximums for yield/fail/nonlinear materials (and the ratio of the maximum from 0 to 1 [all positive end strain to all negative end strain])
-	float updateStrain(float axialStrain); //updates strainNeg and strainPos according to the provided axial strain. returns current stress as well (MPa)
+	double strain;
+	double maxStrain, strainOffset; //keep track of the maximums for yield/fail/nonlinear materials (and the ratio of the maximum from 0 to 1 [all positive end strain to all negative end strain])
+	double updateStrain(double axialStrain); //updates strainNeg and strainPos according to the provided axial strain. returns current stress as well (MPa)
 
 	typedef int linkState;
 	enum linkFlags { //default of each should be zero for easy clearing
@@ -86,7 +83,6 @@ private:
 	bool isLocalVelocityValid() const {return boolStates & LOCAL_VELOCITY_VALID ? true : false;} //
 	void setBoolState(linkFlags flag, bool set=true) {set ? boolStates |= (int)flag : boolStates &= ~(int)flag;}
 
-	//linkAxis axis() {return ax;}
 	linkAxis axis;
 
 	//beam parameters
@@ -104,11 +100,12 @@ private:
 	Quat3D<double> angle1, angle2; //this bond in local coordinates. 
 	bool smallAngle; //based on compiled precision setting
 	double currentRestLength;
-	float currentTransverseArea, currentTransverseStrainSum; //so we don't have to re-calculate everytime
+	double currentTransverseArea, currentTransverseStrainSum; //so we don't have to re-calculate everytime
 
-	float _stress; //keep this around for convenience
+	double _stress;
+	float _strainEnergy; //keep this around for convenience
 
-	Quat3D<double> orientLink(/*double restLength*/); //updates pos2, angle1, angle2, and smallAngle. returns the rotation quaternion (after toAxisX) used to get to this orientation
+	Quat3D<double> orientLink(); //updates pos2, angle1, angle2, and smallAngle. returns the rotation quaternion (after toAxisX) used to get to this orientation
 
 	//unwind a coordinate as if the bond was in the the positive X direction (and back...)
 	template <typename T> void toAxisX			(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->x; pV->x=pV->y; pV->y = -tmp; break;} case Z_AXIS: {T tmp = pV->x; pV->x=pV->z; pV->z = -tmp; break;} default: break;}} //transforms a vec3D in the original orientation of the bond to that as if the bond was in +X direction
@@ -118,7 +115,6 @@ private:
 	template <typename T> void toAxisOriginal	(Vec3D<T>* const pV) const {switch (axis){case Y_AXIS: {T tmp = pV->y; pV->y=pV->x; pV->x = -tmp; break;} case Z_AXIS: {T tmp = pV->z; pV->z=pV->x; pV->x = -tmp; break;} default: break;}}
 	template <typename T> void toAxisOriginal	(Quat3D<T>* const pQ) const {switch (axis){case Y_AXIS: {T tmp = pQ->y; pQ->y=pQ->x; pQ->x = -tmp; break;} case Z_AXIS: {T tmp = pQ->z; pQ->z=pQ->x; pQ->x = -tmp; break;} default: break;}}
 
-//	friend class CVX_Voxel;
 	friend class CVoxelyze;
 	friend class CVX_LinearSolver;
 	friend class CVXS_SimGLView; //TEMPORARY
