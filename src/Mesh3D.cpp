@@ -58,9 +58,10 @@ void CMesh3D::clear()
 	boundsMin = Vec3D<float>(0,0,0);
 	boundsMax = Vec3D<float>(0,0,0);
 
+	
 	//...etc.
 
-	meshChanged(); //stake care of stale flags
+	meshChanged(); //take care of stale flags
 
 }
 
@@ -70,6 +71,15 @@ void CMesh3D::meshChanged()
 	vertexMergesStale = true;
 	faceNormalsStale = true;
 	boundsStale = true;
+	slicerStale = true;
+
+	TriLayer.clear();
+	TriLine.clear();
+	TriInts.clear();
+
+	_lastZ = -FLT_MAX;
+	_lastY = -FLT_MAX;
+	_lastPad = 0;
 }
 
 
@@ -99,6 +109,10 @@ bool CMesh3D::save(const char* filePath)
 void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 {
 	int vIndexStart = (int)(vertices.size());
+//	vertices.push_back(p0);
+//	vertices.push_back(p1);
+//	vertices.push_back(p2);
+
 	for (int i=0; i<3; i++) vertices.push_back(p0[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p1[i]);
 	for (int i=0; i<3; i++) vertices.push_back(p2[i]);
@@ -113,9 +127,10 @@ void CMesh3D::addTriangle(Vec3D<float>& p0, Vec3D<float>& p1, Vec3D<float>& p2)
 //	for (int i=0; i<3; i++) triangleNormals.push_back(N[i]); //don't need faceNormalsStale!
 
 	//stale out other stuff here...
-	boundsStale = true; //we could update here to ease update workload
-	faceNormalsStale = true; //we could update here to ease update workload
-	vertexMergesStale = true;
+	meshChanged();
+//	boundsStale = true; //we could update here to ease update workload
+//	faceNormalsStale = true; //we could update here to ease update workload
+//	vertexMergesStale = true;
 }
 
 void CMesh3D::useFaceNormals()
@@ -229,6 +244,8 @@ void CMesh3D::updateBounds(void)
 		if (vertices[i]<boundsMin[axis]) boundsMin[axis] = vertices[i];
 		if (vertices[i]>boundsMax[axis]) boundsMax[axis] = vertices[i];
 	}
+
+	boundsStale = false;
 }
 
 bool CMesh3D::loadSTL(std::string& filePath)
@@ -254,11 +271,21 @@ bool CMesh3D::loadSTL(std::string& filePath)
 	unsigned char tmpbuf[128];
 	if (fread(tmpbuf,sizeof(tmpbuf),1,fp) == 0) return false;
 	for(unsigned int i = 0; i < sizeof(tmpbuf); i++){ if(tmpbuf[i] > 127) binary=true; }
+	
+	//rewind(fp);
+
 
 	//now we know binary vs ascii. reset file pointer to beginning of data
 	float N[3], P[9];
 
 	if (binary){ //if this is a binary stl
+		fclose(fp);
+		#ifdef WIN32
+			fopen_s(&fp, filePath.c_str(), "rb"); //secure version. preferred on windows platforms...
+		#else
+			fp = fopen(filePath.c_str(), "rb");
+		#endif
+
 		fseek(fp, STL_LABEL_SIZE + sizeof(int), SEEK_SET); //STL_LABEL_SIZE + facenum
 		short attr;
 
@@ -266,8 +293,14 @@ bool CMesh3D::loadSTL(std::string& filePath)
 			if (fread(&N,3*sizeof(float),1,fp) == 0) return false; //We end up throwing this out and recalculating because... we don't trust it!!!
 			if (fread(&P,3*sizeof(float),3,fp) == 0) return false;
 			if (fread(&attr,sizeof(short),1,fp) == 0) return false;
+
+			int prevVCount = (int)vertices.size()/3;
 			for (int j=0; j<9; j++) vertices.push_back(P[j]);
+			triangles.push_back(prevVCount);
+			triangles.push_back(prevVCount+1);
+			triangles.push_back(prevVCount+2);
 		}
+
 	}
 	else { //if this is an ascii stl
 		fseek(fp,0,SEEK_SET);
@@ -296,7 +329,12 @@ bool CMesh3D::loadSTL(std::string& filePath)
 			lineCnt+=7;
 			if(feof(fp)) break;
 
+			int prevVCount = (int)vertices.size()/3;
 			for (int j=0; j<9; j++) vertices.push_back(P[j]);
+			triangles.push_back(prevVCount);
+			triangles.push_back(prevVCount+1);
+			triangles.push_back(prevVCount+2);
+
 		}
 	}
 	fclose(fp);
@@ -380,6 +418,560 @@ bool CMesh3D::saveOBJ(std::string& filePath) const
 	ofile.close();
 	return true;
 }
+
+
+void CMesh3D::translate(Vec3D<float> d)
+{
+	for (int i=0; i<(int)vertices.size(); i++) vertices[i] += d[i%3];
+	meshChanged();
+}
+
+void CMesh3D::scale(Vec3D<float> s)
+{
+	for (int i=0; i<(int)vertices.size(); i++) vertices[i] *= s[i%3];
+	meshChanged();
+	
+}
+
+void CMesh3D::rotate(Vec3D<float> ax, float a)
+{
+	bool hasVertNorms = (vertexNormals.size() != 0);
+	for (int i=0; i<(int)vertices.size(); i+= 3) {
+		Vec3D<float> vert(vertices[i], vertices[i+1], vertices[i+2]);
+		vert = vert.Rot(ax, a);
+		for (int j=0; j<3; j++) vertices[i+j] = vert[j];
+		if (hasVertNorms){
+			Vec3D<float> norm(vertexNormals[i], vertexNormals[i+1], vertexNormals[i+2]);
+			norm = norm.Rot(ax, a);
+			for (int j=0; j<3; j++) vertexNormals[i+j] = norm[j];
+		}
+	}
+	if (triangleNormals.size() != 0){
+		for (int i=0; i<(int)triangles.size(); i+=3) {
+			Vec3D<float> norm(triangleNormals[i], triangleNormals[i+1], triangleNormals[i+2]);
+			norm = norm.Rot(ax, a);
+			for (int j=0; j<3; j++) triangleNormals[i+j] = norm[j];
+		}
+	}
+	meshChanged();
+	
+}
+
+float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance)
+{
+//	if (vertexMergesStale) mergeVertices(10);
+
+	if (!FillCheckTriInts(point->y, point->z, maxDistance)) return FLT_MAX; //returns very fast if previously used z or y layers...
+
+	int triCount = (int)TriLine.size();
+	float minDist2 = FLT_MAX;
+//	float distOut;
+//	float areaSum;
+	for (int i=0; i<triCount; i++){ //all triangles withing maxDistance
+		bool allAbove = true, allBelow = true;
+		for (int j=0; j<3; j++){
+			float thisX = vertices[3*triangles[3*TriLine[i]+j]];
+			if (thisX < point->x+maxDistance) allAbove = false;
+			if (thisX > point->x-maxDistance) allBelow = false;
+		}
+		if (!allAbove && !allBelow){ //within range to consider further
+			float u, v, dist2;
+			Vec3D<float> intPoint;
+			bool result = GetTriDist(TriLine[i], point, u, v, dist2, intPoint);
+			float area = GetTriArea(TriLine[i]);
+
+			if (dist2 < minDist2) minDist2 = dist2;
+//			if (dist2 <= maxDistance*maxDistance){
+//				distOut += sqrt(dist2); //todo here!
+//			}
+		}
+	}
+
+	if (isInside(point))
+		return -sqrt(minDist2);
+	else 
+		return sqrt(minDist2);
+}
+
+bool CMesh3D::isInside(Vec3D<float>* point)
+{
+//	if (vertexMergesStale) mergeVertices(10);
+
+	if (!FillCheckTriInts(point->y, point->z)) return false; //returns very fast if previously used z or y layers...
+
+	int intCount = 0;
+	for (int i=0; i<(int)TriInts.size(); i++) if (TriInts[i] < point->x) intCount++;
+
+	return (intCount%2 == 1);
+}
+
+
+bool CMesh3D::FillCheckTriInts(float y, float z, float pad)
+{
+	float maxYZ = meshSize().y > meshSize().z ? meshSize().y : meshSize().z;
+	float maxEpsilonChange = 20*maxYZ*FLT_EPSILON; //the most the x or y can change in seeking a non-edge intesecting ray
+
+	y += maxYZ*FLT_EPSILON; //these help avoid the majority of costly edge intersections at round numbers.
+	z += maxYZ*FLT_EPSILON;
+
+	pad = pad > maxEpsilonChange ? pad : maxEpsilonChange; //always keep enough padding around to do epsilon changes in the ray position
+	bool yStale = abs(y-_lastY) > maxEpsilonChange; //account for small epsilon changes from before
+	bool zStale = abs(z-_lastZ) > maxEpsilonChange; //account for small epsilon changes from before
+	bool padStale = pad > _lastPad; 
+
+	if (yStale || zStale || padStale) {  //recalculate
+		if (padStale || zStale) FillTriLayer(z, pad);
+		if (padStale || yStale || zStale) FillTriLine(y, z, pad);
+		_lastY = y;
+		_lastZ = z;
+		_lastPad = pad;
+
+
+
+		int tryCount = 1;
+		while (!FillTriInts(y, z, pad)){ //while we don't hit any edges (or vertices) and get an even number of hits for the line
+			if (tryCount%2 == 0) y += tryCount*maxYZ*FLT_EPSILON;
+			else z += tryCount*maxYZ*FLT_EPSILON;
+		
+			if (tryCount++ > 5) return false;
+		}
+	}
+	return true;
+}
+
+bool CMesh3D::FillTriInts(float y, float z, float padding)
+{
+	TriInts.clear();
+
+	int triCount = (int)TriLine.size();
+	for (int i=0; i<triCount; i++){
+		float hitPointX = 0;
+		IntersectionType intersect = IntersectXRay(TriLine[i], y, z, hitPointX);
+
+		for (int j=0; j<(int)TriInts.size(); j++) {if (TriInts[j] == hitPointX)
+			return false;}
+		if (intersect == IT_INSIDE)
+			TriInts.push_back(hitPointX);
+		else if (intersect == IT_EDGE)
+			return false; //try again...
+	}
+	if (TriInts.size() %2 ==1)
+		return false; //should never be an odd number of intersections
+	return true;
+}
+
+
+void CMesh3D::FillTriLine(float y, float z, float padding)
+{
+	int triCount = (int)TriLayer.size();
+	TriLine.clear(); //clear previous list
+
+	//add any Facets whose Z coordinates are not all above or all below this Z plane
+	for (int i=0; i<triCount; i++){
+		bool allAbove = true, allBelow = true;
+		for (int j=0; j<3; j++){
+			float thisY = vertices[3*triangles[3*TriLayer[i]+j]+1];
+			if (thisY < y+padding) allAbove = false;
+			if (thisY > y-padding) allBelow = false;
+		}
+		if (!allAbove && !allBelow) TriLine.push_back(TriLayer[i]);
+	}
+}
+
+void CMesh3D::FillTriLayer(float z, float padding)
+{
+	int triCount = (int)triangles.size()/3;
+	TriLayer.clear(); //clear previous list
+
+	//add any Facets whose Z coordinates are not all above or all below this Z plane
+	for (int i=0; i<triCount; i++){
+		bool allAbove = true, allBelow = true;
+		for (int j=0; j<3; j++){
+			float thisZ = vertices[3*triangles[3*i+j]+2];
+			if (thisZ < z+padding) allAbove = false;
+			if (thisZ > z-padding) allBelow = false;
+		}
+		if (!allAbove && !allBelow) TriLayer.push_back(i);
+	}
+}
+
+CMesh3D::IntersectionType CMesh3D::IntersectXRay(const int TriangleIndex, const float y, const float z, float& XIntersect) const
+{
+	//http://www.blackpawn.com/texts/pointinpoly/default.html
+
+//	Vec3D<float> vA = *GetpFacetVertex(FacetIndex, 0);
+//	Vec3D<float> vB = *GetpFacetVertex(FacetIndex, 1);
+//	Vec3D<float> vC = *GetpFacetVertex(FacetIndex, 2);
+	Vec3D<float> vA(&vertices[3*triangles[3*TriangleIndex]]); // = vertices[pFacet->vi[0]];
+	Vec3D<float> vB(&vertices[3*triangles[3*TriangleIndex+1]]);
+	Vec3D<float> vC(&vertices[3*triangles[3*TriangleIndex+2]]);
+
+	//necessary if buffer has padding and some triangles are fully outside
+	if ((vA.y>y && vB.y>y && vC.y>y) || (vA.y<y && vB.y<y && vC.y<y)) return IT_OUTSIDE;
+	if ((vA.z>z && vB.z>z && vC.z>z) || (vA.z<z && vB.z<z && vC.z<z)) return IT_OUTSIDE;
+
+	float v0y = vC.y-vA.y; //u
+	float v0z = vC.z-vA.z;
+	float v1y = vB.y-vA.y; //v
+	float v1z = vB.z-vA.z;
+	float v2y = y-vA.y;
+	float v2z = z-vA.z;
+
+	float dot00=v0y*v0y+v0z*v0z;
+	float dot01=v0y*v1y+v0z*v1z;
+	float dot02=v0y*v2y+v0z*v2z;
+	float dot11=v1y*v1y+v1z*v1z;
+	float dot12=v1y*v2y+v1z*v2z;
+
+	float invDenom = 1.0f/(dot00*dot11-dot01*dot01);
+	float u=(dot11*dot02-dot01*dot12)*invDenom;
+	float v=(dot00*dot12-dot01*dot02)*invDenom;
+
+	if (u<0 || v<0 || u+v > 1)
+		return IT_OUTSIDE;
+	else if (u>0 && v>0 && u+v<1.0){
+		XIntersect = vA.x+u*(vC.x-vA.x)+v*(vB.x-vA.x);
+		return IT_INSIDE;
+	}
+	else 
+		return IT_EDGE;
+}
+
+bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, float& Dist2Out, Vec3D<float>& ToSurfPointOut) const //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
+{
+	//http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
+
+	//Regions:
+	//    E1 (t)
+	// \ 2|
+	//   \|
+	//	  |\
+	//    |  \    1
+	//  3 |    \
+	//    | 0    \
+	// ___|________\____   E0 (s)
+	//    |          \ 6
+	// 4  |    5       \
+
+//	Vec3D<float> B = *GetpFacetVertex(FacetIndex, 0);
+//	Vec3D<float> E0 = *GetpFacetVertex(FacetIndex, 1) - B; //(s)
+//	Vec3D<float> E1 = *GetpFacetVertex(FacetIndex, 2) - B; //(t)
+	Vec3D<float> B(&vertices[3*triangles[3*TriangleIndex]]);
+	Vec3D<float> E0 = Vec3D<float>(&vertices[3*triangles[3*TriangleIndex+1]]) - B; //(s)
+	Vec3D<float> E1 = Vec3D<float>(&vertices[3*triangles[3*TriangleIndex+2]]) - B; //(t)
+	Vec3D<float> D = B - *pPointIn;
+
+	float a = E0.Dot(E0);
+	float b = E0.Dot(E1);
+	float c = E1.Dot(E1);
+	float d = E0.Dot(D);
+	float e = E1.Dot(D);
+	float f = D.Dot(D);
+
+	float det=a*c-b*b;
+	float s = b*e-c*d;
+	float t = b*d-a*e;
+
+	//determine which region...
+	//Q(s,t) = as^2+2bst+ct^2+2ds+2et+f
+	if (s+t <= det){
+		if (s<0){
+			if (t<0){ //Region 4
+				// Grad(Q) = 2(as+bt+d,bs+ct+e) :: (derivative w respect to s, t)
+				// (0,1)*Grad(Q(0,0)) = (0,1)*(d,e) = e :: is grad from tip of region 2 in directon of leg toward origin (0,1)...
+				// (1,0)*Grad(Q(0,0)) = (1,0)*(d,e) = d
+				// min on edge t=0 if (0,1)*Grad(Q(0,0)) < 0 )
+				// min on edge s=0 otherwise
+				if (e<0){ // minimum on edge t=0
+					t=0;
+					s=(d >=0 ? 0 :(-d >=a ? 1:-d/a)); //fixed 2-7! t changed to s
+				}
+				else { // minimum on edge s=0
+					s=0;
+					t=(e >=0 ? 0 :(-e >=c ? 1:-e/c));
+				}
+			}
+			else { //Region 3
+				// F(t) = Q(0,t) = ct^2 + 2et + f
+				// F’(t)/2 = ct+e
+				// F’(T) = 0 when T = -e/c
+				s=0;
+				t=(e >=0 ? 0 :(-e >=c ? 1:-e/c));
+			}
+		}
+		else if (t<0){ //Region 5 (like region 3)
+			// F(s) = Q(s,0) = as^2 + 2ds + f
+			// F’(s)/2 = as+d
+			// F’(S) = 0 when S = -d/a
+			t=0;
+			s=(d >=0 ? 0 :(-d >=a ? 1:-d/a)); //fixed 2-7! t changed to s
+		}
+		else { //Region 0
+			float invdet = 1/det;
+			s *= invdet;
+			t *= invdet;
+		}
+	}
+	else {
+		if (s<0){ //Region 2
+			// Grad(Q) = 2(as+bt+d,bs+ct+e) :: (derivative w respect to s, t)
+			// (0,-1)*Grad(Q(0,1)) = (0,-1)*(b+d,c+e) = -(c+e) :: is grad from tip of region 2 in directon of leg toward origin (0,1)...
+			// (1,-1)*Grad(Q(0,1)) = (1,-1)*(b+d,c+e) = (b+d)-(c+e)
+			// min on edge s+t=1 if (1,-1)*Grad(Q(0,1)) < 0 )
+			// min on edge s=0 otherwise
+			float tmp0 = b+d;
+			float tmp1 = c+e;
+			if ( tmp1 > tmp0 ){ // minimum on edge s+t=1
+				float numer = tmp1 - tmp0;
+				float denom = a-2*b+c;
+				s = ( numer >= denom ? 1 : numer/denom );
+				t = 1-s;
+			}
+			else { // minimum on edge s=0
+				s = 0;
+				t = ( tmp1 <= 0 ? 1 : ( e >= 0 ? 0 : -e/c ) );
+			}
+		}
+		else if (t<0){ //Region 6 
+			// Grad(Q) = 2(as+bt+d,bs+ct+e) :: (derivative w respect to s, t)
+			// (-1,0)*Grad(Q(1,0)) = (-1,0)*(a+d,b+e) = -(a+d) :: is grad from tip of region 2 in directon of leg toward origin (0,1)...
+			// (-1,1)*Grad(Q(1,0)) = (-1,1)*(a+d,b+e) = (b+e)-(a+d)
+			// min on edge s+t=1 if (-1,1)*Grad(Q(0,1)) < 0 )
+			// min on edge t=0 otherwise
+			float tmp0 = b+e;
+			float tmp1 = a+d;
+			if ( tmp1 > tmp0 ){ // minimum on edge s+t=1
+				float numer = tmp1 - tmp0;
+				float denom = a-2*b+c;
+				t = ( numer >= denom ? 1 : numer/denom );
+				s = 1-t;
+			}
+			else { // minimum on edge t=0
+				t = 0;
+				s = ( tmp1 <= 0 ? 1 : ( d >= 0 ? 0 : -d/a ) );
+			}
+		}
+		else { //Region 1
+			// F(s) = Q(s,1-s) = (a-2b+c)s^2 + 2(b-c+d-e)s + (c+2e+f)
+			// F’(s)/2 = (a-2b+c)s + (b-c+d-e)
+			// F’(S) = 0 when S = (c+e-b-d)/(a-2b+c)
+			// a-2b+c = |E0-E1|^2 > 0, so only sign of c+e-b-d need be considered
+			float numer = c+e-b-d;
+			if (numer <= 0) s=0;
+			else {
+				float denom = a-2*b+c;
+				s = (numer >= denom ? 1 : numer/denom);
+			}
+			t=1-s;
+		}
+	}
+
+	//check one or the other? should be same!
+	Vec3D<float> ClosestPoint = B+s*E0+t*E1;
+	ToSurfPointOut = ClosestPoint-*pPointIn; //OUTPUT!
+
+	Dist2Out = a*s*s+2*b*s*t+c*t*t+2*d*s+2*e*t+f;
+
+	if (s<0 || t<0 || s+t > 1)
+		int flag = 0;
+
+	UOut = s;
+	VOut = t;
+//	Dist2Out = D22;
+	return true;
+}
+
+float CMesh3D::GetTriArea(const int TriangleIndex)
+{
+	Vec3D<float> B(&vertices[3*triangles[3*TriangleIndex]]);
+	Vec3D<float> E0 = Vec3D<float>(&vertices[3*triangles[3*TriangleIndex+1]]) - B; //(s)
+	Vec3D<float> E1 = Vec3D<float>(&vertices[3*triangles[3*TriangleIndex+2]]) - B; //(t)
+
+	return 0.5f*E0.Cross(E1).Length();
+}
+
+
+//
+////---------------------------------------------------------------------------
+//int CMesh::GetXIntersections(vfloat z, vfloat y, vfloat* pIntersections, int NumtoCheck, int* pToCheck)
+////---------------------------------------------------------------------------
+//{ //returns the number of intersections, stored in pIntersections. pToCheck is a vector of facet indices that are in this Z plane...
+//	Vec3D<> p;
+//	vfloat pu, pv, V1y, V2y, V3y;
+//	int NumFound = 0;
+//
+//	for (int i=0; i<NumtoCheck; i++){ //for each facet we wish to check...
+//		V1y = Vertices[Facets[pToCheck[i]].vi[0]].v.y;
+//		V2y = Vertices[Facets[pToCheck[i]].vi[1]].v.y;
+//		V3y = Vertices[Facets[pToCheck[i]].vi[2]].v.y;
+//		//trivial checks (should get most of them...)
+//		if (V1y < y && V2y < y && V3y < y)
+//			continue;
+//		if (V1y > y && V2y > y && V3y > y)
+//			continue;
+//
+//		if(IntersectXRay(&Facets[pToCheck[i]], y, z, p, pu, pv)) { //if it intersects
+//			if (InsideTri(p, Vertices[Facets[pToCheck[i]].vi[0]].v, Vertices[Facets[pToCheck[i]].vi[1]].v, Vertices[Facets[pToCheck[i]].vi[2]].v)){
+//				pIntersections[NumFound++] = p.x; //(1.0 - pu - pv)*Vertices[Facets[pToCheck[i]].vi[0]].v.x + pu*Vertices[Facets[pToCheck[i]].vi[1]].v.x + pv*Vertices[Facets[pToCheck[i]].vi[2]].v.x;
+//			}
+//		}
+//	}
+//	
+////	if (NumFound%2 != 0) std::cout << "Uh-oh! Found an odd number of intersections!";
+//	
+//	//sort intersections... (bubble sort = slow, but these should be super small...
+//	vfloat tmp;
+//	for (int i=0; i<NumFound; i++){
+//		for (int j=0; j<NumFound - i - 1; j++){ //each iteration gets the largest element to the end...
+//			if(pIntersections[j] > pIntersections[j+1]){
+//				tmp = pIntersections[j+1];
+//				pIntersections[j+1] = pIntersections[j];
+//				pIntersections[j] = tmp;
+//			}
+//		}
+//	}
+//
+//	return NumFound;
+//}
+//
+////---------------------------------------------------------------------------
+//bool CMesh::InsideTri(Vec3D<>& p, Vec3D<>& v0, Vec3D<>& v1, Vec3D<>& v2)
+////---------------------------------------------------------------------------
+//{// True if point p projects to within triangle (v0;v1;v2)
+//
+//	Vec3D<> xax = (v1-v0).Normalized();
+//	Vec3D<> zax = ((v2-v0).Cross(xax)).Normalized();
+//	Vec3D<> yax = zax.Cross(xax).Normalized();
+//
+//	Vec3D<> p0(0,0,1);
+//	Vec3D<> p1((v1-v0).Dot(xax),(v1-v0).Dot(yax),1);
+//	Vec3D<> p2((v2-v0).Dot(xax),(v2-v0).Dot(yax),1);
+//	Vec3D<> pt((p-v0).Dot(xax),(p-v0).Dot(yax),1);
+//
+//	vfloat d0 = Det(p0,p1,pt);
+//	vfloat d1 = Det(p1,p2,pt);
+//	vfloat d2 = Det(p2,p0,pt);
+//
+//	if (d0<=0 && d1<=0 && d2<=0)
+//		return true;
+//	if (d0>=0 && d1>=0 && d2>=0)
+//		return true;
+//
+//	return false;
+//
+//}
+//
+////---------------------------------------------------------------------------
+//vfloat CMesh::Det(Vec3D<>& v0, Vec3D<>& v1, Vec3D<>& v2)
+////---------------------------------------------------------------------------
+//{ // Compute determinant of 3x3 matrix v0,v1,v2
+//
+//	return 
+//
+//		v0.x*(v1.y*v2.z-v1.z*v2.y) +
+//		v0.y*(v1.z*v2.x-v1.x*v2.z) +
+//		v0.z*(v1.x*v2.y-v1.y*v2.x);
+//
+//}
+//
+////---------------------------------------------------------------------------
+//bool CMesh3D::IntersectXRay(int triIndex, float y, float z, Vec3D<float>& p, float& pu, float& pv)
+////---------------------------------------------------------------------------
+//{
+//	// compute intersection point P of triangle plane with ray from origin O in direction D
+//	// D assumed to be normalized
+//	// if no interstion, return false
+//	// u and v are barycentric coordinates of the intersection point P = (1 - u - v)A + uB + vC 
+//	// see http://www.devmaster.net/wiki/Ray-triangle_intersection
+//
+//
+////	Vec3D<> a = Vertices[pFacet->vi[0]].v;
+////	Vec3D<> b = Vertices[pFacet->vi[1]].v;
+////	Vec3D<> c = Vertices[pFacet->vi[2]].v;
+//
+//	Vec3D<float> v[3];
+//	for (int i=0; i<3; i++){
+//		for (int j=0; j<3; j++){
+//			v[i][j] = vertices[3*triangles[3*triIndex+i]+j];
+//		}
+//	}
+////	Vec3D<float> a(vertices[triangles[3*triIndex;
+////	Vec3D<float> b = Vertices[pFacet->vi[1]].v;
+////	Vec3D<float> c = Vertices[pFacet->vi[2]].v;
+//	
+//	float MinX = v[0].x < v[1].x ? (v[0].x < v[2].x ? v[0].x : v[2].x) : (v[1].x < v[2].x ? v[1].x : v[2].x) - 1.0;
+//	Vec3D<float> d(1,0,0);
+//	Vec3D<float> o(MinX, y, z);
+//
+//	//Vec3D n = pFacet->n; //((b-a).Cross(c-a)).Normalized();
+//	Vec3D<float> n = ((v[1]-v[0]).Cross(v[2]-v[0])).Normalized();
+//	//if (n.x > 0){ //flip vertices...
+//	//	Vec3D tmp = a;
+//	//	a = b;
+//	//	b = tmp;
+//	//	n = ((b-a).Cross(c-a)).Normalized();
+//	//}
+//
+//	float dn = d.Dot(n);
+//	if (fabs(dn)<1E-5)
+//		return false; //parallel
+//
+//	float dist = -(o-v[0]).Dot(n)/dn;
+//	Vec3D<> sD = d*dist;
+//	p = o+sD;
+//
+//	float V1, V2, V3;
+//	V1 = (v[1]-v[0]).Cross(p-v[0]).Dot(n);
+//	V2 = (v[2]-v[1]).Cross(p-v[1]).Dot(n);
+//	V3 = (v[0]-v[2]).Cross(p-v[2]).Dot(n);
+//	
+//	if (V1 >=0 && V2 >=0 && V2 >=0) return true;
+//	//if (V1 <=0 && V2 <=0 && V2 <=0) return true;
+//	else return false;
+//
+//}
+//
+////
+//void CMesh3D::RotX(vfloat a)
+//{
+//	for (int i=0; i<(int)Vertices.size(); i++) {
+//		Vertices[i].v.RotX(a);
+//		Vertices[i].n.RotX(a);
+//	}
+//	for (int i=0; i<(int)Facets.size(); i++) {
+//		Facets[i].n.RotX(a);
+//	}
+//	meshChanged();
+//	
+//}
+//
+//
+//void CMesh3D::RotY(vfloat a)
+//{
+//	for (int i=0; i<(int)Vertices.size(); i++) {
+//		Vertices[i].v.RotY(a);
+//		Vertices[i].n.RotY(a);
+//	}
+//	for (int i=0; i<(int)Facets.size(); i++) {
+//		Facets[i].n.RotY(a);
+//	}
+//	meshChanged();
+//
+//}
+//
+//
+//void CMesh3D::RotZ(vfloat a)
+//{
+//	for (int i=0; i<(int)Vertices.size(); i++) {
+//		Vertices[i].v.RotZ(a);
+//		Vertices[i].n.RotZ(a);
+//	}
+//	for (int i=0; i<(int)Facets.size(); i++) {
+//		Facets[i].n.RotZ(a);
+//	}
+//	meshChanged();
+//
+//}
 
 
 //#ifdef WIN32
@@ -799,108 +1391,6 @@ bool CMesh3D::saveOBJ(std::string& filePath) const
 //
 //
 //
-////---------------------------------------------------------------------------
-//void CMesh::Translate(Vec3D<> d)
-////---------------------------------------------------------------------------
-//{// translate geometry
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v += d;
-//	}
-//	UpdateBoundingBox();
-//	MeshChanged();
-//}
-//
-////---------------------------------------------------------------------------
-//void CMesh::Scale(Vec3D<> s)
-////---------------------------------------------------------------------------
-//{// scale geometry
-//
-//	//check for zero scale factor
-//	if(s.x==0 || s.y==0 || s.z==0) return;
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v.x *= s.x;
-//		Vertices[i].v.y *= s.y;
-//		Vertices[i].v.z *= s.z;
-////		Vertices[i].n.x *= s.x; //do we really want to scale these?
-////		Vertices[i].n.y *= s.y;
-////		Vertices[i].n.z *= s.z;
-/////		Facets[i].n.Normalize();
-//	}
-//	UpdateBoundingBox();
-//	MeshChanged();
-//	
-//}
-//
-////---------------------------------------------------------------------------
-//void CMesh::Rotate(Vec3D<> ax, vfloat a)
-////---------------------------------------------------------------------------
-//{
-//
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v = Vertices[i].v.Rot(ax, a);
-//		Vertices[i].n = Vertices[i].n.Rot(ax, a);
-//		Vertices[i].DrawOffset = Vertices[i].DrawOffset.Rot(ax, a);
-//
-//		
-//	}
-//	for (int i=0; i<(int)Facets.size(); i++) {
-//		Facets[i].n = Facets[i].n.Rot(ax, a);
-//	}
-//
-//	UpdateBoundingBox();
-//	MeshChanged();
-//	
-//}
-//
-////---------------------------------------------------------------------------
-//void CMesh::RotX(vfloat a)
-////---------------------------------------------------------------------------
-//{
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v.RotX(a);
-//		Vertices[i].n.RotX(a);
-//	}
-//	for (int i=0; i<(int)Facets.size(); i++) {
-//		Facets[i].n.RotX(a);
-//	}
-//	UpdateBoundingBox();
-//	MeshChanged();
-//	
-//}
-//
-//
-////---------------------------------------------------------------------------
-//void CMesh::RotY(vfloat a)
-////---------------------------------------------------------------------------
-//{
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v.RotY(a);
-//		Vertices[i].n.RotY(a);
-//	}
-//	for (int i=0; i<(int)Facets.size(); i++) {
-//		Facets[i].n.RotY(a);
-//	}
-//	UpdateBoundingBox();
-//	MeshChanged();
-//
-//}
-//
-//
-////---------------------------------------------------------------------------
-//void CMesh::RotZ(vfloat a)
-////---------------------------------------------------------------------------
-//{
-//	for (int i=0; i<(int)Vertices.size(); i++) {
-//		Vertices[i].v.RotZ(a);
-//		Vertices[i].n.RotZ(a);
-//	}
-//	for (int i=0; i<(int)Facets.size(); i++) {
-//		Facets[i].n.RotZ(a);
-//	}
-//	UpdateBoundingBox();
-//	MeshChanged();
-//
-//}
 //
 ////---------------------------------------------------------------------------
 //bool CMesh::IsInside(Vec3D<>* Point)
