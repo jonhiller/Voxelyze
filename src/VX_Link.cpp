@@ -19,8 +19,8 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #endif
 
 static const float HYSTERESIS_FACTOR = 1.3f; //Amount for small angle bond calculations
-static const float SA_BOND_BEND_RAD = 0.02f; //Amount for small angle bond calculations
-static const float SA_BOND_EXT_PERC = 1.3f; //Amount for small angle bond calculations
+static const float SA_BOND_BEND_RAD = 0.01f; //Amount for small angle bond calculations
+static const float SA_BOND_EXT_PERC = 1.2f; //Amount for small angle bond calculations
 
 
 CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, linkDirection direction*/)

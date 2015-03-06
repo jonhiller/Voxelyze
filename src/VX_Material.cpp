@@ -64,7 +64,7 @@ void CVX_Material::clear()
 	muKinetic = 0.0f;
 	zetaInternal = 1.0f;
 	zetaGlobal = 0.0f;
-	zetaCollision = 0.0f;
+	zetaCollision = 1.0f;
 
 	extScale=Vec3D<double>(1.0, 1.0, 1.0);
 
