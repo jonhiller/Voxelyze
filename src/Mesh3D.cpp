@@ -479,6 +479,7 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance)
 			Vec3D<float> intPoint;
 			bool result = GetTriDist(TriLine[i], point, u, v, dist2, intPoint);
 			float area = GetTriArea(TriLine[i]);
+			if (dist2 < 0) dist2 = -dist2; //this should never happen, but seems possible.
 
 			if (dist2 < minDist2) minDist2 = dist2;
 //			if (dist2 <= maxDistance*maxDistance){

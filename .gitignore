@@ -4,6 +4,7 @@ lib/libpardiso500-WIN-X86-64.lib
 pardiso.lic
 test/Debug/*
 test/Release/*
+test/x64/*
 test/*.txt
 test/*.stl
 doc/html
