@@ -230,12 +230,6 @@ void CVX_Voxel::timeStep(float dt)
 
 	//Rotation
 
-	if (ix == 0 && iy == 1 && iz == 2){
-		int stop = 0;
-		if (angMom == Vec3D<double>(0,0,0))
-			int stop = 1;
-	}
-
 	Vec3D<double> curMoment = moment();
 	if (ext) {
 		if (ext->isFixed(X_ROTATE)){ curMoment.x=0;}
@@ -248,9 +242,6 @@ void CVX_Voxel::timeStep(float dt)
 	orient = Quat3D<double>(angMom*(dt*mat->_momentInertiaInverse))*orient; //update the orientation
 
 	if (ext){
-		if (iz == 1)
-			int stop = 0;
-
 		double size = mat->nominalSize();
 		if (ext->isFixed(X_TRANSLATE)) {pos.x = ix*size + ext->translation().x; linMom.x=0;}
 		if (ext->isFixed(Y_TRANSLATE)) {pos.y = iy*size + ext->translation().y; linMom.y=0;}
@@ -367,73 +358,6 @@ Vec3D<double> CVX_Voxel::strain(bool poissonsStrain) const
 	}
 
 	if (poissonsStrain){
-	//	float mu = mat->poissonsRatio();
-	//	intStrRet = Vec3D<float>(0,0,0);
-
-	//	bool px = (links[X_POS] != NULL);
-	//	bool nx = (links[X_NEG] != NULL);
-	//	bool py = (links[Y_POS] != NULL);
-	//	bool ny = (links[Y_NEG] != NULL);
-	//	bool pz = (links[Z_POS] != NULL);
-	//	bool nz = (links[Z_NEG] != NULL);
-
-	//	bool Tx = px && nx || ((px || nx) && (ext && (ext->isFixed(X_TRANSLATE) || ext->force().x != 0))); //if bond on both sides or pulling against a fixed or forced constraint
-	//	bool Ty = py && ny || ((py || ny) && (ext && (ext->isFixed(Y_TRANSLATE) || ext->force().y != 0))); //if bond on both sides or pulling against a fixed or forced constraint
-	//	bool Tz = pz && nz || ((pz || nz) && (ext && (ext->isFixed(Z_TRANSLATE) || ext->force().z != 0))); //if bond on both sides or pulling against a fixed or forced constraint
-	//	
-	//if (ix == 0 && iy == 9 && iz == 2)
-	//	int stop = 0;
-	//if (ix == 0 && iy == 8 && iz == 2)
-	//	int stop = 0;		
-	//	
-	//	
-	//	
-	//	if (Tx)	intStrRet.x = OldGetVoxelStrain(CVX_Link::X_AXIS);
-	//	if (Ty) intStrRet.y = OldGetVoxelStrain(CVX_Link::Y_AXIS);
-	//	if (Tz) intStrRet.z = OldGetVoxelStrain(CVX_Link::Z_AXIS);
-
-	//	if (!Tx && !Ty && !Tz) intStrRet = Vec3D<>(0,0,0); //if nothing pushing or pulling, no strain on this bond!
-	//	else if (!Tx && Ty && Tz) intStrRet.x = pow(1+intStrRet.y + intStrRet.z, -mu)-1;
-	//	else if (Tx && !Ty && Tz) intStrRet.y = pow(1+intStrRet.x + intStrRet.z, -mu)-1; //??
-	//	else if (Tx && Ty && !Tz) intStrRet.z = pow(1+intStrRet.x + intStrRet.y, -mu)-1;
-	//	else if (!Tx && !Ty && Tz) intStrRet.x = intStrRet.y = pow(1+intStrRet.z, -mu)-1;
-	//	else if (!Tx && Ty && !Tz) intStrRet.x = intStrRet.z = pow(1+intStrRet.y, -mu)-1;
-	//	else if (Tx && !Ty && !Tz) intStrRet.y = intStrRet.z = pow(1+intStrRet.x, -mu)-1;
-
-	//	float NominalSize = mat->nominalSize();
-	//	for (int i=0; i<6; i++){
-	//		CVX_Link* pThisLink = links[i];
-	//		if (!pThisLink) continue;
-
-	//		switch (i){
-	//		case 0: //positive X
-	//			pThisLink->TStrainSumNeg = intStrRet.y + intStrRet.z;
-	//			pThisLink->CSAreaNeg = (1+intStrRet.y)*(1+intStrRet.z)*NominalSize*NominalSize;
-	//			break;
-	//		case 1: //negative X
-	//			pThisLink->TStrainSumPos = intStrRet.y + intStrRet.z;
-	//			pThisLink->CSAreaPos = (1+intStrRet.y)*(1+intStrRet.z)*NominalSize*NominalSize;
-	//			break;
-	//		case 2: //positive Y
-	//			pThisLink->TStrainSumNeg = intStrRet.x + intStrRet.z;
-	//			pThisLink->CSAreaNeg = (1+intStrRet.x)*(1+intStrRet.z)*NominalSize*NominalSize;
-	//			break;
-	//		case 3: //negative Y
-	//			pThisLink->TStrainSumPos = intStrRet.x + intStrRet.z;
-	//			pThisLink->CSAreaPos = (1+intStrRet.x)*(1+intStrRet.z)*NominalSize*NominalSize;
-	//			break;
-	//		case 4: //positive Z
-	//			pThisLink->TStrainSumNeg = intStrRet.y + intStrRet.x;
-	//			pThisLink->CSAreaNeg = (1+intStrRet.y)*(1+intStrRet.x)*NominalSize*NominalSize;
-	//			break;
-	//		case 5: //negative Z
-	//			pThisLink->TStrainSumPos = intStrRet.y + intStrRet.x;
-	//			pThisLink->CSAreaPos = (1+intStrRet.y)*(1+intStrRet.x)*NominalSize*NominalSize;
-	//			break;
-	//		}
-	//	}
-
-
 		if (!(tension[0] && tension[1] && tension[2])){ //if at least one isn't in tension
 			double add = 0;
 			for (int i=0; i<3; i++) if (tension[i]) add+=intStrRet[i];
@@ -476,18 +400,8 @@ double CVX_Voxel::transverseArea(CVX_Link::linkAxis axis)
 	double size = (double)mat->nominalSize();
 	if (mat->poissonsRatio() == 0) return size*size;
 	
-	
-	if (ix == 0 && iy == 9 && iz == 2 && axis == CVX_Link::X_AXIS)
-		int stop = 0;
-	if (ix == 0 && iy == 8 && iz == 2 && axis == CVX_Link::X_AXIS)
-		int stop = 0;		
-
-
 	Vec3D<double> psVec = poissonsStrain();
-//	Vec3D<float> psVec = strain(false);
-
-
-
+	
 	switch (axis){
 	case CVX_Link::X_AXIS: return (double)(size*size*(1+psVec.y)*(1+psVec.z));
 	case CVX_Link::Y_AXIS: return (double)(size*size*(1+psVec.x)*(1+psVec.z));
@@ -502,19 +416,6 @@ void CVX_Voxel::updateSurface()
 	bool interior = true;
 	for (int i=0; i<6; i++) if (!links[i]) interior = false;
 	interior ? boolStates |= SURFACE : boolStates &= ~SURFACE;
-
-	//tension flags
-	//int numBondAxis[3] = {0}; //number of bonds in this axis (0,1,2). axes according to linkAxis enum
-	//for (int i=0; i<6; i++){ //cycle through link directions
-	//	if (links[i]) numBondAxis[toAxis((linkDirection)i)]++;
-	//}
-	//for (int i=0; i<3; i++){ //cycle through axes
-	//	bool inTension = ((numBondAxis[i]==2) || (numBondAxis[i]==1 && ext && (ext->isFixed((dofComponent)(1<<i)) || ext->force()[i] != 0))); //if both sides pulling, or just one side and a fixed or forced voxel...
-	//	
-	//	if (inTension)
-	//		int stop = 0;
-	//	inTension ? boolStates |= (1<<(TENSION_SHIFT+i)) : boolStates &= ~(1<<(TENSION_SHIFT+i));
-	//}
 }
 
 
