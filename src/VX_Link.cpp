@@ -154,13 +154,6 @@ void CVX_Link::updateForces()
 {
 	Vec3D<double> oldPos2 = pos2, oldAngle1v = angle1v, oldAngle2v = angle2v; //remember the positions/angles from last timestep to calculate velocity
 
-	if (pVNeg->indexX() == 0 && pVNeg->indexY() == 1 && pVNeg->indexZ() == 2 && axis == X_AXIS){
-		int stop = 0;
-		if (pVPos->velocity() ==Vec3D<double>(0,0,0))
-			int stop2=0;
-	}
-
-
 	orientLink(); //sets pos2, angle1, angle2
 
 	Vec3D<double> dPos2 = 0.5*(pos2-oldPos2); //deltas for local damping. velocity at center is half the total velocity
@@ -189,7 +182,16 @@ void CVX_Link::updateForces()
 								-b2*pos2.z - b3*(angle1v.y + 2*angle2v.y),
 								b2*pos2.y - b3*(angle1v.z + 2*angle2v.z));
 
+		//strain energy
+	//_strainEnergy = forceNeg.x*forceNeg.x/(2.0f*mat->_a1) + //Tensile strain
+	//				momentNeg.x*momentNeg.x/(2.0*mat->_a2) + //Torsion strain
+	//				((momentNeg.z*momentNeg.z - momentNeg.z*momentPos.z +momentPos.z*momentPos.z) + //Bending Z
+	//				(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y))/(3.0*mat->_b3); //Bending Y
 
+	//strain energy (U): Given F=kx and U = 0.5*k*x^2, U = 0.5*F*x (matrix forms, of course).
+	_strainEnergy = -(0.5*(angle1v.x*momentNeg.x + angle1v.y*momentNeg.y + angle1v.z*momentNeg.z + 
+						pos2.x*forcePos.x + pos2.y*forcePos.y + pos2.z*forcePos.z + 
+						angle2v.x*momentPos.x + angle2v.y*momentPos.y + angle2v.z*momentPos.z));
 
 	//local damping:
 	if (isLocalVelocityValid()){ //if we don't have the basis for a good damping calculation, don't do any damping.
@@ -213,11 +215,6 @@ void CVX_Link::updateForces()
 	else 
 		setBoolState(LOCAL_VELOCITY_VALID, true); //we're good for next go-around unless something changes
 
-	//strain energy
-	_strainEnergy = forceNeg.x*forceNeg.x/(2.0f*mat->_a1) + //Tensile strain
-					momentNeg.x*momentNeg.x/(2.0*mat->_a2) + //Torsion strain
-					((momentNeg.z*momentNeg.z - momentNeg.z*momentPos.z +momentPos.z*momentPos.z) + //Bending Z
-					(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y))/(3.0*mat->_b3); //Bending Y
 
 
 	//	transform forces and moments to local voxel coordinates
