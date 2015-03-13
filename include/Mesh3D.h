@@ -83,7 +83,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "Array3D.h"
 #include "Vec3D.h"
 
-
 class CMesh3D
 {
 public:
@@ -100,9 +99,8 @@ public:
 	int triangleCount() {return (int)(triangles.size()/3);}
 	int vertexCount() {return (int)(vertices.size()/3);}
 
-
-	bool isInside(Vec3D<float> point);
-	float distanceToSurface(Vec3D<float> point); //negative for inside
+	bool isInside(Vec3D<float>* point); //true if inside mesh, false
+	float distanceFromSurface(Vec3D<float>* point, float maxDistance); //returns "blended" distance if within maxDistance. positive for outside, negative for inside.
 
 	void useFaceNormals(); // calc ? 
 	void useVertexNormals(); // calc ? Requires WeldClose?
@@ -112,18 +110,19 @@ public:
 	Vec3D<float> meshSize() {if (boundsStale) updateBounds(); return boundsMax-boundsMin;}
 
 
-	//	void Scale(Vec3D<> d);
-	//	void Translate(Vec3D<> d);
-	//	void Rotate(Vec3D<> ax, vfloat a);
-	//	void RotX(vfloat a);
-	//	void RotY(vfloat a);
-	//	void RotZ(vfloat a);
+	void translate(Vec3D<float> d); // translate geometry
+	void scale(Vec3D<float> s); // scale geometry
+	void rotate(Vec3D<float> ax, float a);
+	//void rotX(float a);
+	//void rotY(float a);
+	//void rotZ(float a);
 
 
 	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPEN_GL is defined.
 
 protected:
 	std::vector<float> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
+//	std::vector<Vec3D<float>> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
 	std::vector<float> vertexColors; //v1R, v1G, v1B, v2R, v2G, v2B, ... if size != 0, use all vertex colors. Otherwise triangle colors
 	std::vector<float> vertexNormals; //t1Nx, t1Ny, t1Nz, t2Nx, t2Ny, t2Nz, ... if size != 0, use all vertex normals. Otherwise triangle normals
 
@@ -140,7 +139,7 @@ protected:
 private:
 	bool normalsByVertex, colorsByVertex; //normals / colors drawn from vertices (vs by facet)
 
-	bool vertexNormalsStale, vertexMergesStale, faceNormalsStale, boundsStale;
+	bool vertexNormalsStale, vertexMergesStale, faceNormalsStale, boundsStale, slicerStale;
 
 	void mergeVertices(int precision = 10); //precision is 2^precision (max 10) divisions in each dimension to count as "close" enough to merge.
 	
@@ -178,7 +177,29 @@ private:
 //	bool DrawSmooth;
 	void calcFaceNormals(); //called to update the face normals...
 	void calcVertNormals(); //called once for each new geometry (or after deformed...) (depends on face normals!!!)
-//
+
+	std::vector<int> TriLayer, TriLine; //array of all triangle indices that cross the current z layer, or y line
+	std::vector<float> TriInts; //array of all intersection points at the current z height at the curernt Y value
+	float _lastZ, _lastY, _lastPad; //height we calculated TriHeight, TriLine at
+	void FillTriLayer(float z, float pad = 0.0f); //fills in TriLayer with all triangles that bridge this plane. returns true if re-calculated.
+	void FillTriLine(float y, float z, float pad = 0.0); //fills in TriLine with all triangle the bridge the line in the layer. returns true if re-calculated.
+	bool FillTriInts(float y, float z, float pad = 0.0f); //fills in TriLine with all triangle the bridge the line in the layer. returns true if re-calculated.
+	bool FillCheckTriInts(float y, float z, float pad = 0.0f); //Keeps trying FillTriInts until valid results found
+
+
+	enum IntersectionType {IT_INSIDE, IT_OUTSIDE, IT_EDGE};
+	IntersectionType IntersectXRay(const int TriangleIndex, const float y, const float z, float& XIntersect) const;
+	bool GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, float& Dist2Out, Vec3D<float>& ToSurfPointOut) const; //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
+	float GetTriArea(const int TriangleIndex);
+
+//	int GetXIntersections(float z, float y, float* pIntersections, int NumtoCheck, int* pToCheck); //returns the number of intersections, stored in pIntersections
+//	static bool InsideTri(Vec3D<>& p, Vec3D<>& v0, Vec3D<>& v1, Vec3D<>& v2);
+//	static float Det(Vec3D<>& v0, Vec3D<>& v1, Vec3D<>& v2);
+//	bool IntersectXRay(int triIndex, float y, float z, Vec3D<float>& p, float& pu, float& pv);
+
+
+
+
 //#ifdef USE_OPEN_GL
 //	void Draw(bool bModelhNormals = false, bool bShaded = true, bool bIngoreColors = false, bool bIgnoreNames = false); //requires OpenGL libs
 //#endif

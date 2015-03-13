@@ -61,7 +61,7 @@ class CArray3D
 public:
 	//!Constructor
 	CArray3D(){
-		defaultValue = 0;
+		defaultValue = T();
 		clear();
 	}
 

@@ -159,7 +159,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 		switch (error){
 		case -1: errorMsg = "Pardiso error: Input inconsistent\n";
 		case -2: errorMsg = "Pardiso error: Not enough memory\n";
-		case -3: errorMsg = "Pardiso error: Reodering Problem\n";
+		case -3: errorMsg = "Pardiso error: Reordering Problem\n";
 		case -4: errorMsg = "Pardiso error: Zero pivot, numerical factorization or iterative refinement problem\n";
 		case -10: errorMsg = "No License file Pardiso.lic found.\nGo to www.pardiso-project.org and follow the instructions to obtain a license file for your computer.\nPlace the file in the executable directory.\n";
 		case -11: errorMsg = "License is expired\n";

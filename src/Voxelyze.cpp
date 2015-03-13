@@ -237,8 +237,8 @@ bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
 			w.EndObject();
 		}
 		w.EndArray();
-		w.EndObject();
 	}
+	w.EndObject();
 
 	return true;
 }
