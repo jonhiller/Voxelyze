@@ -311,11 +311,42 @@ const int triTable[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-inline Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {
+inline Vec3D<float> vertexInterpLinear(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {
 	return p1 + ((iso - valp1) / (valp2 - valp1))*(p2-p1);
 }
 
-void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMeshOut) //points, vals to beginning of 8-long array
+Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2, float (*density)(Vec3D<float>&), float maxError, int maxIter = 5)
+{
+	bool slopePos = (valp2 > valp1);
+	float pUpper = 1.0, pLower = 0.0, vUpper = valp2, vLower = valp1;
+
+	float curPerc = ((iso - vLower) / (vUpper - vLower)); //first guess at percent from 0 to 1) from p1 to p2.
+	float densEst = vLower + curPerc*(vUpper - vLower);
+	Vec3D<float> P = p1 + curPerc*(p2-p1);
+	float densAct = density(P);
+	
+	int iterCounter = 0;
+	while (abs(densAct-densEst) > maxError && iterCounter++ < maxIter){
+		if (densAct > densEst){
+			if (slopePos){pUpper = curPerc; vUpper = densAct;}
+			else {pLower = curPerc; vLower = densAct;}
+		}
+		else {
+			if (!slopePos){pUpper = curPerc; vUpper = densAct;}
+			else {pLower = curPerc; vLower = densAct;}
+		}
+		
+		float localPerc = ((iso - vLower) / (vUpper - vLower)); //percent of he way between pLower and pUpper.
+		curPerc = pLower + localPerc*(pUpper-pLower); //first guess at percent from 0 to 1) from p1 to p2.
+		densEst = vLower + localPerc*(vUpper - vLower);
+		P = p1 + curPerc*(p2-p1);
+		densAct = density(P);
+	}
+
+	return P;
+}
+
+void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMeshOut, float (*density)(Vec3D<float>&) = 0) //points, vals to beginning of 8-long array
 {
 	//(http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/)
 	int cubeIndex = 0; //bit mask for which corners are below iso value
@@ -328,7 +359,10 @@ void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMesh
 	for (int i=0; i<12; i++){ //for each edge
 		if (thisEdge & (1<<i)){
 			int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
-			vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1]);
+			
+			if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 0.1f);
+			else vertList[i] = vertexInterpLinear(iso, points[v0], points[v1], vals[v0], vals[v1]);
+			
 		}
 	}
 
@@ -337,7 +371,7 @@ void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMesh
 	}
 }
 
-void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, float scale = 1.0f)
+void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, float scale = 1.0f, float (*density)(Vec3D<float>&) = 0)
 {
 	pMeshOut->clear();
 	Index3D minInds = thisArray.minIndices(), maxInds = thisArray.maxIndices();
@@ -349,12 +383,12 @@ void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, f
 		for (int ix=minInds.x-1; ix<maxInds.x+1; ix++){ 
 			for (int iy=minInds.y-1; iy<maxInds.y+1; iy++){
 				for (int j=0; j<8; j++){ //for each corner
-					int ox = ((j+1)/2)%2, oy = (j/2)%2, oz=(j/4); //order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
+					int ox = ((j+1)/2)%2, oy = (j/2)%2, oz=(j/4); //ox, oy, oz are 0 or 1. order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
 					points[j] = scale*Vec3D<float>((float)(ix+ox), (float)(iy+oy), (float)(iz+oz));
 					vals[j] = thisArray(ix+ox, iy+oy, iz+oz);
 				}
 
-				polygoniseCube(points, vals, iso, pMeshOut);
+				polygoniseCube(points, vals, iso, pMeshOut, density);
 			}
 		}
 	}

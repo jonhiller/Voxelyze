@@ -39,9 +39,9 @@ CMesh3D::CMesh3D(const char* filePath)
 	load(filePath);
 }
 
-CMesh3D::CMesh3D(CArray3D<float>& values, float threshold, float scale)
+CMesh3D::CMesh3D(CArray3D<float>& values, float threshold, float scale, float (*density)(Vec3D<float>&))
 {
-	meshFrom3dArray(this, values, threshold, scale);
+	meshFrom3dArray(this, values, threshold, scale, density);
 	meshChanged();
 }
 
@@ -58,7 +58,8 @@ void CMesh3D::clear()
 	boundsMin = Vec3D<float>(0,0,0);
 	boundsMax = Vec3D<float>(0,0,0);
 
-	
+	normalsByVertex = false;
+	colorsByVertex = false;
 	//...etc.
 
 	meshChanged(); //take care of stale flags
@@ -142,7 +143,7 @@ void CMesh3D::useFaceNormals()
 void CMesh3D::useVertexNormals()
 {
 	if (vertexNormalsStale) calcVertNormals();
-	normalsByVertex = false;
+	normalsByVertex = true;
 }
 
 void CMesh3D::calcFaceNormals() //called to update the face normals...
@@ -163,8 +164,14 @@ void CMesh3D::calcFaceNormals() //called to update the face normals...
 
 void CMesh3D::calcVertNormals() //called to update the vertex normals (without welding vertices this will be of limited use...)
 { 
-	if (vertexMergesStale) mergeVertices(10);
 	if (faceNormalsStale) calcFaceNormals();
+	
+	if (!normalsByVertex){
+
+		return;
+	}
+
+	if (vertexMergesStale) mergeVertices(10);
 
 	int triCount = (int)(triangles.size()/3);
 	int vertCount = (int)(vertices.size()/3);
@@ -408,12 +415,22 @@ bool CMesh3D::saveOBJ(std::string& filePath) const
 	for (int i=0; i<(int)(vertices.size()/3); i++){
 		ofile << "v " << vertices[3*i] << " " << vertices[3*i+1] << " " << vertices[3*i+2] << "\n";
 	}
-	for (int i=0; i<(int)(vertices.size()/3); i++){
-		ofile << "vn " << vertexNormals[3*i] << " " << vertexNormals[3*i+1] << " " << vertexNormals[3*i+2] << "\n";
+	if (normalsByVertex){
+		for (int i=0; i<(int)(vertices.size()/3); i++){
+			ofile << "vn " << vertexNormals[3*i] << " " << vertexNormals[3*i+1] << " " << vertexNormals[3*i+2] << "\n";
+		}
+	}
+	else { //flat faces
+		for (int i=0; i<(int)(triangles.size()/3); i++){
+			ofile << "vn " << triangleNormals[3*i] << " " << triangleNormals[3*i+1] << " " << triangleNormals[3*i+2] << "\n";
+		}
 	}
 
 	for (int i=0; i<(int)(triangles.size()/3); i++){
-		ofile << "f " << triangles[3*i]+1 << "//" << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << "//" << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "//" << triangles[3*i+2]+1 << "\n";
+		if (normalsByVertex)
+			ofile << "f " << triangles[3*i]+1 << "//" << triangles[3*i]+1 << " " << triangles[3*i+1]+1 << "//" << triangles[3*i+1]+1 << " " << triangles[3*i+2]+1 << "//" << triangles[3*i+2]+1 << "\n";
+		else 
+			ofile << "f " << triangles[3*i]+1 << "//" << i+1 << " " << triangles[3*i+1]+1 << "//" << i+1 << " " << triangles[3*i+2]+1 << "//" << i+1 << "\n";
 	}
 	ofile.close();
 	return true;

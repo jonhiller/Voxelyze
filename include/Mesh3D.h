@@ -88,7 +88,8 @@ class CMesh3D
 public:
 	CMesh3D(void) {clear();}
 	CMesh3D(const char* filePath); //only stl supported currently
-	CMesh3D(CArray3D<float>& values, float threshold, float scale = 1.0f);
+	CMesh3D(CArray3D<float>& values, float threshold, float scale = 1.0f, float (*density)(Vec3D<float>&) = 0);
+	//CMesh3D(float (*density)(Vec3D<float>&), Vec3D<float>& min, Vec3D<float>& max, int maxDivs, float threshold); //maxDivs = number of voxels in maximum dimension 
 	//virtual ~CMesh(){};
 
 	void clear();

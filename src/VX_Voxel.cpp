@@ -90,20 +90,20 @@ void CVX_Voxel::replaceMaterial(CVX_MaterialVoxel* newMaterial)
 
 float CVX_Voxel::strainEnergy() const
 {
-//	float totalSE = 0;
-//	for (int i=0; i<6; i++){
-//		if (links[i]) totalSE += links[i]->strainEnergy((i%2==1)?true:false)*0.5f;
-//	}
-//	return totalSE;
-
-	float maxSE = 0;
+	float totalSE = 0;
 	for (int i=0; i<6; i++){
-		if (links[i]){
-			float thisSe = links[i]->strainEnergy((i%2==1)?true:false);
-			if (thisSe > maxSE) maxSE = thisSe;
-		}
+		if (links[i]) totalSE += links[i]->strainEnergy((i%2==1)?true:false)*0.5f;
 	}
-	return maxSE;
+	return totalSE;
+
+	//float maxSE = 0;
+	//for (int i=0; i<6; i++){
+	//	if (links[i]){
+	//		float thisSe = links[i]->strainEnergy((i%2==1)?true:false);
+	//		if (thisSe > maxSE) maxSE = thisSe;
+	//	}
+	//}
+	//return maxSE;
 
 }
 
