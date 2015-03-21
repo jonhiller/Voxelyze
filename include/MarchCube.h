@@ -323,6 +323,7 @@ Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float val
 	float curPerc = ((iso - vLower) / (vUpper - vLower)); //first guess at percent from 0 to 1) from p1 to p2.
 	float densEst = vLower + curPerc*(vUpper - vLower);
 	Vec3D<float> P = p1 + curPerc*(p2-p1);
+	if (abs(valp1-valp2)<maxError) return P;
 	float densAct = density(P);
 	
 	int iterCounter = 0;
@@ -360,7 +361,7 @@ void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMesh
 		if (thisEdge & (1<<i)){
 			int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
 			
-			if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 0.1f);
+			if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 0.1f, 5);
 			else vertList[i] = vertexInterpLinear(iso, points[v0], points[v1], vals[v0], vals[v1]);
 			
 		}
@@ -368,6 +369,49 @@ void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMesh
 
 	for (int i=0; triTable[cubeIndex][i]!=-1; i+=3) {
 		pMeshOut->addTriangle(vertList[triTable[cubeIndex][i]], vertList[triTable[cubeIndex][i+1]], vertList[triTable[cubeIndex][i+2]]);
+	}
+}
+
+
+void polygoniseCube2(Vec3D<float> min, float size, float iso, CMesh3D* pMeshOut, int recurse = 0, float (*density)(Vec3D<float>&) = 0) //points, vals to beginning of 8-long array
+{
+	//(http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/)
+	int cubeIndex = 0; //bit mask for which corners are below iso value
+
+	float vals[8];
+	Vec3D<float> points[8];
+	for (int i=0; i<8; i++){
+		//int ox = ((i+1)/2)%2, oy = (i/2)%2, oz=(i/4); //ox, oy, oz are 0 or 1. order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
+		points[i] = min+size*Vec3D<float>(((i+1)/2)%2, (i/2)%2, (i/4));
+		vals[i] = density(points[i]);
+		if (vals[i] < iso) cubeIndex |= 1 << i;
+	}
+
+	int thisEdge = edgeTable[cubeIndex];
+	if (thisEdge == 0) return; //if cube is entirely in or out, return immediately
+
+
+	if (recurse > 0){
+		for (int i=0; i<8; i++){
+			Vec3D<float> thisMin =  min+0.5*size*Vec3D<float>(((i+1)/2)%2, (i/2)%2, (i/4));
+			polygoniseCube2(thisMin, size/2, iso, pMeshOut, recurse-1, density);
+		}
+	}
+	else {
+		Vec3D<float> vertList[12]; //list of each vertex location fo each edge (if the iso surface intersects this edge)
+		for (int i=0; i<12; i++){ //for each edge
+			if (thisEdge & (1<<i)){
+				int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
+			
+				if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 0.1f);
+				else vertList[i] = vertexInterpLinear(iso, points[v0], points[v1], vals[v0], vals[v1]);
+			
+			}
+		}
+
+		for (int i=0; triTable[cubeIndex][i]!=-1; i+=3) {
+			pMeshOut->addTriangle(vertList[triTable[cubeIndex][i]], vertList[triTable[cubeIndex][i+1]], vertList[triTable[cubeIndex][i+2]]);
+		}
 	}
 }
 
@@ -382,6 +426,9 @@ void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, f
 	for (int iz=minInds.z-1; iz<maxInds.z+1; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
 		for (int ix=minInds.x-1; ix<maxInds.x+1; ix++){ 
 			for (int iy=minInds.y-1; iy<maxInds.y+1; iy++){
+				//Vec3D<float> minCorner(scale*ix, scale*iy, scale*iz);
+				//polygoniseCube2(minCorner, scale, iso, pMeshOut, 2, density);
+
 				for (int j=0; j<8; j++){ //for each corner
 					int ox = ((j+1)/2)%2, oy = (j/2)%2, oz=(j/4); //ox, oy, oz are 0 or 1. order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
 					points[j] = scale*Vec3D<float>((float)(ix+ox), (float)(iy+oy), (float)(iz+oz));

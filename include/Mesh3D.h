@@ -101,7 +101,7 @@ public:
 	int vertexCount() {return (int)(vertices.size()/3);}
 
 	bool isInside(Vec3D<float>* point); //true if inside mesh, false
-	float distanceFromSurface(Vec3D<float>* point, float maxDistance); //returns "blended" distance if within maxDistance. positive for outside, negative for inside.
+	float distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut = 0); //returns "blended" distance if within maxDistance. positive for outside, negative for inside.
 
 	void useFaceNormals(); // calc ? 
 	void useVertexNormals(); // calc ? Requires WeldClose?

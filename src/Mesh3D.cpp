@@ -474,14 +474,16 @@ void CMesh3D::rotate(Vec3D<float> ax, float a)
 	
 }
 
-float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance)
+float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut)
 {
 //	if (vertexMergesStale) mergeVertices(10);
+	if (pNormalOut && faceNormalsStale) calcFaceNormals();
 
 	if (!FillCheckTriInts(point->y, point->z, maxDistance)) return FLT_MAX; //returns very fast if previously used z or y layers...
 
 	int triCount = (int)TriLine.size();
 	float minDist2 = FLT_MAX;
+	Vec3D<float> minNormal;
 //	float distOut;
 //	float areaSum;
 	for (int i=0; i<triCount; i++){ //all triangles withing maxDistance
@@ -495,20 +497,22 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance)
 			float u, v, dist2;
 			Vec3D<float> intPoint;
 			bool result = GetTriDist(TriLine[i], point, u, v, dist2, intPoint);
-			float area = GetTriArea(TriLine[i]);
+			//float area = GetTriArea(TriLine[i]);
 			if (dist2 < 0) dist2 = -dist2; //this should never happen, but seems possible.
 
-			if (dist2 < minDist2) minDist2 = dist2;
+			if (dist2 < minDist2){
+				minDist2 = dist2;
+				minNormal = Vec3D<float>(&triangleNormals[3*TriLine[i]]); //currently greedy - takes normal from first equidistant triangle.
+			}
 //			if (dist2 <= maxDistance*maxDistance){
 //				distOut += sqrt(dist2); //todo here!
 //			}
 		}
 	}
 
-	if (isInside(point))
-		return -sqrt(minDist2);
-	else 
-		return sqrt(minDist2);
+	if (pNormalOut) *pNormalOut = minNormal;
+	
+	return (isInside(point)) ? -sqrt(minDist2) : sqrt(minDist2);
 }
 
 bool CMesh3D::isInside(Vec3D<float>* point)

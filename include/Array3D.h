@@ -17,7 +17,10 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 //#include <assert.h>
 #include <vector>
 #include <limits.h>
-//#include <fstream>
+
+//for file output
+#include <iostream>
+#include <fstream>
 
 //why can't min and max just be there when you need them?
 #define LOCALMIN(a,b) (((a)<(b))?(a):(b))
@@ -240,6 +243,19 @@ public:
 	}
 	void removeValue(int i, int j, int k){removeValue(Index3D(i,j,k));} //!< Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use shrink_to_fit() to try to reduce the memory usage after removing element(s). Use removeValue to remove it. @param[in] i The i index to remove a value from if it exists. @param[in] j The j index to remove a value from if it exists. @param[in] k The k index to remove a value from if it exists.
 
+	void writeArray(const char* filePath){ //writes a csv of the array to the specified file path
+		std::ofstream ofile(filePath);
+			for (int j=cMin.y; j<=cMax.y; j++){
+		for (int k=cMin.z; k<=cMax.z; k++){
+				for (int i=cMin.x; i<=cMax.x; i++){
+					ofile << at(i,j,k) << "\t";
+				}
+				ofile << "\n";
+			}
+			ofile << "\n";
+		}
+		ofile.close();
+	}
 private:
 
 	int getIndex(const Index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
