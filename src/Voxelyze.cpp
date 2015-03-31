@@ -27,9 +27,9 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 CVoxelyze::CVoxelyze(double voxelSize)
 {
+	pSolver = NULL;
 	clear();
 	voxSize = voxelSize <= 0 ? DEFAULT_VOXEL_SIZE : voxelSize;
-	pSolver = NULL;
 }
 
 CVoxelyze::~CVoxelyze(void)
@@ -41,6 +41,7 @@ CVoxelyze::~CVoxelyze(void)
 
 CVoxelyze& CVoxelyze::operator=(CVoxelyze& VIn)
 {
+	pSolver = NULL;
 	setVoxelSize(VIn.voxSize);
 	setAmbientTemperature(VIn.ambientTemperature(), true);
 	setGravity(VIn.gravity());
@@ -473,8 +474,10 @@ void CVoxelyze::removeVoxel(int xIndex, int yIndex, int zIndex)
 	if (pV==NULL) return; //no voxel exists here.
 	delete pV;
 	voxels.removeValue(xIndex, yIndex, zIndex); //remove from the array
-	for (std::vector<CVX_Voxel*>::iterator it = voxelsList.begin(); it!=voxelsList.end(); it++){ //remove from the list
-		if (*it == pV) voxelsList.erase(it);
+
+	for (std::vector<CVX_Voxel*>::iterator it = voxelsList.begin(); it!=voxelsList.end(); ){ //remove from the list
+		if (*it == pV){ it = voxelsList.erase(it);}
+		else it++;
 	}
 
 	//make sure no references are left in the list This should be compiled away in release
@@ -558,9 +561,12 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 	//also, check all other links and if nobody else uses this CVX_MaterialLink erase that, too.
 	CVX_MaterialLink* thisLinkMat = pL->mat;
 	bool deleteThisLinkMat = true;
-	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++){ //remove from the list
-		if (*it == pL) { linksList.erase(it++); } //break;}
-		else if ((*it)->mat == thisLinkMat) deleteThisLinkMat = false;
+	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end();){ //remove from the list
+		if (*it == pL) { it = linksList.erase(it); } //points to next element
+		else {
+			if ((*it)->mat == thisLinkMat) deleteThisLinkMat = false;
+			it++;
+		}
 	}
 	if (deleteThisLinkMat) {
 		for (std::list<CVX_MaterialLink*>::iterator it = linkMats.begin(); it!=linkMats.end(); it++){ //remove from the list

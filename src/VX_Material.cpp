@@ -46,6 +46,8 @@ CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
 	zetaGlobal = vIn.zetaGlobal;
 	zetaCollision = vIn.zetaCollision;
 
+	extScale = vIn.extScale;
+
 	_eHat = vIn._eHat;
 
 	return *this;

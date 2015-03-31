@@ -483,7 +483,8 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D
 
 	int triCount = (int)TriLine.size();
 	float minDist2 = FLT_MAX;
-	Vec3D<float> minNormal;
+	Vec3D<float> avgNormal;
+	float avgNormalSum = 0;
 //	float distOut;
 //	float areaSum;
 	for (int i=0; i<triCount; i++){ //all triangles withing maxDistance
@@ -502,16 +503,28 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D
 
 			if (dist2 < minDist2){
 				minDist2 = dist2;
-				minNormal = Vec3D<float>(&triangleNormals[3*TriLine[i]]); //currently greedy - takes normal from first equidistant triangle.
 			}
+
+			if (pNormalOut) {
+				float distWeight = 1/(dist2*dist2);
+				if (dist2 == 0)
+					distWeight = 1e6;
+
+				avgNormal += distWeight*Vec3D<float>(&triangleNormals[3*TriLine[i]]); //currently greedy - takes normal from first equidistant triangle.
+				avgNormalSum += distWeight;
+			}
+
 //			if (dist2 <= maxDistance*maxDistance){
 //				distOut += sqrt(dist2); //todo here!
 //			}
 		}
 	}
 
-	if (pNormalOut) *pNormalOut = minNormal;
-	
+	if (pNormalOut) {
+		avgNormal /= avgNormalSum;
+		*pNormalOut = avgNormal.Normalized();
+	}
+
 	return (isInside(point)) ? -sqrt(minDist2) : sqrt(minDist2);
 }
 

@@ -107,6 +107,9 @@ public:
 	T		Dist2(const Vec3D& v) const		{return (v.x-x)*(v.x-x)+(v.y-y)*(v.y-y)+(v.z-z)*(v.z-z);} //!< Returns the euclidian distance squared between this vector and the specified vector "v". This vector is not modified. @param[in] v Vector to compare with.
 	T		AlignWith(const Vec3D target, Vec3D& rotax) const {Vec3D thisvec = Normalized(); Vec3D targvec = target.Normalized(); Vec3D rotaxis = thisvec.Cross(targvec); if (rotaxis.Length2() == 0) {rotaxis=target.ArbitraryNormal();} rotax = rotaxis.Normalized(); return acos(thisvec.Dot(targvec));} //!< Returns a rotation amount in radians and a unit vector (returned via the rotax argument) that will align this vector with target vector "target'. This vector is not modified. @param[in] target target vector. @param[out] rotax Unit vector of rotation axis.
 	Vec3D	ArbitraryNormal() const			{Vec3D n = Normalized(); if (fabs(n.x) <= fabs(n.y) && fabs(n.x) <= fabs(n.z)){n.x = 1;} else if (fabs(n.y) <= fabs(n.x) && fabs(n.y) <= fabs(n.z)){n.y = 1;}	else {n.z = 1;}	return Cross(n).Normalized();} //!< Generates and returns an arbitrary vector that is normal to this one. This vector is not modified. 
+	Vec3D	ExtractXY() const				{return Vec3D(x, y, 0);}
+	Vec3D	ExtractYZ() const				{return Vec3D(0, y, z);}
+	Vec3D	ExtractXZ() const				{return Vec3D(x, 0, z);}
 };
 
 #endif //_VEC3D_H
