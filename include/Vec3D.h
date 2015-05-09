@@ -70,8 +70,8 @@ public:
 	const Vec3D& operator-=(const Vec3D& s)			{x -= s.x; y -= s.y; z -= s.z; return *this;} //!< overload subract and set
 	const Vec3D& operator*=(const T f)				{x *= f; y *= f; z *= f; return *this;} //!< overload multiply and set
 	const Vec3D& operator/=(const T f)				{T Inv = (T)1.0/f; x *= Inv; y *= Inv; z *= Inv; return *this;} //!< overload divide and set
-	const T& operator[](int index) const			{switch (index%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}} //!< overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
-	T& operator[](int index)						{switch (index%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}}  //!< overload  index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
+	const T& operator[](const int axis) const		{switch (axis%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}} //!< overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
+	T& operator[](const int axis)					{switch (axis%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}}  //!< overload  index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
 
 	//Attributes
 	T		getX(void) const	{return x;} //!< returns the x value
@@ -82,12 +82,12 @@ public:
 	void	setZ(const T ZIn)	{z = ZIn;} //!< sets the z value
 
 	//Vector operations (change this object)
-	T		Normalize()			{T l = sqrt(x*x+y*y+z*z); if (l > 0) {x /= l;y /= l;z /= l;} return l;} //!< Normalizes this vector. Returns the previous magnitude of this vector before normalization. Note: function changes this vector.
-	void	NormalizeFast()		{T l = sqrt(x*x+y*y+z*z); if (l>0) {T li = 1.0/l;	x*=li; y*=li; z*=li;}} //!< Normalizes this vector slightly faster than Normalize() by not returning a value. Note: function changes this vector.
-	Vec3D	Rot(const Vec3D u, const T a) {T ca = cos(a); T sa = sin(a); T t = 1-ca; return Vec3D((u.x*u.x*t + ca) * x + (u.x*u.y*t - u.z*sa) * y + (u.z*u.x*t + u.y*sa) * z, (u.x*u.y*t + u.z*sa) * x + (u.y*u.y*t+ca) * y + (u.y*u.z*t - u.x*sa) * z, (u.z*u.x*t - u.y*sa) * x + (u.y*u.z*t + u.x*sa) * y + (u.z*u.z*t + ca) * z);} //!< Rotates this vector about an axis definied by "u" an angle "a". (http://www.cprogramming.com/tutorial/3d/rotation.html) Note: function changes this vector. @param[in] u axis to rotate this vector about. Must be normalized. @param[in] a The amount to rotate in radians.
-	void	RotZ(const T a)		{T xt =  x*cos(a) - y*sin(a); T yt = x*sin(a) + y*cos(a); x = xt; y = yt;} //!< Rotates this vector about the Z axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
-	void	RotY(const T a)		{T xt =  x*cos(a) + z*sin(a); T zt = -x*sin(a) + z*cos(a); x = xt; z = zt;} //!< Rotates this vector about the Y axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
-	void	RotX(const T a)		{T yt =  y*cos(a) + z*sin(a); T zt = -y*sin(a) + z*cos(a); y = yt; z = zt;} //!< Rotates this vector about the X axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
+	T		Normalize()						{T l = sqrt(x*x+y*y+z*z); if (l > 0) {x /= l;y /= l;z /= l;} return l;} //!< Normalizes this vector. Returns the previous magnitude of this vector before normalization. Note: function changes this vector.
+	void	NormalizeFast()					{T l = sqrt(x*x+y*y+z*z); if (l>0) {T li = 1.0/l;	x*=li; y*=li; z*=li;}} //!< Normalizes this vector slightly faster than Normalize() by not returning a value. Note: function changes this vector.
+	Vec3D	Rot(const Vec3D u, const T a)	{T ca = cos(a); T sa = sin(a); T t = 1-ca; return Vec3D((u.x*u.x*t + ca) * x + (u.x*u.y*t - u.z*sa) * y + (u.z*u.x*t + u.y*sa) * z, (u.x*u.y*t + u.z*sa) * x + (u.y*u.y*t+ca) * y + (u.y*u.z*t - u.x*sa) * z, (u.z*u.x*t - u.y*sa) * x + (u.y*u.z*t + u.x*sa) * y + (u.z*u.z*t + ca) * z);} //!< Rotates this vector about an axis definied by "u" an angle "a". (http://www.cprogramming.com/tutorial/3d/rotation.html) Note: function changes this vector. @param[in] u axis to rotate this vector about. Must be normalized. @param[in] a The amount to rotate in radians.
+	void	RotZ(const T a)					{T xt =  x*cos(a) - y*sin(a); T yt = x*sin(a) + y*cos(a); x = xt; y = yt;} //!< Rotates this vector about the Z axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
+	void	RotY(const T a)					{T xt =  x*cos(a) + z*sin(a); T zt = -x*sin(a) + z*cos(a); x = xt; z = zt;} //!< Rotates this vector about the Y axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
+	void	RotX(const T a)					{T yt =  y*cos(a) + z*sin(a); T zt = -y*sin(a) + z*cos(a); y = yt; z = zt;} //!< Rotates this vector about the X axis "a" radians. Note: function changes this vector. @param[in] a Radians to rotate by.
 
 	//Vector operations (don't change this object!)
 	Vec3D	Cross(const Vec3D& v) const		{return Vec3D(y*v.z-z*v.y,z*v.x-x*v.z,x*v.y-y*v.x);} //!< Returns the cross product of this vector crossed by the provided vector "v". This vector is not modified. @param[in] v Vector to cross by.
@@ -110,6 +110,12 @@ public:
 	Vec3D	ExtractXY() const				{return Vec3D(x, y, 0);}
 	Vec3D	ExtractYZ() const				{return Vec3D(0, y, z);}
 	Vec3D	ExtractXZ() const				{return Vec3D(x, 0, z);}
+	Vec3D	Project(const int axis) const	{switch (axis%3){case vec3_X: return ExtractYZ(); case vec3_Y: return ExtractXZ(); default: return ExtractXY();}}
+
 };
+
+typedef Vec3D<float> Vec3Df;
+typedef Vec3D<double> Vec3Dd;
+
 
 #endif //_VEC3D_H

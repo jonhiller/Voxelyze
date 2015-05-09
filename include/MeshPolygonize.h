@@ -9,13 +9,13 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
 
-#ifndef MARCHCUBE_H
-#define MARCHCUBE_H
+#ifndef MESHPOLYGONIZE_H
+#define MESHPOLYGONIZE_H
 
 #include "Mesh3D.h"
 #include "Array3D.h"
 
-//takes a vector of 3D arrays of floatng points and turns them into an iso-surface...
+//takes a vector of 3D arrays of floatng points and turns them into an iso-surface using either marching cubes or dual contouring
 const int edgeToVert [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
 
 const int edgeTable[256] = {
@@ -311,43 +311,190 @@ const int triTable[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-inline Vec3D<float> vertexInterpLinear(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {
+static inline Vec3D<float> vertexInterpLinear(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2) {
 	return p1 + ((iso - valp1) / (valp2 - valp1))*(p2-p1);
 }
 
-Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2, float (*density)(Vec3D<float>&), float maxError, int maxIter = 5)
+static Vec3D<float> vertexInterp2(float iso, Vec3D<float> p1, Vec3D<float> p2, float (*density)(Vec3D<float>&, Vec3D<float>*), int iterations, float* percOut, Vec3Df* gradOut)
 {
-	bool slopePos = (valp2 > valp1);
-	float pUpper = 1.0, pLower = 0.0, vUpper = valp2, vLower = valp1;
+	//accuracy (in percent of distance between p1 and p2) is 1/2^iterations
 
-	float curPerc = ((iso - vLower) / (vUpper - vLower)); //first guess at percent from 0 to 1) from p1 to p2.
-	float densEst = vLower + curPerc*(vUpper - vLower);
-	Vec3D<float> P = p1 + curPerc*(p2-p1);
-	if (abs(valp1-valp2)<maxError) return P;
-	float densAct = density(P);
-	
+	float valp1 = density(p1, 0);
+	float valp2 = density(p2, 0);
+
+	bool slopePos = (valp2 > valp1);
+	Vec3Df ptUpper = slopePos ? p2 : p1;
+	Vec3Df ptLower = slopePos ? p1 : p2;
+
+	float pUpper = 1.0, pLower = 0.0, vUpper = slopePos?valp2:valp1, vLower = slopePos?valp1:valp2;
 	int iterCounter = 0;
-	while (abs(densAct-densEst) > maxError && iterCounter++ < maxIter){
-		if (densAct > densEst){
-			if (slopePos){pUpper = curPerc; vUpper = densAct;}
-			else {pLower = curPerc; vLower = densAct;}
-		}
-		else {
-			if (!slopePos){pUpper = curPerc; vUpper = densAct;}
-			else {pLower = curPerc; vLower = densAct;}
-		}
-		
-		float localPerc = ((iso - vLower) / (vUpper - vLower)); //percent of he way between pLower and pUpper.
-		curPerc = pLower + localPerc*(pUpper-pLower); //first guess at percent from 0 to 1) from p1 to p2.
-		densEst = vLower + localPerc*(vUpper - vLower);
-		P = p1 + curPerc*(p2-p1);
-		densAct = density(P);
+
+//	while (abs(pUpper - pLower) > maxError){ // && iterCounter++ < maxIter){
+	for (int i=0; i<iterations; i++){
+		float pNew = pLower + 0.5*(pUpper - pLower);
+
+		Vec3Df newPt = ptLower + pNew*(ptUpper-ptLower);
+		float valNew = density(newPt, 0);
+
+		if (valNew < iso) {pLower = pNew; vLower = valNew;}
+		else {pUpper = pNew; vUpper = valNew;}
 	}
 
-	return P;
+	if (percOut) *percOut = slopePos? pLower : 1-pLower;
+	return ptLower + pLower*(ptUpper-ptLower);
 }
 
-void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMeshOut, float (*density)(Vec3D<float>&) = 0) //points, vals to beginning of 8-long array
+
+static Vec3D<float> vertexInterp(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2, float (*density)(Vec3D<float>&, Vec3D<float>*), float maxError, int maxIter = 5)
+{
+	bool slopePos = (valp2 > valp1);
+	Vec3Df ptUpper = slopePos ? p2 : p1;
+	Vec3Df ptLower = slopePos ? p1 : p2;
+
+	float pUpper = 1.0, pLower = 0.0, vUpper = slopePos?valp2:valp1, vLower = slopePos?valp1:valp2;
+	int iterCounter = 0;
+
+	while (abs(pUpper - pLower) > maxError){ // && iterCounter++ < maxIter){
+		float pNew = pLower + 0.5*(pUpper - pLower);
+
+		Vec3Df newPt = ptLower + pNew*(ptUpper-ptLower);
+		float valNew = density(newPt, 0);
+
+		if (valNew <= iso) {pLower = pNew; vLower = valNew;}
+		else {pUpper = pNew; vUpper = valNew;}
+	}
+
+	return ptLower + pLower*(ptUpper-ptLower);
+
+
+
+	//bool slopePos = (valp2 > valp1);
+	//float pUpper = 1.0, pLower = 0.0, vUpper = valp2, vLower = valp1;
+
+	//float curPerc = ((iso - vLower) / (vUpper - vLower)); //first guess at percent from 0 to 1) from p1 to p2.
+	//float densEst = iso; // vLower + curPerc*(vUpper - vLower);
+	//Vec3D<float> P = p1 + curPerc*(p2-p1);
+	//if (abs(valp1-valp2)<maxError) return P;
+	//float densAct = density(P, 0);
+	//
+	//int iterCounter = 0;
+	//while (abs(densAct-densEst) > maxError && iterCounter++ < maxIter){
+	//	if (iterCounter > 5)
+	//		int stop = 0;
+
+	//	if (slopePos){ //valp2 > valp1
+	//		if (densAct > densEst) {pUpper = curPerc; vUpper = densAct;} //slide upper limit of window down
+	//		else {pLower = curPerc; vLower = densAct;} //slide lower limit of window up
+	//	}
+	//	else { //negative slope: valp2 < valp1
+	//		if (densAct > densEst) {pLower = curPerc; vLower = densAct;} //slide lower limit of window up
+	//		else {pUpper = curPerc; vUpper = densAct;} //slide upper limit of window down
+	//	}
+
+
+	//	//if (densAct > densEst){
+	//	//	if (slopePos){pUpper = curPerc; vUpper = densAct;}
+	//	//	else {pLower = curPerc; vLower = densAct;}
+	//	//}
+	//	//else {
+	//	//	if (!slopePos){pUpper = curPerc; vUpper = densAct;}
+	//	//	else {pLower = curPerc; vLower = densAct;}
+	//	//}
+	//	
+	//	float localPerc = ((iso - vLower) / (vUpper - vLower)); //percent of he way between pLower and pUpper.
+	//	curPerc = pLower + localPerc*(pUpper-pLower); //first guess at percent from 0 to 1) from p1 to p2.
+	//	densEst = vLower + localPerc*(vUpper - vLower);
+	//	P = p1 + curPerc*(p2-p1);
+	//	densAct = density(P, 0);
+	//}
+
+	//return P;
+}
+
+//Calculates a best fit plane using 4 3D points. Retunrs the intersection of the point "pointToIntersect" projected along the specified axis (0=x, 1=y, 2=z) with the calculated plane.
+//static Vec3Df meanValueIntersect(const std::vector<Vec3Df>& points, const Vec3Df intersect, const int axis)
+static Vec3Df meanValueIntersect(const Vec3Df points[4], const Vec3Df pointToIntersect, const int axis, const float weightCap = 1e8)
+{
+	//http://128.148.32.110/courses/cs224/papers/mean_value.pdf
+	
+	//Project points and pointToIntersect into the plane normal to axis
+	Vec3Df projIntersect = pointToIntersect.Project(axis);
+	Vec3Df vertsProjLocal[4];
+	float vertsProjLocalLength[4];
+	//projIntersect[axis] = 0;
+
+	//Vec3Df vertsProj[4], vertsProjLocal[4], thisInt;
+
+	for (int i=0; i<4; i++){
+		vertsProjLocal[i] = points[i].Project(axis)-projIntersect;
+		vertsProjLocalLength[i] = vertsProjLocal[i].Length();
+		if (vertsProjLocalLength[i] == 0) return points[i];
+//		vertsProj[i] = points[i];
+//		vertsProj[i][axis] = 0;
+//		vertsProjLocal[i] = vertsProj[i]-projIntersect;
+	}
+
+	//if (vertsProjLocal[0] == Vec3Df(0,0,0)) thisInt = points[0];
+	//else if (vertsProjLocal[1] == Vec3Df(0,0,0)) thisInt = points[1];
+	//else if (vertsProjLocal[2] == Vec3Df(0,0,0)) thisInt = points[2];
+	//else if (vertsProjLocal[3] == Vec3Df(0,0,0)) thisInt = points[3];
+	//else {
+
+	//calculate the angle between each set of points (from center). angles[0] is the angle between point 0 and point 1, etc.
+	float angles[4]; 
+	for (int i=0; i<4; i++){
+		int iNext = (i+1)%4;
+		angles[i] = acos(vertsProjLocal[i].Dot(vertsProjLocal[iNext])/(vertsProjLocalLength[i]*vertsProjLocalLength[iNext]));
+	}
+
+	//calculate the weights for each point and the sum of weights
+	float w[4], wSum = 0; 
+	for (int i=0; i<4; i++){
+		int iPrev = (i+3)%4;
+		w[i] = (tan(angles[iPrev]/2)+tan(angles[i]/2))/vertsProjLocalLength[i];
+		if (w[i] > weightCap) w[i] = weightCap; //cap the weight
+		wSum += w[i];
+	}
+		//float angles[4] = {	acos(vertsProjLocal[0].Dot(vertsProjLocal[1])/(vertsProjLocal[0].Length()*vertsProjLocal[1].Length())),
+		//					acos(vertsProjLocal[1].Dot(vertsProjLocal[2])/(vertsProjLocal[1].Length()*vertsProjLocal[2].Length())),
+		//					acos(vertsProjLocal[2].Dot(vertsProjLocal[3])/(vertsProjLocal[2].Length()*vertsProjLocal[3].Length())),
+		//					acos(vertsProjLocal[3].Dot(vertsProjLocal[0])/(vertsProjLocal[3].Length()*vertsProjLocal[0].Length()))}; //angle[0] is the angle between verts[0] and verts[1], etc.
+
+		//float w[4] = {(tan(angles[3]/2)+tan(angles[0]/2))/(vertsProjLocal[0]).Length(),
+		//				(tan(angles[0]/2)+tan(angles[1]/2))/(vertsProjLocal[1]).Length(),
+		//				(tan(angles[1]/2)+tan(angles[2]/2))/(vertsProjLocal[2]).Length(),
+		//				(tan(angles[2]/2)+tan(angles[3]/2))/(vertsProjLocal[3]).Length()	}; //barycentric weights
+
+
+		//for (int k=0; k<4; k++)
+		//	if (w[k]>weightCap) w[k] = weightCap;
+
+		//float wSum = w[0]+w[1]+w[2]+w[3];
+
+	//weight the contributions of the 4 points in "axis" dimension to get the intersecton "depth"
+	float intersect = 0; //coordinate in "axis" dimension of the intersection
+	for (int i=0; i<4; i++){
+		intersect += (w[i]/wSum)*points[i][axis];
+	}
+
+	//replace the relevant coordinate in the intersect point to be on the plane of intersection
+	Vec3Df intersect3D = pointToIntersect;
+	intersect3D[axis] = intersect;
+	return intersect3D;
+
+//		for (int k=0; k<4; k++){
+//			w[k]/=wSum;
+//		}
+//
+//		float hit = w[0]*points[0][axis] + w[1]*points[1][axis] + w[2]*points[2][axis] + w[3]*points[3][axis];
+//		Vec3Df thisInt = pointToIntersect;
+//		thisInt[axis] = hit;
+//		//end mean value;
+////	}
+//	return thisInt;
+}
+
+static void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMeshOut, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0) //points, vals to beginning of 8-long array
 {
 	//(http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/)
 	int cubeIndex = 0; //bit mask for which corners are below iso value
@@ -373,7 +520,7 @@ void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D* pMesh
 }
 
 
-void polygoniseCube2(Vec3D<float> min, float size, float iso, CMesh3D* pMeshOut, int recurse = 0, float (*density)(Vec3D<float>&) = 0) //points, vals to beginning of 8-long array
+static void polygoniseCube2(Vec3D<float> min, float size, float iso, CMesh3D* pMeshOut, int recurse = 0, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0) //points, vals to beginning of 8-long array
 {
 	//(http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/)
 	int cubeIndex = 0; //bit mask for which corners are below iso value
@@ -383,7 +530,7 @@ void polygoniseCube2(Vec3D<float> min, float size, float iso, CMesh3D* pMeshOut,
 	for (int i=0; i<8; i++){
 		//int ox = ((i+1)/2)%2, oy = (i/2)%2, oz=(i/4); //ox, oy, oz are 0 or 1. order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
 		points[i] = min+size*Vec3D<float>(((i+1)/2)%2, (i/2)%2, (i/4));
-		vals[i] = density(points[i]);
+		vals[i] = density(points[i], 0);
 		if (vals[i] < iso) cubeIndex |= 1 << i;
 	}
 
@@ -415,7 +562,7 @@ void polygoniseCube2(Vec3D<float> min, float size, float iso, CMesh3D* pMeshOut,
 	}
 }
 
-void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, float scale = 1.0f, float (*density)(Vec3D<float>&) = 0)
+static void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
 {
 	pMeshOut->clear();
 	Index3D minInds = thisArray.minIndices(), maxInds = thisArray.maxIndices();
@@ -441,4 +588,4 @@ void meshFrom3dArray(CMesh3D* pMeshOut, CArray3D<float>& thisArray, float iso, f
 	}
 }
 
-#endif
+#endif //MESHPOLYGONIZE_H

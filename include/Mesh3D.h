@@ -88,9 +88,13 @@ class CMesh3D
 public:
 	CMesh3D(void) {clear();}
 	CMesh3D(const char* filePath); //only stl supported currently
-	CMesh3D(CArray3D<float>& values, float threshold, float scale = 1.0f, float (*density)(Vec3D<float>&) = 0);
+	CMesh3D(CArray3D<float>& values, CArray3D<Vec3D<float>>& normals, float threshold, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0);
 	//CMesh3D(float (*density)(Vec3D<float>&), Vec3D<float>& min, Vec3D<float>& max, int maxDivs, float threshold); //maxDivs = number of voxels in maximum dimension 
 	//virtual ~CMesh(){};
+
+	//to DC file!
+	Vec3Df QEF(const std::vector<Vec3Df>& intersects, const std::vector<Vec3Df>& normals, const Vec3Df& min, const Vec3Df& max);
+	//Vec3Df meanValueIntersect(const std::vector<Vec3Df>& points, const Vec3Df intersect, const int axis); //0=x, 1=y, 2=z
 
 	void clear();
 	bool load(const char* filePath); //stl
@@ -104,7 +108,7 @@ public:
 	float distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut = 0); //returns "blended" distance if within maxDistance. positive for outside, negative for inside.
 
 	void useFaceNormals(); // calc ? 
-	void useVertexNormals(); // calc ? Requires WeldClose?
+	void useVertexNormals(float seamAngleDegrees = 0); // seams between triangles less than seamAngleDegrees show as smooth
 
 	Vec3D<float> meshMin() {if (boundsStale) updateBounds(); return boundsMin;}
 	Vec3D<float> meshMax() {if (boundsStale) updateBounds(); return boundsMax;}
@@ -118,10 +122,15 @@ public:
 	//void rotY(float a);
 	//void rotZ(float a);
 
+	void decimate();
 
 	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPEN_GL is defined.
 
 protected:
+//	Vec3Df vInterpLow(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2, float (*density)(Vec3D<float>&, Vec3D<float>*), Vec3Df* pNormalOut, float maxError, int maxIter = 5);
+
+
+
 	std::vector<float> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
 //	std::vector<Vec3D<float>> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
 	std::vector<float> vertexColors; //v1R, v1G, v1B, v2R, v2G, v2B, ... if size != 0, use all vertex colors. Otherwise triangle colors
@@ -139,11 +148,13 @@ protected:
 
 private:
 	bool normalsByVertex, colorsByVertex; //normals / colors drawn from vertices (vs by facet)
+	float currentSeamAngle;
 
 	bool vertexNormalsStale, vertexMergesStale, faceNormalsStale, boundsStale, slicerStale;
 
-	void mergeVertices(int precision = 10); //precision is 2^precision (max 10) divisions in each dimension to count as "close" enough to merge.
-	
+	void mergeVertices(float precision); //precision is 2^precision (max 10) divisions in each dimension to count as "close" enough to merge.
+	void splitVerticesByAngle(float seamAngleDegrees);
+
 	Vec3D<float> boundsMin, boundsMax; //bounds
 	void updateBounds(void);
 	
@@ -177,7 +188,7 @@ private:
 
 //	bool DrawSmooth;
 	void calcFaceNormals(); //called to update the face normals...
-	void calcVertNormals(); //called once for each new geometry (or after deformed...) (depends on face normals!!!)
+	void calcVertNormals(float seamAngleDegrees = 0); //called once for each new geometry (or after deformed...) (depends on face normals!!!)
 
 	std::vector<int> TriLayer, TriLine; //array of all triangle indices that cross the current z layer, or y line
 	std::vector<float> TriInts; //array of all intersection points at the current z height at the curernt Y value
@@ -190,7 +201,7 @@ private:
 
 	enum IntersectionType {IT_INSIDE, IT_OUTSIDE, IT_EDGE};
 	IntersectionType IntersectXRay(const int TriangleIndex, const float y, const float z, float& XIntersect) const;
-	bool GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, float& Dist2Out, Vec3D<float>& ToSurfPointOut) const; //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
+	bool GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, Vec3D<float>& ToSurfPointOut) const; //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
 	float GetTriArea(const int TriangleIndex);
 
 //	int GetXIntersections(float z, float y, float* pIntersections, int NumtoCheck, int* pToCheck); //returns the number of intersections, stored in pIntersections

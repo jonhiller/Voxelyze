@@ -11,12 +11,14 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #include <string>
 #include "Mesh3D.h"
-#include "MarchCube.h"
+#include "MeshPolygonize.h"
 #include <unordered_map>
 
 //for file output
 #include <iostream>
 #include <fstream>
+
+#include "eigen.h"
 
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
@@ -38,12 +40,485 @@ CMesh3D::CMesh3D(const char* filePath)
 {
 	load(filePath);
 }
+//
+//Vec3Df CMesh3D::vInterpLow(float iso, Vec3D<float> p1, Vec3D<float> p2, float valp1, float valp2, float (*density)(Vec3D<float>&, Vec3D<float>*), Vec3Df* pNormalOut, float maxError, int maxIter)
+//{
+//	bool slopePos = (valp2 > valp1);
+//	Vec3Df ptUpper = slopePos ? p2 : p1;
+//	Vec3Df ptLower = slopePos ? p1 : p2;
+//
+//	float pUpper = 1.0, pLower = 0.0, vUpper = slopePos?valp2:valp1, vLower = slopePos?valp1:valp2;
+//	int iterCounter = 0;
+//
+//	while (abs(pUpper - pLower) > maxError){ // && iterCounter++ < maxIter){
+//		float pNew = pLower + 0.5*(pUpper - pLower);
+//
+//		Vec3Df newPt = ptLower + pNew*(ptUpper-ptLower);
+//		float valNew = density(newPt, 0);
+//
+//		if (valNew <= iso) {pLower = pNew; vLower = valNew;}
+//		else {pUpper = pNew; vUpper = valNew;}
+//	}
+//
+//	//return the one with the minumim normal magnitude?
+//	Vec3Df nLower, nUpper;
+//	Vec3Df pLower3 = ptLower + pLower*(ptUpper-ptLower);
+//	Vec3Df pUpper3 = ptLower + pUpper*(ptUpper-ptLower);
+//	density(pLower3, &nLower);
+//	density(pUpper3, &nUpper);
+//
+//	float dUpperToEdge = abs(nUpper.Length2() - 1e-12);
+//	float dLowerToEdge = abs(nLower.Length2() - 1e-12);
+//
+//	if (dUpperToEdge < dLowerToEdge) return pUpper3;
+//	else return pLower3;
+//
+////	if (nUpper.Length2() < nLower.Length2()) return pUpper3;
+////	else return pLower3;
+//
+////	return ptLower + pLower*(ptUpper-ptLower);
+////	return ptLower + pUpper*(ptUpper-ptLower);
+//}
+//
+//Vec3Df CMesh3D::meanValueIntersect(const std::vector<Vec3Df>& points, const Vec3Df intersect, int axis)
+//{
+//	//http://128.148.32.110/courses/cs224/papers/mean_value.pdf
+//
+//	Vec3Df centerVProj = intersect;
+//	centerVProj[axis] = 0;
+//
+//	Vec3Df vertsProj[4], vertsProjLocal[4], thisInt;
+//
+//	for (int i=0; i<4; i++){
+//		vertsProj[i] = points[i];
+//		vertsProj[i][axis] = 0;
+//		vertsProjLocal[i] = vertsProj[i]-centerVProj;
+//	}
+//
+//	if (vertsProjLocal[0] == Vec3Df(0,0,0)) thisInt = points[0];
+//	else if (vertsProjLocal[1] == Vec3Df(0,0,0)) thisInt = points[1];
+//	else if (vertsProjLocal[2] == Vec3Df(0,0,0)) thisInt = points[2];
+//	else if (vertsProjLocal[3] == Vec3Df(0,0,0)) thisInt = points[3];
+//	else {
+//		float angles[4] = {	acos(vertsProjLocal[0].Dot(vertsProjLocal[1])/(vertsProjLocal[0].Length()*vertsProjLocal[1].Length())),
+//							acos(vertsProjLocal[1].Dot(vertsProjLocal[2])/(vertsProjLocal[1].Length()*vertsProjLocal[2].Length())),
+//							acos(vertsProjLocal[2].Dot(vertsProjLocal[3])/(vertsProjLocal[2].Length()*vertsProjLocal[3].Length())),
+//							acos(vertsProjLocal[3].Dot(vertsProjLocal[0])/(vertsProjLocal[3].Length()*vertsProjLocal[0].Length()))}; //angle[0] is the angle between verts[0] and verts[1], etc.
+//
+//		float w[4] = {(tan(angles[3]/2)+tan(angles[0]/2))/(vertsProjLocal[0]).Length(),
+//						(tan(angles[0]/2)+tan(angles[1]/2))/(vertsProjLocal[1]).Length(),
+//						(tan(angles[1]/2)+tan(angles[2]/2))/(vertsProjLocal[2]).Length(),
+//						(tan(angles[2]/2)+tan(angles[3]/2))/(vertsProjLocal[3]).Length()	}; //barycentric weights
+//
+//
+//		for (int k=0; k<4; k++)
+//			if (w[k]>1000) w[k] = 1000;
+//
+//		float wSum = w[0]+w[1]+w[2]+w[3];
+//
+//		for (int k=0; k<4; k++){
+//			w[k]/=wSum;
+//		}
+//
+//		float hit = w[0]*points[0][axis] + w[1]*points[1][axis] + w[2]*points[2][axis] + w[3]*points[3][axis];
+//		thisInt = intersect;
+//		thisInt[axis] = hit;
+//		//end mean value;
+//	}
+//	return thisInt;
+//}
 
-CMesh3D::CMesh3D(CArray3D<float>& values, float threshold, float scale, float (*density)(Vec3D<float>&))
+CMesh3D::CMesh3D(CArray3D<float>& values, CArray3D<Vec3D<float>>& normals, float threshold, float scale, float (*density)(Vec3D<float>&, Vec3D<float>*))
 {
-	meshFrom3dArray(this, values, threshold, scale, density);
+	bool useMC = false;
+	if (useMC) meshFrom3dArray(this, values, threshold, scale, density);
+	else { //dual contouring
+		Index3D vSize = values.size() - Index3D(1, 1, 1);
+		CArray3D<int> vertInds; //vertex index: 1 per full block. -1 if no vertex
+		vertInds.setDefaultValue(-1);
+		vertInds.resize(vSize, values.offset()); //shift up by 1/2 voxel when done
+
+
+		Index3D minInds = values.minIndices()-Index3D(1,1,1), maxInds = values.maxIndices()+Index3D(1,1,1);
+
+		Vec3Df points[8];
+		Vec3Df norms[8];
+		float vals[8];
+
+		for (int iz=minInds.z; iz<maxInds.z; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
+			for (int ix=minInds.x; ix<maxInds.x; ix++){ 
+				for (int iy=minInds.y; iy<maxInds.y; iy++){
+					int cubeIndex = 0; //bit mask for which corners are below iso value
+
+					for (int j=0; j<8; j++){ //for each corner
+						int ox = ((j+1)/2)%2, oy = (j/2)%2, oz=(j/4); //ox, oy, oz are 0 or 1. order: 0:(0,0,0), 1:(1,0,0), 2:(1,1,0), 3:(0,1,0), 4:(0,0,1), 5:(1,0,1), 6:(1,1,1), 7:(0,1,1)
+						points[j] = scale*Vec3Df((float)(ix+ox), (float)(iy+oy), (float)(iz+oz));
+						vals[j] = values(ix+ox, iy+oy, iz+oz);
+						norms[j] = normals(ix+ox, iy+oy, iz+oz);
+
+						if (vals[j] < threshold) cubeIndex |= 1 << j;
+
+					}
+
+					int thisEdge = edgeTable[cubeIndex];
+					if (thisEdge == 0) continue; //if cube is entirely in or out, return immediately
+
+					std::vector<Vec3Df> tryInts, tryNorms;
+					Vec3Df tmpNorm;
+
+					Vec3Df vertList[12]; //list of each vertex location fo each edge (if the iso surface intersects this edge)
+					for (int i=0; i<12; i++){ //for each edge
+						if (thisEdge & (1<<i)){
+							int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
+							//Vec3Df thisInt = vInterpLow(threshold, points[v0], points[v1], vals[v0], vals[v1], density, &tmpNorm, 0.00001f, 10);
+
+							Vec3Df thisInt = vertexInterp2(threshold, points[v0], points[v1], density, 16, 0, 0);
+
+						//	Vec3Df thisInt = vertexInterp(threshold, points[v0], points[v1], vals[v0], vals[v1], density, 0.01f, 3);
+						//	Vec3Df thisInt = vertexInterpLinear(threshold, points[v0], points[v1], vals[v0], vals[v1]);
+
+							//bool IsInAlready = false;
+							//for (int i=0; i<tryInts.size(); i++){
+							//	if (tryInts[i] == thisInt)
+							//		IsInAlready = true;
+							//}
+							
+							//if (!IsInAlready){
+								Vec3Df thisNorm;
+								density(thisInt, &thisNorm);
+								thisNorm.Normalize();
+								tryInts.push_back(thisInt);
+								tryNorms.push_back(thisNorm);
+							//}
+			
+						}
+					}
+
+				//	Vec3Df qefPt(scale*((float)ix+0.5), scale*((float)iy+0.5), scale*((float)iz+0.5));
+
+					Vec3Df min(scale*ix, scale*iy, scale*iz);
+					Vec3Df max(scale*(ix+1), scale*(iy+1), scale*(iz+1));
+
+					Vec3Df qefPt = QEF(tryInts, tryNorms, min, max);
+
+					Vec3Df avgNorm;
+					for (int i=0; i<tryInts.size(); i++) avgNorm += tryNorms[i];
+					avgNorm /= tryNorms.size();
+					avgNorm.Normalize();
+
+					//normals from tryNorms
+					vertInds.addValue(ix, iy, iz, vertexCount());
+					vertices.push_back(qefPt.x);
+					vertices.push_back(qefPt.y);
+					vertices.push_back(qefPt.z);
+					vertexNormals.push_back(avgNorm.x);
+					vertexNormals.push_back(avgNorm.y);
+					vertexNormals.push_back(avgNorm.z);
+				}
+			}
+		}
+
+		for (int iz=minInds.z; iz<maxInds.z; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
+			for (int ix=minInds.x; ix<maxInds.x; ix++){ 
+				for (int iy=minInds.y; iy<maxInds.y; iy++){
+					int v000 = vertInds(ix-1, iy-1, iz-1);
+					int v100 = vertInds(ix, iy-1, iz-1);
+					int v010 = vertInds(ix-1, iy, iz-1);
+					int v001 = vertInds(ix-1, iy-1, iz);
+					int v110 = vertInds(ix, iy, iz-1);
+					int v101 = vertInds(ix, iy-1, iz);
+					int v011 = vertInds(ix-1, iy, iz);
+					int v111 = vertInds(ix, iy, iz);
+
+					if (((values(ix, iy, iz) >= threshold && values(ix, iy, iz+1) < threshold) || (values(ix, iy, iz) < threshold && values(ix, iy, iz+1) >= threshold)) && v001 != -1 && v101 != -1 && v011 != -1 && v111 != -1){
+						//Vec3Df avgNorm(
+						//	vertexNormals[3*v001+0] + vertexNormals[3*v101+0] + vertexNormals[3*v011+0] + vertexNormals[3*v111+0],
+						//	vertexNormals[3*v001+1] + vertexNormals[3*v101+1] + vertexNormals[3*v011+1] + vertexNormals[3*v111+1],
+						//	vertexNormals[3*v001+2] + vertexNormals[3*v101+2] + vertexNormals[3*v011+2] + vertexNormals[3*v111+2]
+						//);
+						//avgNorm.Normalize();
+						float avgZNorm = (vertexNormals[3*v001+2] + vertexNormals[3*v101+2] + vertexNormals[3*v011+2] + vertexNormals[3*v111+2]);
+						bool positiveFacing = (values(ix, iy, iz+1) < values(ix, iy, iz));
+
+
+						//Vec3Df thisInt = vertexInterp2(threshold, Vec3Df(scale*ix, scale*iy, scale*iz), Vec3Df(scale*ix, scale*iy, scale*(iz+1)), density, 16, 0, 0);
+						
+						//std::vector<Vec3Df> pts;
+						//pts.push_back(Vec3Df(&vertices[3*v001]));
+						//pts.push_back(Vec3Df(&vertices[3*v011]));
+						//pts.push_back(Vec3Df(&vertices[3*v111]));
+						//pts.push_back(Vec3Df(&vertices[3*v101]));
+
+						Vec3Df pts[4] = {Vec3Df(&vertices[3*v001]), Vec3Df(&vertices[3*v011]), Vec3Df(&vertices[3*v111]), Vec3Df(&vertices[3*v101])};
+
+						Vec3Df thisInt = meanValueIntersect(pts, Vec3Df(scale*ix, scale*iy, scale*iz), 2);
+						
+						int vEdge = vertexCount();
+						vertices.push_back(thisInt.x);
+						vertices.push_back(thisInt.y);
+						vertices.push_back(thisInt.z);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+
+						if (positiveFacing){ //avgZNorm >= 0){ //+Z facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v001);
+							triangles.push_back(v101);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v101);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v011);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v011);
+							triangles.push_back(v001);
+						}
+						else { //-Z facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v101);
+							triangles.push_back(v001);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v101);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v011);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v001);
+							triangles.push_back(v011);
+						}
+					}
+					if (((values(ix, iy, iz) >= threshold && values(ix, iy+1, iz) < threshold) || (values(ix, iy, iz) < threshold && values(ix, iy+1, iz) >= threshold)) && v010 != -1 && v110 != -1 && v011 != -1 && v111 != -1){
+					//if (v000 != -1 && v100 != -1 && v001 != -1 && v101 != -1){ //y axis
+						//float avgYNorm = (vertexNormals[3*v010+1] + vertexNormals[3*v110+1] + vertexNormals[3*v011+1] + vertexNormals[3*v111+1]);
+						bool positiveFacing = (values(ix, iy+1, iz) < values(ix, iy, iz));
+
+						//std::vector<Vec3Df> pts;
+						//pts.push_back(Vec3Df(&vertices[3*v010]));
+						//pts.push_back(Vec3Df(&vertices[3*v110]));
+						//pts.push_back(Vec3Df(&vertices[3*v111]));
+						//pts.push_back(Vec3Df(&vertices[3*v011]));
+
+						Vec3Df pts[4] = {Vec3Df(&vertices[3*v010]), Vec3Df(&vertices[3*v110]), Vec3Df(&vertices[3*v111]), Vec3Df(&vertices[3*v011])};
+
+
+						Vec3Df thisInt = meanValueIntersect(pts, Vec3Df(scale*ix, scale*iy, scale*iz), 1);
+						
+
+						int vEdge = vertexCount();
+						vertices.push_back(thisInt.x);
+						vertices.push_back(thisInt.y);
+						vertices.push_back(thisInt.z);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+
+
+						if (positiveFacing){ //avgYNorm > 0){ //+Y facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v110);
+							triangles.push_back(v010);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v110);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v011);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v010);
+							triangles.push_back(v011);
+
+						}
+						else { //-Y facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v010);
+							triangles.push_back(v110);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v110);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v011);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v011);
+							triangles.push_back(v010);
+						}
+					}
+
+					if (((values(ix, iy, iz) >= threshold && values(ix+1, iy, iz) < threshold) || (values(ix, iy, iz) < threshold && values(ix+1, iy, iz) >= threshold))&&v100 != -1 && v110 != -1 && v101 != -1 && v111 != -1){
+						bool positiveFacing = (values(ix+1, iy, iz) < values(ix, iy, iz));
+
+						//Vec3Df thisInt = vertexInterp2(threshold, Vec3Df(scale*ix, scale*iy, scale*iz), Vec3Df(scale*(ix+1), scale*iy, scale*iz), density, 16, 0, 0);
+						
+						//std::vector<Vec3Df> pts;
+						//pts.push_back(Vec3Df(&vertices[3*v100]));
+						//pts.push_back(Vec3Df(&vertices[3*v101]));
+						//pts.push_back(Vec3Df(&vertices[3*v111]));
+						//pts.push_back(Vec3Df(&vertices[3*v110]));
+
+						Vec3Df pts[4] = {Vec3Df(&vertices[3*v100]), Vec3Df(&vertices[3*v101]), Vec3Df(&vertices[3*v111]), Vec3Df(&vertices[3*v110])};
+
+						Vec3Df thisInt = meanValueIntersect(pts, Vec3Df(scale*ix, scale*iy, scale*iz), 0);
+						
+
+						int vEdge = vertexCount();
+						vertices.push_back(thisInt.x);
+						vertices.push_back(thisInt.y);
+						vertices.push_back(thisInt.z);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+						vertexNormals.push_back(0);
+
+
+						if (positiveFacing) { //avgXNorm > 0){ //+X facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v100);
+							triangles.push_back(v110);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v110);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v101);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v101);
+							triangles.push_back(v100);
+						}
+						else { //-X facing
+							triangles.push_back(vEdge);
+							triangles.push_back(v110);
+							triangles.push_back(v100);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v111);
+							triangles.push_back(v110);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v101);
+							triangles.push_back(v111);
+
+							triangles.push_back(vEdge);
+							triangles.push_back(v100);
+							triangles.push_back(v101);
+						}
+					}
+				}
+			}
+		}
+
+
+	}
+
 	meshChanged();
+
+	mergeVertices(scale/100);
+	useVertexNormals(44.0);
 }
+
+Vec3Df CMesh3D::QEF(const std::vector<Vec3Df>& intersects, const std::vector<Vec3Df>& normals, const Vec3Df& min, const Vec3Df& max)
+{
+	int numInt = intersects.size();
+//	float inters[12][3] = {{0.75,0,0},{0,0.5,0},{0,0,0.5},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
+//	float norms[12][3] = {{1.0,0,0},{0,1.0,0},{0,0,1.0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
+//	int st[3] = {1,0,0};
+//	int len = 2;
+
+	float ata[6] = {0},btb = 0 ; // atb[3] = {0}, mp[3] = {0}, 
+	Vec3Df pt, atb, mp;
+//	float pt[3] ={0,0,0} ;
+	if ( numInt > 0 )
+	{
+		for ( int i = 0 ; i < numInt ; i ++ )
+		{
+			const Vec3Df& intr = intersects[i];
+			const Vec3Df& norm = normals[i];
+//			float* norm = norms[i] ;
+//			float* p = inters[i] ;
+				
+			// printf("Norm: %f, %f, %f Pts: %f, %f, %f\n", norm[0], norm[1], norm[2], p[0], p[1], p[2] ) ;
+				
+			
+			// QEF
+			ata[0] += norm.x * norm.x;
+			ata[1] += norm.x * norm.y;
+			ata[2] += norm.x * norm.z;
+			ata[3] += norm.y * norm.y;
+			ata[4] += norm.y * norm.z;
+			ata[5] += norm.z * norm.z;
+				
+			double pn = intr.x*norm.x + intr.y*norm.y + intr.z*norm.z ;
+				
+			atb += norm*pn;
+//			atb[0] += norm.x * pn;
+//			atb[1] += norm.y * pn;
+//			atb[2] += norm.z * pn;
+				
+			btb += pn*pn ;
+				
+			// Minimizer
+			pt += intr;
+//			pt[0] += intr.x ;
+//			pt[1] += intr.y ;
+//			pt[2] += intr.z ;
+		}
+	
+		pt /= numInt;
+//		pt[0] /= numint ;
+//		pt[1] /= numint ;
+//		pt[2] /= numint ;
+			
+		// Solve
+		//float avgPt[3] = {pt.x, pt.y, pt.z}
+		float error = calcPoint( ata, &atb[0], btb, &pt[0], &mp[0], 0, 0 ) ;
+
+		Vec3Df returnVec = mp;
+
+		if (mp.x <= min.x) returnVec.x = min.x*(1+FLT_EPSILON);
+		if (mp.x >= max.x) returnVec.x = max.x*(1-FLT_EPSILON);
+		if (mp.y <= min.y) returnVec.y = min.y*(1+FLT_EPSILON);
+		if (mp.y >= max.y) returnVec.y = max.y*(1-FLT_EPSILON);
+		if (mp.z <= min.z) returnVec.z = min.z*(1+FLT_EPSILON);
+		if (mp.z >= max.z) returnVec.z = max.z*(1-FLT_EPSILON);
+
+		//if (mp.x < min.x || mp.x > max.x) returnVec.x = pt.x;
+		//if (mp.y < min.y || mp.y > max.y) returnVec.y = pt.y;
+		//if (mp.z < min.z || mp.z > max.z) returnVec.z = pt.z;
+
+//		if (mp.x < min.x || mp.y < min.y || mp.z < min.z || mp.x > max.x || mp.y > max.y || mp.z > max.z) return pt;
+//		else return mp;
+
+		return returnVec;
+	}
+	return Vec3Df(0,0,0);
+}
+
+
+void CMesh3D::decimate()
+{
+
+}
+
+//CMesh3D::CMesh3D(float threshold, float scale, float (*density)(Vec3D<float>&, Vec3D<float>*))
+//{
+//
+//}
 
 void CMesh3D::clear()
 {
@@ -140,10 +615,11 @@ void CMesh3D::useFaceNormals()
 	normalsByVertex = false;
 }
 
-void CMesh3D::useVertexNormals()
+void CMesh3D::useVertexNormals(float seamAngleDegrees)
 {
-	if (vertexNormalsStale) calcVertNormals();
+	if (vertexNormalsStale || seamAngleDegrees != currentSeamAngle) calcVertNormals(seamAngleDegrees);
 	normalsByVertex = true;
+	currentSeamAngle = seamAngleDegrees;
 }
 
 void CMesh3D::calcFaceNormals() //called to update the face normals...
@@ -161,17 +637,112 @@ void CMesh3D::calcFaceNormals() //called to update the face normals...
 	faceNormalsStale = false;
 }
 
+//assumes triangle normals are accurate! (and that coincident vertices are merged)
+void CMesh3D::splitVerticesByAngle(float seamAngleDegrees)
+{
+	float seamAngleRad = seamAngleDegrees*3.1415926/180.0f;
+	useFaceNormals();
 
-void CMesh3D::calcVertNormals() //called to update the vertex normals (without welding vertices this will be of limited use...)
+	std::vector<int> oldTriangles = triangles;
+
+	int vCount = vertexCount();
+	int tCount = triangleCount();
+
+	int lTri[256], lVert[256], lTriGroup[256], lTriGroupToVertIndex[256]; //assume maximum 256 triangles fanning out from this vertex
+	for (int i=0; i<vCount; i++){ //for each vertex (although, not duplicate ones that are added in process
+		int lTriCount = 0;
+		for (int j=0; j<tCount; j++){ //for each vertex
+			//get the local triangles
+			if (oldTriangles[3*j] == i || oldTriangles[3*j+1] == i || oldTriangles[3*j+2] == i) lTri[lTriCount++] = j;
+		}
+
+		for (int j=0; j<lTriCount; j++) lTriGroup[j] = j; //each in its own smoothing group to begin
+
+		for (int j=0; j<lTriCount; j++){
+			for (int k=j+1; k<lTriCount; k++){
+				bool commonEdge = false;
+				for (int mj=0; mj<3; mj++){
+					int thisJVertInd = oldTriangles[3*lTri[j]+mj];
+				//	if (thisJVertInd == i) continue;
+				//	if (commonEdge) break;
+					for (int mk=0; mk<3; mk++){
+						if (thisJVertInd == oldTriangles[3*lTri[k]+mk]){ commonEdge = true;} // break; }
+					}
+				}
+
+
+				if (commonEdge){ //if adjacent triangles
+					//angles and smoothing group calc
+					Vec3Df Nj = Vec3Df(&triangleNormals[3*lTri[j]]);
+					Vec3Df Nk = Vec3Df(&triangleNormals[3*lTri[k]]);
+
+					float thisAngle = acosf(Nj.Dot(Nk));
+					if (thisAngle < seamAngleRad){
+						int jSmoothGroup = lTriGroup[j];
+						int kSmoothGroup = lTriGroup[k];
+						for (int m=0; m<lTriCount; m++){
+							if (lTriGroup[m] == kSmoothGroup) lTriGroup[m] = jSmoothGroup;
+						}
+					}
+				}
+			}
+		}
+
+		//map smoothing groups to whichever vertex is for their smoothing group
+		bool usedOriginalVertex = false;
+		for (int m=0; m<lTriCount; m++) lTriGroupToVertIndex[m] = -1;
+					
+		for (int m=0; m<lTriCount; m++){
+			int thisGroupIndex = lTriGroup[m];
+			if (lTriGroupToVertIndex[thisGroupIndex] == -1){ //unassigned
+				if (!usedOriginalVertex){
+					lTriGroupToVertIndex[thisGroupIndex] = i;
+					usedOriginalVertex = true;
+				}
+				else { //must duplicate vertex
+					int newIndex = vertexCount();
+					for (int n=0; n<3; n++) vertices.push_back(vertices[3*i+n]); //add the new vertex
+					lTriGroupToVertIndex[thisGroupIndex] = newIndex;
+				}
+			}
+		}		
+
+		//replace references to vertex "i" in triangles with new vertices as necessary
+		for (int m=0; m<lTriCount; m++){
+			for (int n=0; n<3; n++){
+				if (oldTriangles[3*lTri[m]+n] == i){
+					triangles[3*lTri[m]+n] = lTriGroupToVertIndex[lTriGroup[m]];
+					continue;
+				}
+			}
+
+		}
+
+
+	}
+}
+
+void CMesh3D::calcVertNormals(float seamAngleDegrees) //called to update the vertex normals (without welding vertices this will be of limited use...)
 { 
-	if (faceNormalsStale) calcFaceNormals();
-	
-	if (!normalsByVertex){
+	if (seamAngleDegrees == 0){
+		if (faceNormalsStale) calcFaceNormals();
+	}
+	else {
+		//if (vertexMergesStale) 
+		//	mergeVertices(20);
 
-		return;
+		if (faceNormalsStale) calcFaceNormals();
+
+		splitVerticesByAngle(seamAngleDegrees);
 	}
 
-	if (vertexMergesStale) mergeVertices(10);
+
+	//
+	//if (faceNormalsStale) calcFaceNormals();
+	//if (!normalsByVertex){
+	//	return;
+	//}
+
 
 	int triCount = (int)(triangles.size()/3);
 	int vertCount = (int)(vertices.size()/3);
@@ -182,7 +753,8 @@ void CMesh3D::calcVertNormals() //called to update the vertex normals (without w
 
 	for (int i=0; i<triCount; i++){
 		Vec3D<float> thisFNormal(&triangleNormals[i*3]);
-		for (int j=0; j<3; j++)	newVNormals[triangles[3*i+j]] += thisFNormal;
+		float thisTriArea = GetTriArea(i);
+		for (int j=0; j<3; j++)	newVNormals[triangles[3*i+j]] += thisTriArea*thisFNormal;
 	}
 
 	for (int i=0; i<vertCount; i++){
@@ -193,47 +765,80 @@ void CMesh3D::calcVertNormals() //called to update the vertex normals (without w
 	vertexNormalsStale = false;
 }
 
-void CMesh3D::mergeVertices(int precision)
+void CMesh3D::mergeVertices(float threshold)
 {
-//	assumes 1024 divisions in the maximum mesh dimension is enough resolution to be ok with merging "close" vertices
-//	throws out colors and normals
+	//	throws out colors and normals
 	vertexColors.clear();
 	vertexNormals.clear();
 
-	if (precision > 10) precision = 10;
-	else if (precision < 2) precision = 2;
-	int precNum = (1 << precision) -1;
-
 	int vCount = vertexCount();
-	std::vector<int> oldToNew(vCount); //size of # old vertices, values of # new vertices
+	std::vector<int> oldToNew(vCount, -1); //size of # old vertices, values of # new vertices
 	int newVCount = 0; //keep track of how many new vertices added
-
 	Vec3D<float> size = meshSize();
-	Vec3D<float> min = meshMin();
-//	float maxDim = std::max(size.x, std::max(size.y, size.z));
 
-	std::unordered_map<unsigned int, int> map; //key is a hash of the three float values. value is the new vertex index
+	bool useStandard = true;
+	if (useStandard){
+		//calculate epsilon
+//		float mergePercent = 1.0f/pow(2.0f, (float)precision); //% of largest dimension it is ok to combine vertices (half-edge merge)
+//		float epsilon = mergePercent * std::max(size.x, std::max(size.y, size.z));
+		float epsSq = threshold*threshold; //epsilon*epsilon;
 
-	for (int i=0; i<vCount; i++){
-		//hash for this vertex: a 32-bit uint
-		unsigned int ix = (unsigned int)(precNum*((vertices[3*i]-min.x)/size.x)); //each range from 0-1024
-		unsigned int iy = (unsigned int)(precNum*((vertices[3*i+1]-min.y)/size.y));
-		unsigned int iz = (unsigned int)(precNum*((vertices[3*i+2]-min.z)/size.z));
-		unsigned int key = ix | (iy << 10) | (iz << 20);
+		//map old to new, shifting down as we go
+		for (int i=0; i<vCount; i++){
+			if (oldToNew[i] == -1){ //this vertex not already merged
+				oldToNew[i] = newVCount;
 
-		if (!map.count(key)){
-			oldToNew[i] = newVCount;
-			map[key] = newVCount;
-			for (int j=0; j<3; j++) vertices[3*newVCount+j] = vertices[3*i+j];
-			newVCount++; //added a new vertex
+				for (int j=i+1; j<vCount; j++){ //the rest of the vertices
+					float dx = vertices[3*i] - vertices[3*j];
+					float dy = vertices[3*i+1] - vertices[3*j+1];
+					float dz = vertices[3*i+2] - vertices[3*j+2];
+					if (dx*dx+dy*dy+dz*dz < epsSq)
+						oldToNew[j] = newVCount; //if within epsilon
+				}
+
+				vertices[3*newVCount] = vertices[3*i];
+				vertices[3*newVCount+1] = vertices[3*i+1];
+				vertices[3*newVCount+2] = vertices[3*i+2];
+				newVCount++;
+			}
 		}
-		else oldToNew[i] = map[key];  //key exists
+	}
+	else { //experimental
+	//	assumes 1024 divisions in the maximum mesh dimension is enough resolution to be ok with merging "close" vertices
+		int precision = 10;
+
+		if (precision > 10) precision = 10;
+		else if (precision < 2) precision = 2;
+		int precNum = (1 << precision) -1;
+
+
+		Vec3D<float> min = meshMin();
+	//	float maxDim = std::max(size.x, std::max(size.y, size.z));
+
+		std::unordered_map<unsigned int, int> map; //key is a hash of the three float values. value is the new vertex index
+
+		for (int i=0; i<vCount; i++){
+			//hash for this vertex: a 32-bit uint
+			unsigned int ix = (unsigned int)(precNum*((vertices[3*i]-min.x)/size.x)); //each range from 0-1024
+			unsigned int iy = (unsigned int)(precNum*((vertices[3*i+1]-min.y)/size.y));
+			unsigned int iz = (unsigned int)(precNum*((vertices[3*i+2]-min.z)/size.z));
+			unsigned int key = ix | (iy << 10) | (iz << 20);
+
+			if (!map.count(key)){
+				oldToNew[i] = newVCount;
+				map[key] = newVCount;
+				for (int j=0; j<3; j++) vertices[3*newVCount+j] = vertices[3*i+j];
+				newVCount++; //added a new vertex
+			}
+			else oldToNew[i] = map[key];  //key exists
+		}
 	}
 
 	vertices.resize(3*newVCount); //chop off any unused vertices
 	
 	int tSize = (int)triangles.size();
-	for (int i=0; i<tSize; i++) triangles[i] = oldToNew[triangles[i]];
+	for (int i=0; i<tSize; i++)
+		triangles[i] = oldToNew[triangles[i]];
 
 	faceNormalsStale = true;
 	vertexNormalsStale = true;
@@ -477,42 +1082,52 @@ void CMesh3D::rotate(Vec3D<float> ax, float a)
 float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut)
 {
 //	if (vertexMergesStale) mergeVertices(10);
-	if (pNormalOut && faceNormalsStale) calcFaceNormals();
+	if (pNormalOut){
+		if (faceNormalsStale) calcFaceNormals();
+		*pNormalOut = Vec3D<float>(0,0,0);
+	}
 
 	if (!FillCheckTriInts(point->y, point->z, maxDistance)) return FLT_MAX; //returns very fast if previously used z or y layers...
 
 	int triCount = (int)TriLine.size();
 	float minDist2 = FLT_MAX;
-	Vec3D<float> avgNormal;
-	float avgNormalSum = 0;
+//	Vec3D<float> avgNormal;
+//	float avgNormalSum = 0;
 //	float distOut;
 //	float areaSum;
-	for (int i=0; i<triCount; i++){ //all triangles withing maxDistance
+	float minPointX = point->x-maxDistance, maxPointX = point->x+maxDistance;
+
+	for (int i=0; i<triCount; i++){ //all triangles within maxDistance
+		int thisTriIndex = TriLine[i];
 		bool allAbove = true, allBelow = true;
 		for (int j=0; j<3; j++){
-			float thisX = vertices[3*triangles[3*TriLine[i]+j]];
-			if (thisX < point->x+maxDistance) allAbove = false;
-			if (thisX > point->x-maxDistance) allBelow = false;
+			float thisX = vertices[3*triangles[3*thisTriIndex+j]];
+			if (thisX < maxPointX) allAbove = false;
+			if (thisX > minPointX) allBelow = false;
 		}
 		if (!allAbove && !allBelow){ //within range to consider further
-			float u, v, dist2;
-			Vec3D<float> intPoint;
-			bool result = GetTriDist(TriLine[i], point, u, v, dist2, intPoint);
+			float u, v;
+			Vec3D<float> toIntersect;
+			bool result = GetTriDist(thisTriIndex, point, u, v, toIntersect);
 			//float area = GetTriArea(TriLine[i]);
-			if (dist2 < 0) dist2 = -dist2; //this should never happen, but seems possible.
+			float dist2 = toIntersect.Length2();
+			//if (dist2a < 0)
+			//	dist2a = 0; //-dist2; //this should never happen, but seems possible.
 
 			if (dist2 < minDist2){
 				minDist2 = dist2;
+				if (pNormalOut)	{ 
+					if (dist2 < FLT_EPSILON) *pNormalOut = Vec3D<float>(&triangleNormals[3*thisTriIndex]); //if coincident to triangle, use that triangle's normal
+					else *pNormalOut = toIntersect;
+				}
 			}
 
-			if (pNormalOut) {
-				float distWeight = 1/(dist2*dist2);
-				if (dist2 == 0)
-					distWeight = 1e6;
+			//if (pNormalOut) {
+			//	//float distWeight = 1/(dist2*dist2);
 
-				avgNormal += distWeight*Vec3D<float>(&triangleNormals[3*TriLine[i]]); //currently greedy - takes normal from first equidistant triangle.
-				avgNormalSum += distWeight;
-			}
+			//	avgNormal += distWeight*Vec3D<float>(&triangleNormals[3*TriLine[i]]); //currently greedy - takes normal from first equidistant triangle.
+			//	avgNormalSum += distWeight;
+			//}
 
 //			if (dist2 <= maxDistance*maxDistance){
 //				distOut += sqrt(dist2); //todo here!
@@ -520,12 +1135,13 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D
 		}
 	}
 
-	if (pNormalOut) {
-		avgNormal /= avgNormalSum;
-		*pNormalOut = avgNormal.Normalized();
+	bool inside = isInside(point);
+	if (pNormalOut){
+		if(!inside) *pNormalOut = - *pNormalOut;
+		pNormalOut->Normalize();
 	}
 
-	return (isInside(point)) ? -sqrt(minDist2) : sqrt(minDist2);
+	return inside ? -sqrt(minDist2) : sqrt(minDist2);
 }
 
 bool CMesh3D::isInside(Vec3D<float>* point)
@@ -571,6 +1187,7 @@ bool CMesh3D::FillCheckTriInts(float y, float z, float pad)
 			if (tryCount++ > 5) return false;
 		}
 	}
+
 	return true;
 }
 
@@ -672,7 +1289,7 @@ CMesh3D::IntersectionType CMesh3D::IntersectXRay(const int TriangleIndex, const 
 		return IT_EDGE;
 }
 
-bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, float& Dist2Out, Vec3D<float>& ToSurfPointOut) const //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
+bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, float& UOut, float& VOut, Vec3D<float>& ToSurfPointOut) const //gets distance of provided point to closest UV coordinate of within the triangle. returns true if sensible distance, otherwise false
 {
 	//http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
 
@@ -805,10 +1422,7 @@ bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, 
 	Vec3D<float> ClosestPoint = B+s*E0+t*E1;
 	ToSurfPointOut = ClosestPoint-*pPointIn; //OUTPUT!
 
-	Dist2Out = a*s*s+2*b*s*t+c*t*t+2*d*s+2*e*t+f;
-
-	if (s<0 || t<0 || s+t > 1)
-		int flag = 0;
+//	Dist2Out = a*s*s+2*b*s*t+c*t*t+2*d*s+2*e*t+f;
 
 	UOut = s;
 	VOut = t;
