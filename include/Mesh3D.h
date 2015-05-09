@@ -92,17 +92,18 @@ public:
 	//CMesh3D(float (*density)(Vec3D<float>&), Vec3D<float>& min, Vec3D<float>& max, int maxDivs, float threshold); //maxDivs = number of voxels in maximum dimension 
 	//virtual ~CMesh(){};
 
-	//to DC file!
-	Vec3Df QEF(const std::vector<Vec3Df>& intersects, const std::vector<Vec3Df>& normals, const Vec3Df& min, const Vec3Df& max);
-	//Vec3Df meanValueIntersect(const std::vector<Vec3Df>& points, const Vec3Df intersect, const int axis); //0=x, 1=y, 2=z
-
 	void clear();
 	bool load(const char* filePath); //stl
 	bool save(const char* filePath); //stl or obj (color) //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
 
-	void addTriangle(Vec3D<float>& p1, Vec3D<float>& p2, Vec3D<float>& p3); //assummed ccw order
+	int addVertex(Vec3D<float>& location); 
+	void addTriangle(int vIndex1, int vIndex2, int vIndex3); //assummed ccw (from outside) order
+	void addTriangle(Vec3D<float>& p1, Vec3D<float>& p2, Vec3D<float>& p3); //assummed ccw (from outside) order
+
 	int triangleCount() {return (int)(triangles.size()/3);}
 	int vertexCount() {return (int)(vertices.size()/3);}
+	Vec3Df vertex(int vIndex) {return Vec3Df(&vertices[3*vIndex]);} //returns location of this vertex
+	void mergeVertices(float precision); //precision is distance to consider points coincident
 
 	bool isInside(Vec3D<float>* point); //true if inside mesh, false
 	float distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut = 0); //returns "blended" distance if within maxDistance. positive for outside, negative for inside.
@@ -152,7 +153,6 @@ private:
 
 	bool vertexNormalsStale, vertexMergesStale, faceNormalsStale, boundsStale, slicerStale;
 
-	void mergeVertices(float precision); //precision is 2^precision (max 10) divisions in each dimension to count as "close" enough to merge.
 	void splitVerticesByAngle(float seamAngleDegrees);
 
 	Vec3D<float> boundsMin, boundsMax; //bounds
