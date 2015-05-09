@@ -14,7 +14,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #include "Mesh3D.h"
 #include "Array3D.h"
-#include "eigen.h" //for QEF support
+#include "eigen/eigen.h" //for QEF support
 
 //takes a vector of 3D arrays of floatng points and turns them into an iso-surface using either marching cubes or dual contouring
 const int edgeToVert [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
