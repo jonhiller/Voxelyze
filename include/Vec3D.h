@@ -16,6 +16,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 #include <math.h>
 #include <float.h>
+#include <iostream>
 
 //indices for each direction
 #define vec3_X 0
@@ -73,6 +74,7 @@ public:
 	const T& operator[](const int axis) const		{switch (axis%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}} //!< overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
 	T& operator[](const int axis)					{switch (axis%3){case vec3_X: return x; case vec3_Y: return y; /*case vec3_Z:*/ default: return z;}}  //!< overload  index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y and 2 ("vec3_Z") is z.
 
+
 	//Attributes
 	T		getX(void) const	{return x;} //!< returns the x value
 	T		getY(void) const	{return y;} //!< returns the y value
@@ -117,5 +119,8 @@ public:
 typedef Vec3D<float> Vec3Df;
 typedef Vec3D<double> Vec3Dd;
 
+template <typename U> std::ostream &operator<<(std::ostream &os, Vec3D<U> const &v) { 
+    return os << v.x << "\t" << v.y << "\t" << v.z << "\t";
+}
 
 #endif //_VEC3D_H

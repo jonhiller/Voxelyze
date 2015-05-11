@@ -245,8 +245,11 @@ public:
 
 	void writeArray(const char* filePath){ //writes a csv of the array to the specified file path
 		std::ofstream ofile(filePath);
-			for (int j=cMin.y; j<=cMax.y; j++){
+//		for (int k=cMin.z; k<=cMax.z; k++){
+//			for (int j=cMin.y; j<=cMax.y; j++){
+//				for (int i=cMin.x; i<=cMax.x; i++){
 		for (int k=cMin.z; k<=cMax.z; k++){
+			for (int j=cMin.y; j<=cMax.y; j++){
 				for (int i=cMin.x; i<=cMax.x; i++){
 					ofile << at(i,j,k) << "\t";
 				}
