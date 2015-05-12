@@ -593,7 +593,7 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray
 	}
 
 	pMeshOut->mergeVertices(scale/100);
-	pMeshOut->useVertexNormals(44.0);
+	//pMeshOut->useVertexNormals(44.0);
 }
 
 #endif //MESHPOLYGONIZE_H
