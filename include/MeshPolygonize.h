@@ -417,12 +417,14 @@ static Vec3Df QEF(const std::vector<Vec3Df>& intersects, const std::vector<Vec3D
 		Vec3Df returnVec = mp;
 
 		//enforce limits
-		if (mp.x <= min.x) returnVec.x = min.x*(1+FLT_EPSILON);
-		if (mp.x >= max.x) returnVec.x = max.x*(1-FLT_EPSILON);
-		if (mp.y <= min.y) returnVec.y = min.y*(1+FLT_EPSILON);
-		if (mp.y >= max.y) returnVec.y = max.y*(1-FLT_EPSILON);
-		if (mp.z <= min.z) returnVec.z = min.z*(1+FLT_EPSILON);
-		if (mp.z >= max.z) returnVec.z = max.z*(1-FLT_EPSILON);
+		if (mp.x <= min.x) returnVec.x = min.x+abs(min.x)*FLT_EPSILON;
+		if (mp.x >= max.x) returnVec.x = max.x-abs(max.x)*FLT_EPSILON;
+		if (mp.y <= min.y) returnVec.y = min.y+abs(min.y)*FLT_EPSILON;
+		if (mp.y >= max.y) returnVec.y = max.y-abs(max.y)*FLT_EPSILON;
+		if (mp.z <= min.z) returnVec.z = min.z+abs(min.z)*FLT_EPSILON;
+		if (mp.z >= max.z) returnVec.z = max.z-abs(max.z)*FLT_EPSILON;
+
+
 
 		return returnVec;
 	}
@@ -531,6 +533,9 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray
 					}
 				}
 
+				//Vec3Df thisInd(ix, iy, iz);
+				//Vec3Df min(scale*(thisInd+Vec3Df(0.5, 0.5, 0.5)));
+				//Vec3Df max = min + Vec3Df(scale, scale, scale);
 				Vec3Df min(scale*ix, scale*iy, scale*iz);
 				Vec3Df max(scale*(ix+1), scale*(iy+1), scale*(iz+1));
 
@@ -547,6 +552,8 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray
 		for (int ix=minInds.x; ix<maxInds.x; ix++){ 
 			for (int iy=minInds.y; iy<maxInds.y; iy++){
 				for (int j=0; j<3; j++){ //for each axis (x, y, z)
+					//if (j==2) continue;
+
 					float vThis = values(ix, iy, iz); //this value
 					int ixt = ix + ((j==vec3_X)?1:0);
 					int iyt = iy + ((j==vec3_Y)?1:0);

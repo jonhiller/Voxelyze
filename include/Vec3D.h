@@ -120,7 +120,7 @@ typedef Vec3D<float> Vec3Df;
 typedef Vec3D<double> Vec3Dd;
 
 template <typename U> std::ostream &operator<<(std::ostream &os, Vec3D<U> const &v) { 
-    return os << v.x << "\t" << v.y << "\t" << v.z << "\t";
+    return os << v.x; // << "\t" << v.y << "\t" << v.z << "\t";
 }
 
 #endif //_VEC3D_H

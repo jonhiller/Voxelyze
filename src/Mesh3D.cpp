@@ -617,13 +617,18 @@ void CMesh3D::rotate(Vec3D<float> ax, float a)
 
 float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D<float>* pNormalOut)
 {
-//	if (vertexMergesStale) mergeVertices(10);
+	if (vertexMergesStale) mergeVertices(maxDistance/10000);
+
 	if (pNormalOut){
 		if (faceNormalsStale) calcFaceNormals();
 		*pNormalOut = Vec3D<float>(0,0,0);
+
+//		std::string tmp("intermediate.obj");
+//		saveOBJ(tmp);
 	}
 
-	if (!FillCheckTriInts(point->y, point->z, maxDistance)) return FLT_MAX; //returns very fast if previously used z or y layers...
+	if (!FillCheckTriInts(point->y, point->z, maxDistance))
+		return FLT_MAX; //returns very fast if previously used z or y layers...
 
 	int triCount = (int)TriLine.size();
 	float minDist2 = FLT_MAX;
@@ -787,9 +792,6 @@ CMesh3D::IntersectionType CMesh3D::IntersectXRay(const int TriangleIndex, const 
 {
 	//http://www.blackpawn.com/texts/pointinpoly/default.html
 
-//	Vec3D<float> vA = *GetpFacetVertex(FacetIndex, 0);
-//	Vec3D<float> vB = *GetpFacetVertex(FacetIndex, 1);
-//	Vec3D<float> vC = *GetpFacetVertex(FacetIndex, 2);
 	Vec3D<float> vA(&vertices[3*triangles[3*TriangleIndex]]); // = vertices[pFacet->vi[0]];
 	Vec3D<float> vB(&vertices[3*triangles[3*TriangleIndex+1]]);
 	Vec3D<float> vC(&vertices[3*triangles[3*TriangleIndex+2]]);
@@ -805,20 +807,23 @@ CMesh3D::IntersectionType CMesh3D::IntersectXRay(const int TriangleIndex, const 
 	float v2y = y-vA.y;
 	float v2z = z-vA.z;
 
-	float dot00=v0y*v0y+v0z*v0z;
-	float dot01=v0y*v1y+v0z*v1z;
-	float dot02=v0y*v2y+v0z*v2z;
-	float dot11=v1y*v1y+v1z*v1z;
-	float dot12=v1y*v2y+v1z*v2z;
+	//without these as double precision, nearly degenerate triangles can produce false hits...
+	double dot00=v0y*v0y+v0z*v0z;
+	double dot01=v0y*v1y+v0z*v1z;
+	double dot02=v0y*v2y+v0z*v2z;
+	double dot11=v1y*v1y+v1z*v1z;
+	double dot12=v1y*v2y+v1z*v2z;
 
-	float invDenom = 1.0f/(dot00*dot11-dot01*dot01);
-	float u=(dot11*dot02-dot01*dot12)*invDenom;
-	float v=(dot00*dot12-dot01*dot02)*invDenom;
+	double total = (dot00*dot11-dot01*dot01);
+	if (total < 1e-9) return IT_OUTSIDE;
+	double invDenom = 1.0f/total;
+	double u=(dot11*dot02-dot01*dot12)*invDenom;
+	double v=(dot00*dot12-dot01*dot02)*invDenom;
 
 	if (u<0 || v<0 || u+v > 1)
 		return IT_OUTSIDE;
 	else if (u>0 && v>0 && u+v<1.0){
-		XIntersect = vA.x+u*(vC.x-vA.x)+v*(vB.x-vA.x);
+		XIntersect = (float)(vA.x+u*(vC.x-vA.x)+v*(vB.x-vA.x));
 		return IT_INSIDE;
 	}
 	else 
