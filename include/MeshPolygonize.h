@@ -445,7 +445,7 @@ static void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D
 	for (int i=0; i<12; i++){ //for each edge
 		if (thisEdge & (1<<i)){
 			int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
-			if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 8, 0);
+			if (density) vertList[i] = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 12, 0);
 			else vertList[i] = vertexInterpLinear(iso, points[v0], points[v1], vals[v0], vals[v1]);
 			
 		}
@@ -522,7 +522,7 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray
 						int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
 						//Vec3Df thisInt = vInterpLow(threshold, points[v0], points[v1], vals[v0], vals[v1], density, &tmpNorm, 0.00001f, 10);
 
-						Vec3Df thisInt = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 16, 0);
+						Vec3Df thisInt = vertexInterp(iso, points[v0], points[v1], vals[v0], vals[v1], density, 12, 0); //upping iterations past 12 (16?) may cause problems...
 
 						Vec3Df thisNorm;
 						density(thisInt, &thisNorm);
