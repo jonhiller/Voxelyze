@@ -552,7 +552,7 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray
 		for (int ix=minInds.x; ix<maxInds.x; ix++){ 
 			for (int iy=minInds.y; iy<maxInds.y; iy++){
 				for (int j=0; j<3; j++){ //for each axis (x, y, z)
-					//if (j==2) continue;
+					//if (j==1) continue;
 
 					float vThis = values(ix, iy, iz); //this value
 					int ixt = ix + ((j==vec3_X)?1:0);
