@@ -25,8 +25,8 @@ VOXELYZE_SRC = \
 	src/VX_Collision.cpp \
 	src/VX_LinearSolver.cpp \
 	src/Mesh3D.cpp \
-	src/VX_MeshRender.cpp 
-
+	src/VX_MeshRender.cpp \
+        src/eigen/eigen.cpp 
 VOXELYZE_OBJS = \
 	src/Voxelyze.o \
 	src/VX_Voxel.o \
@@ -38,7 +38,8 @@ VOXELYZE_OBJS = \
 	src/VX_Collision.o \
 	src/VX_LinearSolver.o \
 	src/Mesh3D.o \
-	src/VX_MeshRender.o
+	src/VX_MeshRender.o \
+        src/eigen/eigen.o
 		
 	
 .PHONY: clean all

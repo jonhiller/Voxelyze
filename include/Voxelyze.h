@@ -71,7 +71,7 @@ public:
 	CVoxelyze(const char* jsonFilePath) {loadJSON(jsonFilePath);} //!< Constructs a voxelyze object from a *.vxl.json file. The details of this file format are available in the Voxelyze user guide. @param[in] jsonFilePath path to the json file
 	CVoxelyze(rapidjson::Value* pV); //!< Constructs a voxelyze object from a rapidjson parser node that contains valid voxelyze sub-nodes. @param[in] pV pointer to a rapidjson Value that contains Voxelyze information. See rapidjson documentation and the *.vxl.json format info in the voxelyze user guide.
 	~CVoxelyze(void); //!< Destructor
-	CVoxelyze(CVoxelyze& VIn) {*this = VIn;} //!< Copy constructor
+	//CVoxelyze(CVoxelyze& VIn) {*this = VIn;} //!< Copy constructor
 	CVoxelyze& operator=(CVoxelyze& VIn); //!< Equals operator
 
 	void clear(); //!< Erases all voxels and materials and restores the voxelyze object to its default (empty) state.
