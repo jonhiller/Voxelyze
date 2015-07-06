@@ -13,7 +13,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #define MESHPOLYGONIZE_H
 
 #include "Mesh3D.h"
-#include "Array3D.h"
+#include "Array3Df.h"
 #include "eigen/eigen.h" //for QEF support
 
 //takes a vector of 3D arrays of floatng points and turns them into an iso-surface using either marching cubes or dual contouring
@@ -456,9 +456,10 @@ static void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D
 	}
 }
 
-static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3D<float>& values, float iso, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
+static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3Df& values, float iso, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
 {
 	pMeshOut->clear();
+	float scale = values.spacing();
 	Index3D minInds = values.minIndices()-Index3D(1,1,1), maxInds = values.maxIndices()+Index3D(1,1,1);
 //	Index3D minInds = values.minIndices(), maxInds = values.maxIndices();
 
@@ -483,9 +484,10 @@ static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3D<float>& values, float 
 	}
 }
 
-static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3D<float>& values, CArray3D<Vec3D<float>>& normals, float iso, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
+static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3Df& values, float iso, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
 {
 	pMeshOut->clear();
+	float scale = values.spacing();
 	Index3D minInds = values.minIndices()-Index3D(1,1,1), maxInds = values.maxIndices()+Index3D(1,1,1);
 
 	Index3D vSize = values.size() - Index3D(1, 1, 1);

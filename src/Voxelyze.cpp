@@ -21,9 +21,10 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <sstream>
 #include <assert.h>
 
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/document.h"
+#include "json.h"
+//#include "rapidjson/prettywriter.h"
+//#include "rapidjson/stringbuffer.h"
+//#include "rapidjson/document.h"
 
 CVoxelyze::CVoxelyze(double voxelSize)
 {
@@ -85,7 +86,8 @@ bool CVoxelyze::saveJSON(const char* jsonFilePath)
 	std::ofstream t(jsonFilePath);
 	if (t){
 		rapidjson::StringBuffer s;
-		rapidjson::PrettyWriter<rapidjson::StringBuffer> w(s);
+		rapidjson_Writer w(s);
+//		rapidjson::PrettyWriter<rapidjson::StringBuffer> w(s);
 		writeJSON(w);
 		
 		t << s.GetString();
@@ -165,7 +167,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 }
 
 #include <iostream>
-bool CVoxelyze::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
+bool CVoxelyze::writeJSON(rapidjson_Writer& w)
 {
 	w.StartObject();
 	w.Key("voxelSize");		w.Double(voxSize);

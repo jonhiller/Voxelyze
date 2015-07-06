@@ -16,6 +16,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "Array3D.h"
 #include "VX_Link.h"
 #include "VX_Voxel.h"
+#include "json.h"
 #include <vector> //delete if PIMPL'd
 #include <list> //delete if PIMPL'd
 #include <algorithm> //delete if PIMPL'd
@@ -182,7 +183,7 @@ private:
 	void clearCollisions(); //remove all existing collisions
 	void regenerateCollisions(float threshRadiusSq);
 
-	bool writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w);
+	bool writeJSON(rapidjson_Writer& w);
 	bool readJSON(rapidjson::Value& vxl);
 
 	CVX_LinearSolver* pSolver;

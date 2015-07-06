@@ -16,10 +16,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <string>
 #include <vector>
 #include "Vec3D.h"
-
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/document.h"
+#include "json.h"
 
 //!Defines the properties a raw material 
 /*!Contains all information relevant to a physical material to be simulated. All units are SI standard.
@@ -150,7 +147,7 @@ protected:
 
 	std::vector<CVX_Material*> dependentMaterials; //!< Any materials in this list will have updateDerived() called whenever it's called for this material. For example, in Voxelyze this is used for updatng link materials when one or both voxel materials change
 
-	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w); //!< Writes this material's data to the rapidjson writing object.
+	void writeJSON(rapidjson_Writer& w); //!< Writes this material's data to the rapidjson writing object.
 	bool readJSON(rapidjson::Value& mat); //!< reads this material data from the rapidjson Value.
 
 private:

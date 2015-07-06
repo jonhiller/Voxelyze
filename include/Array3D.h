@@ -39,6 +39,7 @@ struct Index3D {
 	Index3D& operator=(const Index3D& i3D) {x=i3D.x; y=i3D.y; z=i3D.z; return *this;} //!< Overload equals.
 	const Index3D operator+(const Index3D &i3D) const {return Index3D(x+i3D.x, y+i3D.y, z+i3D.z);} //!< Adds an Index3D to this one. Indices are added individually.
 	const Index3D operator-(const Index3D &i3D) const {return Index3D(x-i3D.x, y-i3D.y, z-i3D.z);} //!< Subtracts an Index3D from this one. Indices are subtracted individually.
+	const Index3D operator*(const int m) const {return Index3D(x*m, y*m, z*m);} //!< Multiplies this index by an integer.
 	bool operator==(const Index3D& i3D) const {return (x==i3D.x && y==i3D.y && z==i3D.z);} //!< Two index3Ds are equal only if all indices are equal.
 	bool operator!=(const Index3D& i3D) const {return (x!=i3D.x || y!=i3D.y || z!=i3D.z);} //!< Two index3Ds are not equal if any indices are not equal.
 	bool valid(){return !(x==INDEX_INVALID || y==INDEX_INVALID || z==INDEX_INVALID);} //!< Returns true if all indices are valid.
@@ -100,6 +101,14 @@ public:
 		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
 		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 		data.clear();
+	}
+
+	//!Erases all data from the array but leaves memory allocated
+	void erase(){ 
+		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
+		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
+		int dataSize = (int)data.size();
+		for (int i=0; i<dataSize; i++) data[i] = defaultValue;
 	}
 
 	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
@@ -175,12 +184,13 @@ public:
 
 	//!Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] index the index to add this value at. @param[in] value The value to add.
 	bool addValue(const Index3D& index, T value){
-		if (value==defaultValue){ //catch if adding default value (equivalent to removeValue). Call removeValue to keep min and max up-to-date
-			removeValue(index);
+		int ThisIndex = getIndex(index);
+
+		if (value==defaultValue){
+			if (ThisIndex != -1 && data[ThisIndex] != defaultValue) removeValue(index); //catch if adding default value (equivalent to removeValue). Call removeValue to keep min and max up-to-date
 			return true;
 		}
 
-		int ThisIndex = getIndex(index);
 		if (ThisIndex != -1){data[ThisIndex] = value;}
 		else { //reallocation required
 			int attempt=0;
@@ -259,7 +269,7 @@ public:
 		}
 		ofile.close();
 	}
-private:
+protected:
 
 	int getIndex(const Index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
 		if (i3D.x<aOff.x || i3D.x >= aOff.x+aSize.x || i3D.y<aOff.y || i3D.y >= aOff.y+aSize.y || i3D.z<aOff.z || i3D.z >= aOff.z+aSize.z) return -1; //if this XYZ is out of the area

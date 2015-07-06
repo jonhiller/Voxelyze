@@ -12,7 +12,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #ifndef MESH3D_H
 #define MESH3D_H
 
-#include "Array3D.h"
+#include "Array3Df.h"
 #include "Vec3D.h"
 
 class CMesh3D
@@ -20,8 +20,8 @@ class CMesh3D
 public:
 	CMesh3D(void) {clear();}
 	CMesh3D(const char* filePath); //only stl supported currently
-	CMesh3D(CArray3D<float>& values, float threshold, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0);
-	CMesh3D(CArray3D<float>& values, CArray3D<Vec3D<float>>& normals, float threshold, float scale = 1.0f, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0);
+	CMesh3D(CArray3Df& values, float threshold, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0, bool useDC = false);
+	//CMesh3D(CArray3Df& values, CArray3D<Vec3D<float>>& normals, float threshold, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0);
 	//CMesh3D(float (*density)(Vec3D<float>&), Vec3D<float>& min, Vec3D<float>& max, int maxDivs, float threshold); //maxDivs = number of voxels in maximum dimension 
 	//virtual ~CMesh(){};
 

@@ -74,7 +74,7 @@ void CVX_Material::clear()
 	updateDerived();
 }
 
-void CVX_Material::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
+void CVX_Material::writeJSON(rapidjson_Writer& w)
 {
 	//rapidjson::PrettyWriter<rapidjson::StringBuffer>* pW = (rapidjson::PrettyWriter<rapidjson::StringBuffer>*)writer;
 	w.StartObject();

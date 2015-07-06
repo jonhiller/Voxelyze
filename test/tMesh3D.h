@@ -1,7 +1,7 @@
 #include "../include/Mesh3D.h"
 
 TEST(Mesh3D, MarchCubeSimple){
-	CArray3D<float> arr;
+	CArray3Df arr;
 
 	arr.addValue(0,0,0,1.0f);
 
@@ -21,7 +21,7 @@ TEST(Mesh3D, MarchCubeSimple){
 }
 
 TEST(Mesh3D, MarchCubeScale){
-	CArray3D<float> arr;
+	CArray3Df arr;
 	arr.addValue(0,0,0,1.0f);
 
 	CMesh3D mesh(arr, 0.5f, 2.0f);
@@ -31,7 +31,7 @@ TEST(Mesh3D, MarchCubeScale){
 }
 
 TEST(Mesh3D, MarchCubeThreshold){
-	CArray3D<float> arr;
+	CArray3Df arr;
 	arr.addValue(0,0,0,1.0f);
 
 	CMesh3D mesh(arr, 0.25f);
@@ -55,7 +55,7 @@ TEST(Mesh3D, MarchCubeThreshold){
 
 
 TEST(Mesh3D, MarchCube2){
-	CArray3D<float> arr;
+	CArray3Df arr;
 
 	arr.addValue(0,0,0,1.0f);
 	arr.addValue(1,0,0,1.0f);

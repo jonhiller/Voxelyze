@@ -39,15 +39,16 @@ CMesh3D::CMesh3D(const char* filePath)
 	load(filePath);
 }
 
-CMesh3D::CMesh3D(CArray3D<float>& values, float threshold, float scale, float (*density)(Vec3D<float>&, Vec3D<float>*))
+CMesh3D::CMesh3D(CArray3Df& values, float threshold, float (*density)(Vec3D<float>&, Vec3D<float>*), bool useDC)
 {
-	meshFrom3dArrayMC(this, values, threshold, scale, density);
+	if (useDC) meshFrom3dArrayDC(this, values, threshold, density);
+	else meshFrom3dArrayMC(this, values, threshold, density);
 }
 
-CMesh3D::CMesh3D(CArray3D<float>& values, CArray3D<Vec3D<float>>& normals, float threshold, float scale, float (*density)(Vec3D<float>&, Vec3D<float>*))
-{
-	meshFrom3dArrayDC(this, values, normals, threshold, scale, density);
-}
+//CMesh3D::CMesh3D(CArray3Df& values, CArray3D<Vec3D<float>>& normals, float threshold, float (*density)(Vec3D<float>&, Vec3D<float>*))
+//{
+//	
+//}
 
 
 void CMesh3D::clear()
