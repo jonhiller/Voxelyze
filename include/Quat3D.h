@@ -205,4 +205,7 @@ public:
 
 };
 
+typedef Quat3D<float> Quat3Df;
+typedef Quat3D<double> Quat3Dd;
+
 #endif //_QUAT3D_H
