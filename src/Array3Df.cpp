@@ -135,7 +135,7 @@ Vec3Df CArray3Df::locationToContinuousIndex(Vec3Df& location) //returns location
 }
 
 //gaussian blur this array with the sepcified sigma. Values outside initialized array will naturally be counted as the default array value (0).
-//sigma: distance (in units of array spacing) for the guassian kernel
+//sigma: distance (in non-dimensional units of array spacing (1.e. "1" = whatever the array spacing is) for the guassian kernel
 //extent: number of sigmas to consider values. Large values will be more accurate but increase calculation time dramatically.
 void CArray3Df::gaussianBlur(float sigma, float extent){
 	//create linear gaussian kernel
