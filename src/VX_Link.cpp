@@ -200,7 +200,7 @@ void CVX_Link::updateForces()
 								sqB1*dPos2.y - sqB2xFMp*(dAngle1.z+dAngle2.z),
 								sqB1*dPos2.z + sqB2xFMp*(dAngle1.y+dAngle2.y));
 
-		float dampMultNeg = pVNeg->dampingMultiplier();
+		//float dampMultNeg = pVNeg->dampingMultiplier();
 		forceNeg += pVNeg->dampingMultiplier()*posCalc;
 		forcePos -= pVPos->dampingMultiplier()*posCalc;
 

@@ -280,7 +280,7 @@ void CArray3Df::linearBlur(float radius)
 					for (int m = std::max(min.y, j-fRadI); m <= std::min(max.y, j+fRadI); m++){
 						for (int n = std::max(min.z, k-fRadI); n <= std::min(max.z, k+fRadI); n++){
 
-							float fac = std::max(0.0f, fRad-sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
+							float fac = std::max(0.0f, fRad-(float)sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
 							newValue += fac*arrCopy(l,m,n);
 							sum += fac; 
 
@@ -390,7 +390,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 	resize((in.size()-Index3D(1,1,1))*oSample+Index3D(1,1,1), in.offset()*oSample);
 
 	Index3D min = in.offset(), max = in.offset() + in.size() - Index3D(1,1,1);
-	Index3D osMin = offset(), osMax = offset() + size() - Index3D(1,1,1);
+	Index3D /*osMin = offset(),*/ osMax = offset() + size() - Index3D(1,1,1);
 
 	for (int k=min.z; k<=max.z; k++){
 		for (int j=min.y; j<=max.y; j++){ 
