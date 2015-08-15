@@ -134,6 +134,60 @@ Vec3Df CArray3Df::locationToContinuousIndex(Vec3Df& location) //returns location
 	return location/aspc;
 }
 
+void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
+{
+	if (defaultValue != 0.0f) return;
+	
+	if (aSize == multiplyBy.size() && aOff == multiplyBy.offset()){ //operate directly on buffer data
+		int numEl = data.size();
+		for (int i=0; i<numEl; i++) data[i] *= multiplyBy.data[i];
+	}
+	else {
+		for (int k=cMin.x; k<=cMax.x; k++){
+			for (int j=cMin.y; j<=cMax.y; j++){ 
+				for (int i=cMin.z; i<=cMax.z; i++){
+					at(i,j,k) *= multiplyBy(i,j,k);
+				}
+			}
+		}
+	}
+
+}
+
+void CArray3Df::divideElements(CArray3Df& divideBy)
+{
+	if (defaultValue != 0.0f) return;
+	
+	if (aSize == divideBy.size() && aOff == divideBy.offset()){ //operate directly on buffer data
+		int numEl = data.size();
+		for (int i=0; i<numEl; i++) {
+			float divideByValue = divideBy.data[i];
+			if (divideByValue == 0) data[i] = 0;
+			else data[i] /= divideByValue;
+		}
+	}
+	else {
+		for (int k=cMin.x; k<=cMax.x; k++){
+			for (int j=cMin.y; j<=cMax.y; j++){ 
+				for (int i=cMin.z; i<=cMax.z; i++){
+					float divideByValue = divideBy(i,j,k);
+					if (divideByValue == 0) at(i,j,k) = 0;
+					else at(i,j,k) /= divideByValue;
+				}
+			}
+		}
+	}
+}
+
+void CArray3Df::multiplyElements(float multiplyBy)
+{
+	if (defaultValue != 0.0f) return;
+	
+	int numEl = data.size();
+	for (int i=0; i<numEl; i++) data[i] *= multiplyBy;
+}
+
+
 //gaussian blur this array with the sepcified sigma. Values outside initialized array will naturally be counted as the default array value (0).
 //sigma: distance (in non-dimensional units of array spacing (1.e. "1" = whatever the array spacing is) for the guassian kernel
 //extent: number of sigmas to consider values. Large values will be more accurate but increase calculation time dramatically.
@@ -143,16 +197,119 @@ void CArray3Df::gaussianBlur(float sigma, float extent){
 	int linSize = 1+2*numOut;
 	std::vector<float> linKernel(linSize);
 
-	float sumKernel = 0;
+//	float sumKernel = 0;
 	for (int i=0; i<linSize; i++){
 		linKernel[i] = exp(-((i-numOut)*(i-numOut))/(2*sigma*sigma))/sqrt((2*3.1415926f*sigma*sigma));
-		sumKernel += linKernel[i];
+//		sumKernel += linKernel[i];
 	}
-	for (int i=0; i<linSize; i++)linKernel[i]/=sumKernel; //normalize
+//	for (int i=0; i<linSize; i++)linKernel[i]/=sumKernel; //normalize
 
-	//apply in X, then Y, then Z (that are independent!)
+	normalizeLinearKernel(&linKernel);
+	applyLinearKernel(&linKernel);
+
+	////apply in X, then Y, then Z (that are independent!)
+	//CArray3Df arrCopy(*this);
+	//Index3D min = offset(), max = min + size();
+
+	////apply in X:
+	//for (int ak=min.z; ak<=max.z; ak++){
+	//	for (int aj=min.y; aj<=max.y; aj++){
+	//		for (int ai=min.x; ai<=max.x; ai++){
+	//			float acc = 0;
+	//			for (int ti=-numOut; ti<=numOut; ti++){
+	//				int thisI = ai+ti;
+	//				if (thisI >= min.x && thisI <= max.x){
+	//					acc += linKernel[ti+numOut]*arrCopy(thisI, aj, ak);
+	//				}
+	//			}
+	//			addValue(ai, aj, ak, acc, false);
+	//		}
+	//	}
+	//}
+
+	////apply in Y:
+	//for (int ak=min.z; ak<=max.z; ak++){
+	//	for (int ai=min.x; ai<=max.x; ai++){
+	//		for (int aj=min.y; aj<=max.y; aj++){
+	//			float acc = 0;
+	//			for (int tj=-numOut; tj<=numOut; tj++){
+	//				int thisJ = aj+tj;
+	//				if (thisJ >= min.y && thisJ <= max.y){
+	//					acc += linKernel[tj+numOut]* (*this)(ai, thisJ, ak);
+	//				}
+	//			}
+	//			arrCopy.addValue(ai, aj, ak, acc, false);
+	//		}
+	//	}
+	//}
+
+	////apply in Z:
+	//for (int aj=min.y; aj<=max.y; aj++){
+	//	for (int ai=min.x; ai<=max.x; ai++){
+	//		for (int ak=min.z; ak<=max.z; ak++){
+	//			float acc = 0;
+	//			for (int tk=-numOut; tk<=numOut; tk++){
+	//				int thisK = ak+tk;
+	//				if (thisK >= min.z && thisK <= max.z){
+	//					acc += linKernel[tk+numOut]*arrCopy(ai, aj, thisK);
+	//				}
+	//			}
+	//			addValue(ai, aj, ak, acc, false);
+	//		}
+	//	}
+	//}
+}
+
+//blur with a linear falloff. Unfortunately not linearly independent like gaussian.
+//radius is in voxel units (i.e. 1 = arraySpacing in real units).
+void CArray3Df::linearBlur(float radius)
+{
+	Index3D min = offset(), max = min + size();
+
+	float fRad = 2.5f; //filtering radius in voxels
+	int fRadI = (int)(1+fRad); //number of voxels to search up and down.
+
+	CArray3Df arrCopy(*this);
+
+	for (int k=min.z; k<=max.z; k++){
+		for (int j=min.y; j<=max.y; j++){ 
+			for (int i=min.x; i<=max.x; i++){
+				float sum = 0;
+				float newValue = 0;
+				for (int l = std::max(min.x, i-fRadI); l <= std::min(max.x, i+fRadI); l++){
+					for (int m = std::max(min.y, j-fRadI); m <= std::min(max.y, j+fRadI); m++){
+						for (int n = std::max(min.z, k-fRadI); n <= std::min(max.z, k+fRadI); n++){
+
+							float fac = std::max(0.0f, fRad-sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
+							newValue += fac*arrCopy(l,m,n);
+							sum += fac; 
+
+						}
+					}
+				}
+
+				addValue(i,j,k,newValue/sum, false);
+			}
+		}
+	}
+}
+
+
+//normalizes a linear kernel such that the sum of the values = 1.0
+void CArray3Df::normalizeLinearKernel(std::vector<float>* kernel)
+{
+	float sumKernel = 0;
+	int kSize = kernel->size();
+	for (int i=0; i<kSize; i++) sumKernel += (*kernel)[i]; //sum
+	for (int i=0; i<kSize; i++) (*kernel)[i]/=sumKernel; //normalize
+}
+
+//applies the linear kernel to this 3D array in X, then Y, then Z. (Order shouldn't matter for a linear kernel though)
+void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
+{
 	CArray3Df arrCopy(*this);
 	Index3D min = offset(), max = min + size();
+	int numOut = (kernel->size()-1)/2;
 
 	//apply in X:
 	for (int ak=min.z; ak<=max.z; ak++){
@@ -162,16 +319,14 @@ void CArray3Df::gaussianBlur(float sigma, float extent){
 				for (int ti=-numOut; ti<=numOut; ti++){
 					int thisI = ai+ti;
 					if (thisI >= min.x && thisI <= max.x){
-						acc += linKernel[ti+numOut]*arrCopy(thisI, aj, ak);
+						acc += (*kernel)[ti+numOut]*arrCopy(thisI, aj, ak);
 					}
 				}
-				addValue(ai, aj, ak, acc);
+				addValue(ai, aj, ak, acc, false);
 			}
 		}
 	}
 
-//		arrCopy = *this;
-	//"this" has the latest values
 	//apply in Y:
 	for (int ak=min.z; ak<=max.z; ak++){
 		for (int ai=min.x; ai<=max.x; ai++){
@@ -180,15 +335,14 @@ void CArray3Df::gaussianBlur(float sigma, float extent){
 				for (int tj=-numOut; tj<=numOut; tj++){
 					int thisJ = aj+tj;
 					if (thisJ >= min.y && thisJ <= max.y){
-						acc += linKernel[tj+numOut]* (*this)(ai, thisJ, ak);
+						acc += (*kernel)[tj+numOut]* (*this)(ai, thisJ, ak);
 					}
 				}
-				arrCopy.addValue(ai, aj, ak, acc);
+				arrCopy.addValue(ai, aj, ak, acc, false);
 			}
 		}
 	}
 
-	//arrCopy = arr;
 	//apply in Z:
 	for (int aj=min.y; aj<=max.y; aj++){
 		for (int ai=min.x; ai<=max.x; ai++){
@@ -197,14 +351,15 @@ void CArray3Df::gaussianBlur(float sigma, float extent){
 				for (int tk=-numOut; tk<=numOut; tk++){
 					int thisK = ak+tk;
 					if (thisK >= min.z && thisK <= max.z){
-						acc += linKernel[tk+numOut]*arrCopy(ai, aj, thisK);
+						acc += (*kernel)[tk+numOut]*arrCopy(ai, aj, thisK);
 					}
 				}
-				addValue(ai, aj, ak, acc);
+				addValue(ai, aj, ak, acc, false);
 			}
 		}
 	}
 }
+
 
 //simplest of finite difference methods. Provide a gridSpacing value (in real units between grid point) for a quantitaive gradient.
 Vec3Df CArray3Df::arrayGradient(Index3D index)
@@ -235,7 +390,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 	resize((in.size()-Index3D(1,1,1))*oSample+Index3D(1,1,1), in.offset()*oSample);
 
 	Index3D min = in.offset(), max = in.offset() + in.size() - Index3D(1,1,1);
-
+	Index3D osMin = offset(), osMax = offset() + size() - Index3D(1,1,1);
 
 	for (int k=min.z; k<=max.z; k++){
 		for (int j=min.y; j<=max.y; j++){ 
@@ -248,6 +403,8 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 							int curI = i*oSample+i2;
 							int curJ = j*oSample+j2;
 							int curK = k*oSample+k2;
+
+							if (curI > osMax.x || curJ > osMax.y || curK > osMax.z) continue; 
 							
 							//interpolate homogenization
 							float xp = (float)i2/(float)oSample;
@@ -266,7 +423,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 							//	case AVG_TRILINEAR: interpVal = in.interpolateTriLinearAvg(Vec3Df(i+xp, j+yp, k+zp)); break;
 							//}
 
-							addValue(curI, curJ, curK, interpVal);
+							addValue(curI, curJ, curK, interpVal, false);
 
 						}
 					}

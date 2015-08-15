@@ -34,6 +34,10 @@ public:
 	bool writeJSON(rapidjson_Writer& w);
 	bool readJSON(rapidjson::Value& v);
 
+	void multiplyElements(CArray3Df& multiplyBy); //element-wise scaling. Only applied if default array value is zero.
+	void divideElements(CArray3Df& divideBy); //element-wise inverse scaling (i.e. dividing be each element of divideByBy. divideByBy Values of zero will result in zero, not INF. Only applied if default array value is zero.
+	void multiplyElements(float multiplyBy); //scale all elements equally. Only applied if default array value is zero.
+
 	//a value representing the space between array indices (in some sort of real unit, so scale indices by)
 	void setSpacing(float arraySpacing){aspc=arraySpacing;}
 	float spacing(){return aspc;}
@@ -42,7 +46,10 @@ public:
 	Index3D locationToIndex(Vec3Df& location); //returns nearest (normal rounding)
 	Vec3Df locationToContinuousIndex(Vec3Df& location); //returns location, in index scale, but without truncating to integer
 
-	void gaussianBlur(float sigma = 1, float extent = 3.0f);
+	void gaussianBlur(float sigma = 1.0f, float extent = 3.0f);
+	void linearBlur(float radius = 1.0f);
+
+
 	Vec3Df arrayGradient(Index3D index);
 	void oversample(int oSample, interpolateType type = TRILINEAR); //oversample self
 	void oversample(CArray3Df& in, int oSample, interpolateType type = TRILINEAR);
@@ -52,6 +59,8 @@ public:
 	float interpolateTriCubic(Vec3Df interpIndex);
 
 private:
+	void normalizeLinearKernel(std::vector<float>* kernel);
+	void applyLinearKernel(std::vector<float>* kernel);
 	static const int _C[64][64];
 	float aspc;
 	};

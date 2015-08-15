@@ -542,7 +542,7 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 				Vec3Df max(scale*(ix+1), scale*(iy+1), scale*(iz+1));
 
 				Vec3Df qefPt = QEF(tryInts, tryNorms, min, max);
-				vertInds.addValue(ix, iy, iz, pMeshOut->addVertex(qefPt));
+				vertInds.addValue(ix, iy, iz, pMeshOut->addVertex(qefPt), false);
 			}
 		}
 	}
