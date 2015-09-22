@@ -95,17 +95,20 @@ float CVX_Voxel::strainEnergy() const
 		if (links[i]) totalSE += links[i]->strainEnergy((i%2==1)?true:false)*0.5f;
 	}
 	return totalSE;
-
-	//float maxSE = 0;
-	//for (int i=0; i<6; i++){
-	//	if (links[i]){
-	//		float thisSe = links[i]->strainEnergy((i%2==1)?true:false);
-	//		if (thisSe > maxSE) maxSE = thisSe;
-	//	}
-	//}
-	//return maxSE;
-
 }
+
+float CVX_Voxel::strainEnergyMax() const
+{
+	float maxSE = 0;
+	for (int i=0; i<6; i++){
+		if (links[i]){
+			float thisSe = links[i]->strainEnergy((i%2==1)?true:false);
+			if (thisSe > maxSE) maxSE = thisSe;
+		}
+	}
+	return maxSE;
+}
+
 
 bool CVX_Voxel::isYielded() const
 {

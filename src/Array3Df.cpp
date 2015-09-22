@@ -25,7 +25,7 @@ CArray3Df& CArray3Df::operator=(const CArray3D<float>& rArray)
 	return *this;
 }
 
-bool CArray3Df::writeJSON(rapidjson_Writer& w){
+bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite){
 	w.StartObject();
 	w.Key("spacing");
 	w.Double(aspc);
@@ -64,7 +64,11 @@ bool CArray3Df::writeJSON(rapidjson_Writer& w){
 	w.Key("arrayData");
 	w.StartArray();
 	int dataSize = (int)data.size();
-	for (int i=0; i<dataSize; i++) w.Double(data[i]);
+	for (int i=0; i<dataSize; i++){
+		float thisData = data[i];
+		if (abs(thisData)<minMagToWrite) w.Double(0.0);
+		else w.Double(data[i]);
+	}
 	w.EndArray();
 	w.EndObject();
 
@@ -139,7 +143,7 @@ void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
 	if (defaultValue != 0.0f) return;
 	
 	if (aSize == multiplyBy.size() && aOff == multiplyBy.offset()){ //operate directly on buffer data
-		int numEl = data.size();
+		int numEl = (int)data.size();
 		for (int i=0; i<numEl; i++) data[i] *= multiplyBy.data[i];
 	}
 	else {
@@ -159,7 +163,7 @@ void CArray3Df::divideElements(CArray3Df& divideBy)
 	if (defaultValue != 0.0f) return;
 	
 	if (aSize == divideBy.size() && aOff == divideBy.offset()){ //operate directly on buffer data
-		int numEl = data.size();
+		int numEl = (int)data.size();
 		for (int i=0; i<numEl; i++) {
 			float divideByValue = divideBy.data[i];
 			if (divideByValue == 0) data[i] = 0;
@@ -183,10 +187,29 @@ void CArray3Df::multiplyElements(float multiplyBy)
 {
 	if (defaultValue != 0.0f) return;
 	
-	int numEl = data.size();
+	int numEl = (int)data.size();
 	for (int i=0; i<numEl; i++) data[i] *= multiplyBy;
 }
 
+void CArray3Df::sqrtElements()
+{
+	if (defaultValue != 0.0f) return;
+	int numEl = (int)data.size();
+	for (int i=0; i<numEl; i++){
+		if (data[i] > 0) data[i] = sqrt(data[i]);
+		else data[i] = 0;
+	}
+}
+
+float CArray3Df::maxMagnitude()
+{
+	float maxVal = 0;
+	int numEl = (int)data.size();
+	for (int i=0; i<numEl; i++)
+		if (abs(data[i]) > maxVal) maxVal = abs(data[i]);
+
+	return maxVal;
+}
 
 //gaussian blur this array with the sepcified sigma. Values outside initialized array will naturally be counted as the default array value (0).
 //sigma: distance (in non-dimensional units of array spacing (1.e. "1" = whatever the array spacing is) for the guassian kernel
@@ -264,9 +287,10 @@ void CArray3Df::gaussianBlur(float sigma, float extent){
 //radius is in voxel units (i.e. 1 = arraySpacing in real units).
 void CArray3Df::linearBlur(float radius)
 {
-	Index3D min = offset(), max = min + size();
+//	Index3D min = offset(), max = min + size()-Index3D(1,1,1);
+	Index3D min = minAllocated(), max = maxAllocated();
 
-	float fRad = 2.5f; //filtering radius in voxels
+	float fRad = radius; //filtering radius in voxels
 	int fRadI = (int)(1+fRad); //number of voxels to search up and down.
 
 	CArray3Df arrCopy(*this);
@@ -294,12 +318,35 @@ void CArray3Df::linearBlur(float radius)
 	}
 }
 
+//sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
+void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
+{
+	if (sampleFrom->size() == size() && sampleFrom->offset() == offset() && sampleFrom->spacing() == spacing()){
+		*this = *sampleFrom; //if equal, just copy over.
+	}
+	else {
+		erase(); //ensures min and max are accurate as we add values
+
+		Index3D min = minAllocated(), max = maxAllocated();
+		for (int k=min.z; k<=max.z; k++){
+			for (int j=min.y; j<=max.y; j++){ 
+				for (int i=min.x; i<=max.x; i++){
+					Vec3Df thisLocation = indexToLocation(Index3D(i,j,k));
+					Vec3Df thatContinuousIndex = sampleFrom->locationToContinuousIndex(thisLocation);
+					float interpDens = sampleFrom->interpolateTriLinear(thatContinuousIndex);
+
+					addValue(i,j,k,interpDens,false);
+				}
+			}
+		}
+	}
+}
 
 //normalizes a linear kernel such that the sum of the values = 1.0
 void CArray3Df::normalizeLinearKernel(std::vector<float>* kernel)
 {
 	float sumKernel = 0;
-	int kSize = kernel->size();
+	int kSize = (int)kernel->size();
 	for (int i=0; i<kSize; i++) sumKernel += (*kernel)[i]; //sum
 	for (int i=0; i<kSize; i++) (*kernel)[i]/=sumKernel; //normalize
 }
@@ -309,7 +356,7 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 {
 	CArray3Df arrCopy(*this);
 	Index3D min = offset(), max = min + size();
-	int numOut = (kernel->size()-1)/2;
+	int numOut = (int)(kernel->size()-1)/2;
 
 	//apply in X:
 	for (int ak=min.z; ak<=max.z; ak++){

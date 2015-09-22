@@ -122,6 +122,10 @@ public:
 	Index3D maxIndices() const {return cMax;} //!< Returns the maximum i, j, and k indices utilized by any element in the array
 	Index3D size() const {return aSize;} //!< Returns the currently allocated size of the array
 	Index3D offset() const {return aOff;} //!< Returns the offset (i.e. location of most negative corner) of the currently allocated array
+	Index3D minAllocated() const {return offset();}
+	Index3D maxAllocated() const {return aOff + aSize - Index3D(1,1,1);}
+
+
 
 	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
 	const T& at(const Index3D& i3D) const { 
