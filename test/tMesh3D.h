@@ -23,8 +23,9 @@ TEST(Mesh3D, MarchCubeSimple){
 TEST(Mesh3D, MarchCubeScale){
 	CArray3Df arr;
 	arr.addValue(0,0,0,1.0f);
+	arr.setSpacing(2.0f);
 
-	CMesh3D mesh(arr, 0.5f, 2.0f);
+	CMesh3D mesh(arr, 0.5f);
 
 	EXPECT_EQ(mesh.meshMin().x, -1.0f);
 	EXPECT_EQ(mesh.meshMax().x, 1.0f);

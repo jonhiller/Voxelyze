@@ -26,7 +26,7 @@ public:
 	void clear();
 
 	int addVertex(Vec2Df& location); 
-	int vertexCount(){return vertices.size();}
+	int vertexCount(){return (int)vertices.size();}
 	Vec2Df& vertex(int vertexIndex){return vertices[vertexIndex];}
 
 	bool isInside(Vec2Df* point); //true if inside mesh, false
