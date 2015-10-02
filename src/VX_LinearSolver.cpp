@@ -375,6 +375,7 @@ void CVX_LinearSolver::applyBX() //Assumes 0-based indices
 		//std::vector<int> aToZero; //list of "a" matrix indices to set to zero at the end.
 		aToZero.clear();
 		fixed.resize(dof); //any fixed degrees of freedom
+		int fixedCount = 0;
 
 		//fill in all displacements first: (and build list to note which are prescribed/fixed)
 		for (int i=0; i<vCount; i++){
@@ -388,28 +389,50 @@ void CVX_LinearSolver::applyBX() //Assumes 0-based indices
 			for (int j=0; j<6; j++){
 				int thisDof = 6*i+j;
 				x[thisDof] = (j<3)?position[j]:angle[j%3]; //add in displacement
-				fixed[thisDof] = hasExternal ? pVox->external()->isFixed(dofMap[j]) : false; //note if it is presecribed/fixed
-				if (!fixed[thisDof]) b[thisDof] = (j<3)?force[j]:moment[j%3]; //add in forces if it's not a fixed degree of freedom
+				bool iAmFixed = hasExternal ? pVox->external()->isFixed(dofMap[j]) : false; //note if it is presecribed/fixed
+				fixed[thisDof] = iAmFixed;
+
+				if (iAmFixed) fixedCount++;
+				else b[thisDof] = (j<3)?force[j]:moment[j%3]; //add in forces if it's not a fixed degree of freedom
 			}
 		}
 
-		//Add in forces that make prescribed displacements work and mark the a values that are to be removed
-		for (int thisDof=0; thisDof<dof; thisDof++){
-			if (fixed[thisDof]){
-				int dofCounter = 0; //keep track of the row we're searching when examining the column above the active diagonal element, or the column when in the final row.
-				for (int k=0; k<ia[thisDof+1]; k++){ //up through the end of this row
-					bool thisRow = (k>=ia[thisDof]); //searching the final row (otherwise searching the column above)
-					if (thisRow) dofCounter = ja[k]; //keep track of the column as we step through the row.
-					if (k==ia[dofCounter+1]) dofCounter++; //keep track of the row as we step through columns
+		aToZero.reserve(12*fixedCount);
 
-					if (ja[k]==thisDof || thisRow){
-						b[dofCounter] -= x[thisDof]*a[k];
-						if (iteration == 0 && k!=ia[thisDof]) aToZero.push_back(k); //if not diagonal, it will be zeroed. However, defer zeroing since some of these values could be used twice...
-					}
-
+		//Add in forces that make prescribed displacements work and mark the "a" values that are to be removed
+		const int iaSize = ia.size();
+		for (int i=0; i<iaSize-1; i++){ //i is the row of this element
+			const int kStart = ia[i], kEnd=ia[i+1];
+			for(int k=kStart; k<kEnd; k++){
+				const int j = ja[k]; //j is the column of this element
+				
+				if (fixed[i] || fixed[j]){ //same row as fixed degree of freedom
+					b[i] -= x[j]*a[k]; //subract out any force for the linked DOF for this element
+					if (i != j) aToZero.push_back(k); //if not on diagonal, nuke it!
 				}
 			}
 		}
+
+
+		//for (int thisDof=0; thisDof<dof; thisDof++){
+		//	if (fixed[thisDof]){
+		//		int dofCounter = 0; //keep track of the row we're searching when examining the column above the active diagonal element, or the column when in the final row.
+		//		
+		//		//int RowBegin = 
+		//		int lastAToConsider = ia[thisDof+1];
+		//		for (int k=0; k<lastAToConsider; k++){ //up through the end of this row
+		//			bool thisRow = (k>=ia[thisDof]); //searching the final row (otherwise searching the column above)
+		//			if (thisRow) dofCounter = ja[k]; //keep track of the column as we step through the row.
+		//			if (k==ia[dofCounter+1]) dofCounter++; //keep track of the row as we step through columns
+
+		//			if (ja[k]==thisDof || thisRow){ //if in column or row of this degree of freedom...
+		//				b[dofCounter] -= x[thisDof]*a[k];
+		//				if (iteration == 0 && k!=ia[thisDof]) aToZero.push_back(k); //if not diagonal, it will be zeroed. However, defer zeroing since some of these values could be used twice...
+		//			}
+
+		//		}
+		//	}
+		//}
 
 
 	}
@@ -429,7 +452,8 @@ void CVX_LinearSolver::applyBX() //Assumes 0-based indices
 		}
 	}
 
-	for (int i=0; i<(int)aToZero.size(); i++) a[aToZero[i]] = 0; //zero out the ones we've marked accordingly
+	const int numToZero = (int)aToZero.size();
+	for (int i=0; i<numToZero; i++) a[aToZero[i]] = 0; //zero out the ones we've marked accordingly
 }
 
 void CVX_LinearSolver::convertTo1Base()
