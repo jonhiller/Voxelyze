@@ -11,6 +11,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 
 #include "Array3Df.h"
+#include <algorithm>
 
 CArray3Df& CArray3Df::operator=(const CArray3Df& rArray) {
 	CArray3D::operator=(rArray);
