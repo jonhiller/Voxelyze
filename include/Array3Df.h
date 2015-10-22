@@ -46,7 +46,7 @@ public:
 	void setSpacing(float arraySpacing){aspc=arraySpacing;}
 	float spacing(){return aspc;}
 
-	Vec3Df indexToLocation(Index3D& index);
+	Vec3Df indexToLocation(const Index3D& index);
 	Index3D locationToIndex(Vec3Df& location); //returns nearest (normal rounding)
 	Vec3Df locationToContinuousIndex(Vec3Df& location); //returns location, in index scale, but without truncating to integer
 
