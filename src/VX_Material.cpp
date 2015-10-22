@@ -46,6 +46,8 @@ CVX_Material& CVX_Material::operator=(const CVX_Material& vIn)
 	zetaGlobal = vIn.zetaGlobal;
 	zetaCollision = vIn.zetaCollision;
 
+	extScale = vIn.extScale;
+
 	_eHat = vIn._eHat;
 
 	return *this;
@@ -64,15 +66,15 @@ void CVX_Material::clear()
 	muKinetic = 0.0f;
 	zetaInternal = 1.0f;
 	zetaGlobal = 0.0f;
-	zetaCollision = 0.0f;
+	zetaCollision = 1.0f;
 
-	extScale=Vec3D<>(1.0, 1.0, 1.0);
+	extScale=Vec3D<double>(1.0, 1.0, 1.0);
 
 	setModelLinear(1.0);
 	updateDerived();
 }
 
-void CVX_Material::writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w)
+void CVX_Material::writeJSON(rapidjson_Writer& w)
 {
 	//rapidjson::PrettyWriter<rapidjson::StringBuffer>* pW = (rapidjson::PrettyWriter<rapidjson::StringBuffer>*)writer;
 	w.StartObject();
@@ -162,15 +164,14 @@ bool CVX_Material::readJSON(rapidjson::Value& m)
 	return true;
 }
 
-float CVX_Material::stress(float strain, float transverseStrainSum, bool forceLinear)
+double CVX_Material::stress(double strain, double transverseStrainSum, bool forceLinear)
 {
 	//reference: http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf page 10
-	if (isFailed(strain)) return 0.0f; //if a failure point is set and exceeded, we've broken!
+	if (isFailed(strain)) return 0.0; //if a failure point is set and exceeded, we've broken!
 	
 	if (strain <= strainData[1] || linear || forceLinear){ //for compression/first segment and linear materials (forced or otherwise), simple calculation
-		if (nu==0.0f) return E*strain;
+		if (nu==0.0) return E*strain;
 		else return _eHat*((1-nu)*strain + nu*transverseStrainSum); 
-//		else return eHat()*((1-nu)*strain + nu*transverseStrainSum); 
 	}
 
 	//the non-linear feature with non-zero poissons ratio is currently experimental
@@ -191,7 +192,7 @@ float CVX_Material::stress(float strain, float transverseStrainSum, bool forceLi
 	}
 
 	assert(false); //should never reach this point
-	return 0.0f;
+	return 0.0;
 }
 
 float CVX_Material::strain(float stress)
@@ -444,7 +445,7 @@ bool CVX_Material::setYieldFromData(float percentStrainOffset)
 
 	assert(strainData.size() == stressData.size());
 	assert(strainData.size() > 2); // more than 2 data points (more than bilinear)
-	int dataPoints = strainData.size()-1;
+	int dataPoints = (int)(strainData.size()-1);
 	for (int i=1; i<dataPoints-1; i++){
 		float x1=strainData[i];
 		float x2=strainData[i+1];
@@ -500,12 +501,16 @@ void CVX_Material::setInternalDamping(float zeta)
 {
 	if (zeta <= 0) zeta = 0;
 	zetaInternal = zeta;
+//	for (std::vector<CVX_Material*>::iterator it = dependentMaterials.begin(); it != dependentMaterials.end(); it++)
+//		(*it)->setInternalDamping(zeta);
 }
 
 void CVX_Material::setGlobalDamping(float zeta)
 {
 	if (zeta <= 0) zeta = 0;
 	zetaGlobal = zeta;
+//	for (std::vector<CVX_Material*>::iterator it = dependentMaterials.begin(); it != dependentMaterials.end(); it++)
+//		(*it)->setGlobalDamping(zeta);
 }
 
 void CVX_Material::setCollisionDamping(float zeta)

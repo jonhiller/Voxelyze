@@ -16,10 +16,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <string>
 #include <vector>
 #include "Vec3D.h"
-
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/document.h"
+#include "json.h"
 
 //!Defines the properties a raw material 
 /*!Contains all information relevant to a physical material to be simulated. All units are SI standard.
@@ -43,7 +40,7 @@ class CVX_Material {
 	void setName(const char* name) {myName = std::string(name);} //!< Adds an optional name to the material. @param[in] name Desired name. 
 	const char* name() const {return myName.c_str();} //!< Returns the optional material name if one was specifed. Otherwise returns an empty string.
 
-	float stress(float strain, float transverseStrainSum=0.0f, bool forceLinear = false); //!<returns the stress of the material model accounting for volumetric strain effects. @param [in] strain The strain to query. The resulting stress in this direction will be returned. @param [in] transverseStrainSum The sum of the two principle normal strains in the plane perpendicular to strain. @param [in] forceLinear If true, the result will be calculated according to the elastic modulus of the material regardless of non-linearities in the model.
+	double stress(double strain, double transverseStrainSum=0.0f, bool forceLinear = false); //!<returns the stress of the material model accounting for volumetric strain effects. @param [in] strain The strain to query. The resulting stress in this direction will be returned. @param [in] transverseStrainSum The sum of the two principle normal strains in the plane perpendicular to strain. @param [in] forceLinear If true, the result will be calculated according to the elastic modulus of the material regardless of non-linearities in the model.
 	float modulus(float strain); //!<returns the modulus (slope of the stress/strain curve) of the material model at the specified strain. @param [in] strain The strain to query.
 	bool isYielded(float strain) {return epsilonYield != -1.0f && strain>epsilonYield;} //!< Returns true if the specified strain is past the yield point (if one is specified). @param [in] strain The strain to query.
 	bool isFailed(float strain) {return epsilonFail != -1.0f && strain>epsilonFail;} //!< Returns true if the specified strain is past the failure point (if one is specified). @param [in] strain The strain to query.
@@ -68,7 +65,7 @@ class CVX_Material {
 	float youngsModulus() const {return E;} //!< Returns Youngs modulus in Pa.
 	float yieldStress() const {return sigmaYield;} //!<Returns the yield stress in Pa or -1 if unspecified.
 	float failureStress() const {return sigmaFail;} //!<Returns the failure stress in Pa or -1 if unspecified.
-	int modelDataPoints() const {return strainData.size();} //!< Returns the number of data points in the current material model data arrays.
+	int modelDataPoints() const {return (int)(strainData.size());} //!< Returns the number of data points in the current material model data arrays.
 	const float* modelDataStrain() const {return &strainData[0];} //!< Returns a pointer to the first strain value data point in a continuous array. The number of values can be determined from modelDataPoints(). The assumed first value of 0 is included.
 	const float* modelDataStress() const {return &stressData[0];} //!< Returns a pointer to the first stress value data point in a continuous array. The number of values can be determined from modelDataPoints(). The assumed first value of 0 is included.
 
@@ -150,7 +147,7 @@ protected:
 
 	std::vector<CVX_Material*> dependentMaterials; //!< Any materials in this list will have updateDerived() called whenever it's called for this material. For example, in Voxelyze this is used for updatng link materials when one or both voxel materials change
 
-	void writeJSON(rapidjson::PrettyWriter<rapidjson::StringBuffer>& w); //!< Writes this material's data to the rapidjson writing object.
+	void writeJSON(rapidjson_Writer& w); //!< Writes this material's data to the rapidjson writing object.
 	bool readJSON(rapidjson::Value& mat); //!< reads this material data from the rapidjson Value.
 
 private:

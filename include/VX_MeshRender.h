@@ -13,6 +13,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #define VX_MESH_H
 
 #include "Voxelyze.h"
+#include "Mesh3D.h"
 #include <vector>
 
 //! Voxelyze mesh visualizer
@@ -21,7 +22,7 @@ A simple way to generate a deformed mesh reflecting the current state of a voxel
 
 The mesh can be drawn in an initialized OpenGL window by defining USE_OPEN_GL in the preprocessor and calling glDraw from within the drawing loop. An obj mesh file can also be generated at any time.
 */
-class CVX_MeshRender
+class CVX_MeshRender : CMesh3D
 {
 public:
 	//! Defines various ways of coloring the voxels in the 3D mesh
@@ -35,21 +36,20 @@ public:
 	void generateMesh(); //!< Generates (or regenerates) this mesh from the linked voxelyze object. This must be called whenever voxels are added or removed in the simulation.
 	void updateMesh(viewColoring colorScheme = MATERIAL, CVoxelyze::stateInfoType stateType = CVoxelyze::DISPLACEMENT); //!< Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme specified by the arguments. @param[in] colorScheme The coloring scheme. @param[in] stateType If colorScheme = STATE_INFO, this argument determines the state to color the object according to. Only kinetic energy, strain energy, displacement, and pressure are currently supported.
 
-	void saveObj(const char* filePath); //!< Save the current deformed mesh as an obj file to the path specified. Coloring is not supported yet. @param[in] filePath File path to save the obj file as. Creates or overwrites.
 	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPEN_GL is defined.
 
 private:
 	CVoxelyze* vx;
 
-	std::vector<float> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
+//	std::vector<float> vertices; //vx1, vy1, vz1, vx2, vy2, vz2, vx3, ...
 	std::vector<CVX_Voxel*> vertexLinks; //vx1NNN, vx1NNP, [CVX_Voxel::voxelCorner enum order], ... vx2NNN, vx2NNp, ... (null if no link) 
 
-	std::vector<int> quads; //q1v1, q1v2, q1v3, q1v4, q2v1, q2v2, ... (ccw order)
-	std::vector<float> quadColors; //q1R, q1G, q1B, q2R, q2G, q2B, ... 
-	std::vector<int> quadVoxIndices; //q1n, q2n, q3n, ... 
-	std::vector<float> quadNormals; //q1Nx, q1Ny, q1Nz, q2Nx, q2Ny, q2Nz, ... (needs updating with mesh deformation)
+//	std::vector<int> tris; //t1v1, t1v2, t1v3, t2v1, t2v2, ... (ccw order)
+//	std::vector<float> triColors; //t1R, t1G, t1B, t2R, t2G, t2B, ... 
+	std::vector<int> triVoxIndices; //t1n, t2n, t3n, ... 
+//	std::vector<float> triNormals; //t1Nx, t1Ny, t1Nz, t2Nx, t2Ny, t2Nz, ... (needs updating with mesh deformation)
 
-	std::vector<int> lines; //l1v1, l1v2, l2v1, l2v2, ...
+//	std::vector<int> lines; //l1v1, l1v2, l2v1, l2v2, ...
 
 	float jetMapR(float val) {if (val<0.5f) return 0.0f; else if (val>0.75f) return 1.0f; else return val*4-2;}
 	float jetMapG(float val) {if (val<0.25f) return val*4; else if (val>0.75f) return 4-val*4; else return 1.0f;}

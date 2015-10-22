@@ -18,9 +18,9 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <iostream>
 #endif
 
-static const float HYSTERESIS_FACTOR = 1.2f; //Amount for small angle bond calculations
-static const float SA_BOND_BEND_RAD = 0.05f; //Amount for small angle bond calculations
-static const float SA_BOND_EXT_PERC = 0.50f; //Amount for small angle bond calculations
+static const float HYSTERESIS_FACTOR = 1.3f; //Amount for small angle bond calculations
+static const float SA_BOND_BEND_RAD = 0.01f; //Amount for small angle bond calculations
+static const float SA_BOND_EXT_PERC = 1.2f; //Amount for small angle bond calculations
 
 
 CVX_Link::CVX_Link(CVX_Voxel* voxel1, CVX_Voxel* voxel2, CVX_MaterialLink* material/*, linkDirection direction*/)
@@ -62,9 +62,10 @@ void CVX_Link::reset()
 {
 	pos2 = angle1v = angle2v = Vec3D<double>();
 	angle1 = angle2 = Quat3D<double>();
-	forceNeg = forcePos = momentNeg = momentPos = Vec3D<>();
+	forceNeg = forcePos = momentNeg = momentPos = Vec3D<double>();
 	strain = maxStrain = strainOffset = _stress = 0.0f;
-	strainRatio = pVPos->material()->E/pVNeg->material()->E;
+//	strainRatio = pVPos->material()->E/pVNeg->material()->E; //Ehat?
+	strainRatio = pVPos->material()->_eHat /pVNeg->material()->_eHat;
 	smallAngle = true;
 
 	setBoolState(LOCAL_VELOCITY_VALID, false);
@@ -74,7 +75,7 @@ void CVX_Link::reset()
 
 }
 
-Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle1, angle2, and smallAngle
+Quat3D<double> CVX_Link::orientLink() //updates pos2, angle1, angle2, and smallAngle
 {
 	pos2 = toAxisX(Vec3D<double>(pVPos->position() - pVNeg->position())); //digit truncation happens here...
 
@@ -84,11 +85,15 @@ Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle
 	Quat3D<double> totalRot = angle1.Conjugate(); //keep track of the total rotation of this bond (after toAxisX())
 	pos2 = totalRot.RotateVec3D(pos2);
 	angle2 = totalRot*angle2;
-	angle1 = Quat3D<>(); //zero for now...
+	angle1 = Quat3D<double>(); //zero for now...
 
 	//small angle approximation?
+	//smallAngle = false;
+
 	float SmallTurn = (float)((abs(pos2.z)+abs(pos2.y))/pos2.x);
-	float ExtendPerc = (float)(abs(1-pos2.x/currentRestLength));
+//	float ExtendPerc = (float)(abs(1-pos2.x/currentRestLength));
+//	float ExtendPerc = (float)(abs(pos2.x/currentRestLength));
+	float ExtendPerc = (float)abs((pos2.x/currentRestLength));
 	if (!smallAngle /*&& angle2.IsSmallAngle()*/ && SmallTurn < SA_BOND_BEND_RAD && ExtendPerc < SA_BOND_EXT_PERC){
 		smallAngle = true;
 		setBoolState(LOCAL_VELOCITY_VALID, false);
@@ -105,7 +110,7 @@ Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle
 		angle1.FromAngleToPosX(pos2); //get the angle to align Pos2 with the X axis
 		totalRot = angle1 * totalRot; //update our total rotation to reflect this
 		angle2 = angle1 * angle2; //rotate angle2
-		pos2 = Vec3D<>(pos2.Length() - currentRestLength, 0, 0); 
+		pos2 = Vec3D<double>(pos2.Length() - currentRestLength, 0, 0); 
 	}
 
 	angle1v = angle1.ToRotationVector();
@@ -118,7 +123,7 @@ Quat3D<double> CVX_Link::orientLink(/*double restLength*/) //updates pos2, angle
 	return totalRot;
 }
 
-float CVX_Link::axialStrain(bool positiveEnd) const
+double CVX_Link::axialStrain(bool positiveEnd) const
 {
 	return positiveEnd ? 2.0f*strain*strainRatio/(1.0f+strainRatio) : 2.0f*strain/(1.0f+strainRatio);
 }
@@ -143,23 +148,24 @@ void CVX_Link::updateTransverseInfo()
 {
 	currentTransverseArea = 0.5f*(pVNeg->transverseArea(axis)+pVPos->transverseArea(axis));
 	currentTransverseStrainSum = 0.5f*(pVNeg->transverseStrainSum(axis)+pVPos->transverseStrainSum(axis));
-
 }
 
 void CVX_Link::updateForces()
 {
 	Vec3D<double> oldPos2 = pos2, oldAngle1v = angle1v, oldAngle2v = angle2v; //remember the positions/angles from last timestep to calculate velocity
 
-	orientLink(/*restLength*/); //sets pos2, angle1, angle2
+	orientLink(); //sets pos2, angle1, angle2
 
 	Vec3D<double> dPos2 = 0.5*(pos2-oldPos2); //deltas for local damping. velocity at center is half the total velocity
 	Vec3D<double> dAngle1 = 0.5*(angle1v-oldAngle1v);
 	Vec3D<double> dAngle2 = 0.5*(angle2v-oldAngle2v);
 	
 	//if volume effects...
-	if (!mat->isXyzIndependent() || currentTransverseStrainSum != 0) updateTransverseInfo(); //currentTransverseStrainSum != 0 catches when we disable poissons mid-simulation
+	if (!mat->isXyzIndependent() || currentTransverseStrainSum != 0)
+		updateTransverseInfo(); //currentTransverseStrainSum != 0 catches when we disable poissons mid-simulation
 
-	_stress = updateStrain((float)(pos2.x/currentRestLength));
+	_stress = updateStrain((double)(pos2.x/currentRestLength));
+
 	if (isFailed()){forceNeg = forcePos = momentNeg = momentPos = Vec3D<double>(0,0,0); return;}
 
 	float b1=mat->_b1, b2=mat->_b2, b3=mat->_b3, a2=mat->_a2; //local copies
@@ -176,6 +182,16 @@ void CVX_Link::updateForces()
 								-b2*pos2.z - b3*(angle1v.y + 2*angle2v.y),
 								b2*pos2.y - b3*(angle1v.z + 2*angle2v.z));
 
+		//strain energy
+	//_strainEnergy = forceNeg.x*forceNeg.x/(2.0f*mat->_a1) + //Tensile strain
+	//				momentNeg.x*momentNeg.x/(2.0*mat->_a2) + //Torsion strain
+	//				((momentNeg.z*momentNeg.z - momentNeg.z*momentPos.z +momentPos.z*momentPos.z) + //Bending Z
+	//				(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y))/(3.0*mat->_b3); //Bending Y
+
+	//strain energy (U): Given F=kx and U = 0.5*k*x^2, U = 0.5*F*x (matrix forms, of course).
+	_strainEnergy = -(0.5*(angle1v.x*momentNeg.x + angle1v.y*momentNeg.y + angle1v.z*momentNeg.z + 
+						pos2.x*forcePos.x + pos2.y*forcePos.y + pos2.z*forcePos.z + 
+						angle2v.x*momentPos.x + angle2v.y*momentPos.y + angle2v.z*momentPos.z));
 
 	//local damping:
 	if (isLocalVelocityValid()){ //if we don't have the basis for a good damping calculation, don't do any damping.
@@ -184,18 +200,22 @@ void CVX_Link::updateForces()
 								sqB1*dPos2.y - sqB2xFMp*(dAngle1.z+dAngle2.z),
 								sqB1*dPos2.z + sqB2xFMp*(dAngle1.y+dAngle2.y));
 
+		//float dampMultNeg = pVNeg->dampingMultiplier();
 		forceNeg += pVNeg->dampingMultiplier()*posCalc;
 		forcePos -= pVPos->dampingMultiplier()*posCalc;
 
-		momentNeg -= 0.5*pVNeg->dampingMultiplier()*Vec3D<>(	-sqA2xIp*(dAngle2.x - dAngle1.x),
+		momentNeg -= 0.5*pVNeg->dampingMultiplier()*Vec3D<double>(	-sqA2xIp*(dAngle2.x - dAngle1.x),
 																sqB2xFMp*dPos2.z + sqB3xIp*(2*dAngle1.y + dAngle2.y),
 																-sqB2xFMp*dPos2.y + sqB3xIp*(2*dAngle1.z + dAngle2.z));
-		momentPos -= 0.5*pVPos->dampingMultiplier()*Vec3D<>(	sqA2xIp*(dAngle2.x - dAngle1.x),
+		momentPos -= 0.5*pVPos->dampingMultiplier()*Vec3D<double>(	sqA2xIp*(dAngle2.x - dAngle1.x),
 																sqB2xFMp*dPos2.z + sqB3xIp*(dAngle1.y + 2*dAngle2.y),
 																-sqB2xFMp*dPos2.y + sqB3xIp*(dAngle1.z + 2*dAngle2.z));
 
 	}
-	else setBoolState(LOCAL_VELOCITY_VALID, true); //we're good for next go-around unless something changes
+	else 
+		setBoolState(LOCAL_VELOCITY_VALID, true); //we're good for next go-around unless something changes
+
+
 
 	//	transform forces and moments to local voxel coordinates
 	if (!smallAngle){
@@ -217,7 +237,7 @@ void CVX_Link::updateForces()
 }
 
 
-float CVX_Link::updateStrain(float axialStrain)
+double CVX_Link::updateStrain(double axialStrain)
 {
 	strain = axialStrain; //redundant?
 
@@ -226,7 +246,7 @@ float CVX_Link::updateStrain(float axialStrain)
 		return mat->stress(axialStrain, currentTransverseStrainSum);
 	}
 	else {
-		float returnStress;
+		double returnStress;
 
 		if (axialStrain > maxStrain){ //if new territory on the stress/strain curve
 			maxStrain = axialStrain; //remember this maximum for easy reference
@@ -237,7 +257,7 @@ float CVX_Link::updateStrain(float axialStrain)
 
 		}
 		else { //backed off a non-linear material, therefore in linear region.
-			float relativeStrain = axialStrain-strainOffset; // treat the material as linear with a strain offset according to the maximum plastic deformation
+			double relativeStrain = axialStrain-strainOffset; // treat the material as linear with a strain offset according to the maximum plastic deformation
 			
 			if (mat->nu != 0.0f) returnStress = mat->stress(relativeStrain, currentTransverseStrainSum, true);
 			else returnStress = mat->E*relativeStrain;
@@ -248,13 +268,12 @@ float CVX_Link::updateStrain(float axialStrain)
 
 }
 
-float CVX_Link::strainEnergy() const
+float CVX_Link::strainEnergy(bool positiveEnd) const
 {
-	return	forceNeg.x*forceNeg.x/(2.0f*mat->_a1) + //Tensile strain
-			momentNeg.x*momentNeg.x/(2.0*mat->_a2) + //Torsion strain
-			(momentNeg.z*momentNeg.z - momentNeg.z*momentPos.z +momentPos.z*momentPos.z)/(3.0*mat->_b3) + //Bending Z
-			(momentNeg.y*momentNeg.y - momentNeg.y*momentPos.y +momentPos.y*momentPos.y)/(3.0*mat->_b3); //Bending Y
+	if (positiveEnd) return strainEnergy()/(1+strainRatio);
+	else return strainEnergy()*strainRatio/(1+strainRatio);
 }
+
 
 float CVX_Link::axialStiffness() {
 	if (mat->isXyzIndependent()) return mat->_a1;

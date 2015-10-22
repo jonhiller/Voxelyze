@@ -36,14 +36,14 @@ class CVX_Voxel
 {
 public:
 	//! Defines the direction of a link relative to a given voxel.
-	enum linkDirection {	
+	enum linkDirection {
 		X_POS=0,			//!< Positive X direction
 		X_NEG=1,			//!< Negative X direction
 		Y_POS=2,			//!< Positive Y direction
 		Y_NEG=3,			//!< Negative Y direction
 		Z_POS=4,			//!< Positive Z direction
 		Z_NEG=5				//!< Negative Z direction
-	}; 
+	};
 	//! Defines each of 8 corners of a voxel.
 	enum voxelCorner {
 		NNN = 0, //0b000
@@ -54,7 +54,7 @@ public:
 		PNP = 5, //0b101
 		PPN = 6, //0b110
 		PPP = 7  //0b111
-	}; 
+	};
 
 	CVX_Voxel(CVX_MaterialVoxel* material, short indexX, short indexY, short indexZ); //!< Default constuctor. @param [in] material Links this CVX_Material to define the physical properties for this voxel. @param[in] indexX The global X index of this voxel. @param[in] indexY The global Y index of this voxel. @param[in] indexZ The global Z index of this voxel.
 	~CVX_Voxel(); //!< Destructor
@@ -68,7 +68,7 @@ public:
 	short indexZ() {return iz;} //!< Returns the global Z index of this voxel.
 
 	CVX_MaterialVoxel* material() {return mat;} //!<Returns the linked material object containing the physical properties of this voxel.
-	
+
 	bool externalExists() {return ext?true:false;} //!< Returns true if this voxel has had its CVX_External object created. This does not mecessarily imply that this external object actually contains any fixes or forces.
 	CVX_External* external() {if (!ext) ext = new CVX_External(); return ext;} //!< Returns a pointer to this voxel's unique external object that contains fixes, forces, and/or displacements. Allocates a new empty one if it doesn't already exist. Use externalExists() to determine if external() has been previously called at any time.
 
@@ -100,6 +100,8 @@ public:
 	Vec3D<double> angularVelocity() const {return angMom*mat->_momentInertiaInverse;} //!< Returns the 3D angular velocity of this voxel in rad/s (GCS)
 	float angularVelocityMagnitude() const {return (float)(angMom.Length()*mat->_momentInertiaInverse);} //!< Returns the angular velocity of this voxel in rad/s.
 	float kineticEnergy() const {return (float)(0.5*(mat->_massInverse*linMom.Length2() + mat->_momentInertiaInverse*angMom.Length2()));} //!< Returms the kinetic energy of this voxel in Joules.
+	float strainEnergy() const; //!<Returns an approximation of the strain energy contained in this voxel.
+	float strainEnergyMax() const; //!<Returns an approximation of the maximum strain energy within this voxel.
 	float volumetricStrain() const {return (float)(strain(false).x+strain(false).y+strain(false).z);} //!< Returns the volumetric strain of the voxel according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 	float pressure() const {return -mat->youngsModulus()*volumetricStrain()/(3*(1-2*mat->poissonsRatio()));} //!< Returns the engineering internal "pressure" in Pa according to the definition at http://www.colorado.edu/engineering/CAS/courses.d/Structures.d/IAST.Lect05.d/IAST.Lect05.pdf
 
@@ -114,7 +116,7 @@ public:
 	Vec3D<float> externalForce(); //!< Returns the current external force applied to this voxel in newtons. If the voxel is not fixed this will return any applied external forces. If fixed it will return the current reaction force necessary to enforce the zero-motion constraint.
 	Vec3D<float> externalMoment(); //!< Returns the current external moment applied to this voxel in N-m. If the voxel is not fixed this will return any applied external moments. If fixed it will return the current reaction moment necessary to enforce the zero-motion constraint.
 
-	void haltMotion(){linMom = angMom = Vec3D<>(0,0,0);} //!< Halts all momentum of this block. Unless fixed the voxel will continue to move in subsequent timesteps.
+	void haltMotion(){linMom =  Vec3D<double>(0,0,0); angMom = Vec3D<double>(0,0,0);} //!< Halts all momentum of this block. Unless fixed the voxel will continue to move in subsequent timesteps.
 
 	void enableFloor(bool enabled) {enabled ? boolStates |= FLOOR_ENABLED : boolStates &= ~FLOOR_ENABLED;} //!< Enables this voxel interacting with the floor at Z=0. @param[in] enabled Enable interaction
 	bool isFloorEnabled() const {return boolStates & FLOOR_ENABLED ? true : false;} //!< Returns true of this voxel will interact with the floor at Z=0.
@@ -124,14 +126,14 @@ public:
 	Vec3D<double> force(); //!< Calculates and returns the sum of the current forces on this voxel. This would normally only be called internally, but can be used to query the state of a voxel for visualization or debugging.
 	Vec3D<double> moment(); //!< Calculates and returns the sum of the current moments on this voxel. This would normally only be called internally, but can be used to query the state of a voxel for visualization or debugging.
 
-	float transverseArea(CVX_Link::linkAxis axis); //!< Returns the transverse area of this voxel with respect to the specified axis. This would normally be called only internally, but can be used to calculate the correct relationship between force and stress for this voxel if Poisson's ratio is non-zero.
-	float transverseStrainSum(CVX_Link::linkAxis axis); //!< Returns the sum of the current strain of this voxel in the two mutually perpindicular axes to the specified axis. This would normally be called only internally, but can be used to correctly calculate stress for this voxel if Poisson's ratio is non-zero.
+	double transverseArea(CVX_Link::linkAxis axis); //!< Returns the transverse area of this voxel with respect to the specified axis. This would normally be called only internally, but can be used to calculate the correct relationship between force and stress for this voxel if Poisson's ratio is non-zero.
+	double transverseStrainSum(CVX_Link::linkAxis axis); //!< Returns the sum of the current strain of this voxel in the two mutually perpindicular axes to the specified axis. This would normally be called only internally, but can be used to correctly calculate stress for this voxel if Poisson's ratio is non-zero.
 
-	float dampingMultiplier() {return 2*mat->_sqrtMass*mat->zetaInternal/previousDt;} //!< Returns the damping multiplier for this voxel. This would normally be called only internally for the internal damping calculations.
+	float dampingMultiplier() {return 2.0*mat->_sqrtMass*mat->zetaInternal/previousDt;} //!< Returns the damping multiplier for this voxel. This would normally be called only internally for the internal damping calculations.
 
 	//a couple global convenience functions to have wherever the link enums are used
 	static inline CVX_Link::linkAxis toAxis(linkDirection direction) {return (CVX_Link::linkAxis)((int)direction/2);} //!< Returns the link axis of the specified link direction.
-	static inline linkDirection toDirection(CVX_Link::linkAxis axis, bool positiveDirection) {return (linkDirection)(2*((int)axis) + positiveDirection?0:1);} //!< Returns the link direction of the specified link axis and sign.
+	static inline linkDirection toDirection(CVX_Link::linkAxis axis, bool positiveDirection) {return (linkDirection)(2*((int)axis) + (positiveDirection?0:1));} //!< Returns the link direction of the specified link axis and sign.
 	static inline bool isNegative(linkDirection direction) {return direction%2==1;} //!< Returns true if the specified link direction is negative.
 	static inline bool isPositive(linkDirection direction) {return direction%2==0;} //!< Returns true if the specified link direction is positive.
 	static inline linkDirection toOpposite(linkDirection direction) {return (linkDirection)(direction-direction%2 + (direction+1)%2);} //!< Returns the opposite (negated) link direction of the specified direction.
@@ -165,7 +167,7 @@ private:
 	Quat3D<double> orient;				//current orientation (GCS)
 	Vec3D<double> angMom;				//current angular momentum (kg*m^2/s) (GCS)
 
-	voxState boolStates;				//single int to store many boolean state values as bit flags according to 
+	voxState boolStates;				//single int to store many boolean state values as bit flags according to
 	void setFloorStaticFriction(bool active) {active? boolStates |= FLOOR_STATIC_FRICTION : boolStates &= ~FLOOR_STATIC_FRICTION;}
 
 	float temp; //0 is no expansion
@@ -173,10 +175,10 @@ private:
 	void floorForce(float dt, Vec3D<double>* pTotalForce); //modifies pTotalForce to include the object's interaction with a floor. This should be calculated as the last step of sumForce so that pTotalForce is complete.
 
 
-	Vec3D<float> strain(bool poissonsStrain) const; //LCS returns voxel strain. if tensionStrain true and no actual tension in that
-	Vec3D<float> poissonsStrain();
-	
-	Vec3D<float> pStrain; //cached poissons strain
+	Vec3D<double> strain(bool poissonsStrain) const; //LCS returns voxel strain. if tensionStrain true and no actual tension in that
+	Vec3D<double> poissonsStrain();
+
+	Vec3D<double> pStrain; //cached poissons strain
 	bool poissonsStrainInvalid; //flag for recomputing poissons strain.
 
 	void eulerStep(float dt); //execute an euler time step at the specified dt
@@ -190,7 +192,6 @@ private:
 	Vec3D<float>* lastColWatchPosition;
 	std::vector<CVX_Collision*>* colWatch;
 	std::vector<CVX_Voxel*>* nearby;
-
 
 	friend class CVoxelyze; //give access to private members directly
 	friend class CVXS_SimGLView; //TEMPORARY

@@ -12,10 +12,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_MeshRender.h"
 #include "VX_Voxel.h"
 
-//for file output
-#include <iostream>
-#include <fstream>
-
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
 		#include <qgl.h>
@@ -50,10 +46,12 @@ void CVX_MeshRender::generateMesh()
 {
 	vertices.clear();
 	vertexLinks.clear();
-	quads.clear();
-	quadColors.clear();
-	quadVoxIndices.clear();
-	quadNormals.clear();
+
+	triangles.clear();
+	triangleColors.clear();
+	triVoxIndices.clear();
+	triangleNormals.clear();
+
 	lines.clear();
 
 	int minX = vx->indexMinX();
@@ -63,8 +61,8 @@ void CVX_MeshRender::generateMesh()
 	int minZ = vx->indexMinZ();
 	int sizeZ = vx->indexMaxZ()-minZ+1;
 
-	CArray3D<int> vIndMap; //maps
-	vIndMap.setDefaultValue(-1);
+	CArray3D<int> vIndMap; //maps a 3d location to a vertex index
+	vIndMap.setDefaultValue(-1); //-1 indicates no vertex created (yet)
 	vIndMap.resize(sizeX+1, sizeY+1, sizeZ+1, minX, minY, minZ);
 	int vertexCounter = 0;
 	
@@ -77,11 +75,11 @@ void CVX_MeshRender::generateMesh()
 		Index3D thisVox(x, y, z);
 		for (int i=0; i<6; i++){ //for each direction that a quad face could exist
 			if (pV->adjacentVoxel((CVX_Voxel::linkDirection)i)) continue;
+			int theseInds[4]; //ccw order of voxel endices for this quad
 			for (int j=0; j<4; j++){ //for each corner of the (exposed) face in this direction
 				CVX_Voxel::voxelCorner thisCorner = CwLookup[i][j];
 				Index3D thisVertInd3D = thisVox + Index3D(thisCorner&(1<<2)?1:0, thisCorner&(1<<1)?1:0, thisCorner&(1<<0)?1:0);
 				int thisInd = vIndMap[thisVertInd3D];
-
 
 				//if this vertec needs to be added, do it now!
 				if (thisInd == -1){ 
@@ -89,10 +87,21 @@ void CVX_MeshRender::generateMesh()
 					for (int i=0; i<3; i++) vertices.push_back(0); //will be set on first updateMesh()
 				}
 
-				quads.push_back(thisInd); //add this vertices' contribution to the quad
+				theseInds[j] = thisInd;
+
+				//quads.push_back(thisInd); //add this vertices' contribution to the quad
 			}
-			//quadLinks.push_back(pV);
-			quadVoxIndices.push_back(k);
+			//triangle 1
+			triangles.push_back(theseInds[0]);
+			triangles.push_back(theseInds[1]);
+			triangles.push_back(theseInds[2]);
+			triVoxIndices.push_back(k);
+
+			//triangle 2
+			triangles.push_back(theseInds[0]);
+			triangles.push_back(theseInds[2]);
+			triangles.push_back(theseInds[3]);
+			triVoxIndices.push_back(k);
 		}
 	}
 
@@ -129,10 +138,9 @@ void CVX_MeshRender::generateMesh()
 	}
 
 	//the rest... allocate space, but updateMesh will fill them in.
-	int quadCount = quads.size()/4;
-
-	quadColors.resize(quadCount*3);
-	quadNormals.resize(quadCount*3);
+	int triCount = (int)(triangles.size()/3);
+	triangleColors.resize(triCount*3);
+	triangleNormals.resize(triCount*3);
 
 	updateMesh();
 }
@@ -141,7 +149,7 @@ void CVX_MeshRender::generateMesh()
 void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoType stateType)
 {
 	//location
-	int vCount = vertices.size()/3;
+	int vCount = (int)(vertices.size()/3);
 	if (vCount == 0) return;
 	for (int i=0; i<vCount; i++){ //for each vertex...
 		Vec3D<float> avgPos;
@@ -171,36 +179,37 @@ void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoTy
 
 	}
 
-	//color + normals (for now just pick three vertices, assuming it will be very close to flat...)
-	int qCount = quads.size()/4;
-	if (qCount == 0) return;
-	for (int i=0; i<qCount; i++){
-		Vec3D<float> v[4];
-		for (int j=0; j<4; j++) v[j] = Vec3D<float>(vertices[3*quads[4*i+j]], vertices[3*quads[4*i+j]+1], vertices[3*quads[4*i+j]+2]);
-		Vec3D<float> n = ((v[1]-v[0]).Cross(v[3]-v[0]));
+	//color + normals 
+	int tCount = (int)(triangles.size()/3);
+	if (tCount == 0) return;
+	for (int i=0; i<tCount; i++){
+		Vec3D<float> v[3];
+		for (int j=0; j<3; j++) v[j] = Vec3D<float>(vertices[3*triangles[3*i+j]], vertices[3*triangles[3*i+j]+1], vertices[3*triangles[3*i+j]+2]);
+		Vec3D<float> n = ((v[1]-v[0]).Cross(v[2]-v[0]));
 		n.Normalize(); //necessary? try glEnable(GL_NORMALIZE)
-		quadNormals[i*3] = n.x;
-		quadNormals[i*3+1] = n.y;
-		quadNormals[i*3+2] = n.z;
+		triangleNormals[i*3] = n.x;
+		triangleNormals[i*3+1] = n.y;
+		triangleNormals[i*3+2] = n.z;
+
 
 		float r=1.0f, g=1.0f, b=1.0f;
 		float jetValue = -1.0f;
 		switch (colorScheme){
 			case MATERIAL:
-				r = ((float)vx->voxel(quadVoxIndices[i])->material()->red())/255.0f;
-				g = ((float)vx->voxel(quadVoxIndices[i])->material()->green())/255.0f;
-				b = ((float)vx->voxel(quadVoxIndices[i])->material()->blue())/255.0f;
+				r = ((float)vx->voxel(triVoxIndices[i])->material()->red())/255.0f;
+				g = ((float)vx->voxel(triVoxIndices[i])->material()->green())/255.0f;
+				b = ((float)vx->voxel(triVoxIndices[i])->material()->blue())/255.0f;
 				break;
 			case FAILURE:
-				if (vx->voxel(quadVoxIndices[i])->isFailed()){g=0.0f; b=0.0f;}
-				else if (vx->voxel(quadVoxIndices[i])->isYielded()){b=0.0f;}
+				if (vx->voxel(triVoxIndices[i])->isFailed()){g=0.0f; b=0.0f;}
+				else if (vx->voxel(triVoxIndices[i])->isYielded()){b=0.0f;}
 				break;
 			case STATE_INFO:
 				switch (stateType) {
-				case CVoxelyze::KINETIC_ENERGY: jetValue = vx->voxel(quadVoxIndices[i])->kineticEnergy()/maxVal; break;
-				case CVoxelyze::STRAIN_ENERGY: case CVoxelyze::ENG_STRAIN: case CVoxelyze::ENG_STRESS: jetValue = linkMaxColorValue(vx->voxel(quadVoxIndices[i]), stateType) / maxVal; break;
-				case CVoxelyze::DISPLACEMENT: jetValue = vx->voxel(quadVoxIndices[i])->displacementMagnitude()/maxVal; break;
-				case CVoxelyze::PRESSURE: jetValue = 0.5-vx->voxel(quadVoxIndices[i])->pressure()/(2*maxVal); break;
+				case CVoxelyze::KINETIC_ENERGY: jetValue = vx->voxel(triVoxIndices[i])->kineticEnergy()/maxVal; break;
+				case CVoxelyze::STRAIN_ENERGY: case CVoxelyze::ENG_STRAIN: case CVoxelyze::ENG_STRESS: jetValue = linkMaxColorValue(vx->voxel(triVoxIndices[i]), stateType) / maxVal; break;
+				case CVoxelyze::DISPLACEMENT: jetValue = vx->voxel(triVoxIndices[i])->displacementMagnitude()/maxVal; break;
+				case CVoxelyze::PRESSURE: jetValue = 0.5-vx->voxel(triVoxIndices[i])->pressure()/(2*maxVal); break;
 				default: jetValue = 0;
 				}
 			break;
@@ -212,9 +221,9 @@ void CVX_MeshRender::updateMesh(viewColoring colorScheme, CVoxelyze::stateInfoTy
 			b = jetMapB(jetValue);
 		}
 
-		quadColors[i*3] = r;
-		quadColors[i*3+1] = g;
-		quadColors[i*3+2] = b;
+		triangleColors[i*3] = r;
+		triangleColors[i*3+1] = g;
+		triangleColors[i*3+2] = b;
 	}
 }
 float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType coloring)
@@ -237,40 +246,22 @@ float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType 
 	return voxMax;
 }
 
-void CVX_MeshRender::saveObj(const char* filePath)
-{
-	std::ofstream ofile(filePath);
-	ofile << "# OBJ file generated by Voxelyze\n";
-	for (int i=0; i<(int)(vertices.size()/3); i++){
-		ofile << "v " << vertices[3*i] << " " << vertices[3*i+1] << " " << vertices[3*i+2] << "\n";
-	}
-
-	for (int i=0; i<(int)(quads.size()/4); i++){
-		ofile << "f " << quads[4*i]+1 << " " << quads[4*i+1]+1 << " " << quads[4*i+2]+1 << " " << quads[4*i+3]+1 << "\n";
-	}
-
-	ofile.close();
-}
 
 void CVX_MeshRender::glDraw()
 {
 #ifdef USE_OPEN_GL
 
-	//quads
-	int qCount = quads.size()/4;
-	for (int i=0; i<qCount; i++) {
-		glNormal3d(quadNormals[i*3], quadNormals[i*3+1], quadNormals[i*3+2]);
-		glColor3d(quadColors[i*3], quadColors[i*3+1], quadColors[i*3+2]);
-		glLoadName(quadVoxIndices[i]); //to enable picking
+	//triangles
+	int tCount = triangles.size()/3;
+	for (int i=0; i<tCount; i++) {
+		glNormal3d(triangleNormals[i*3], triangleNormals[i*3+1], triangleNormals[i*3+2]);
+		glColor3d(triangleColors[i*3], triangleColors[i*3+1], triangleColors[i*3+2]);
+		glLoadName(triVoxIndices[i]); //to enable picking
 
 		glBegin(GL_TRIANGLES);
-		glVertex3d(vertices[3*quads[4*i]],   vertices[3*quads[4*i]+1],   vertices[3*quads[4*i]+2]);
-		glVertex3d(vertices[3*quads[4*i+1]], vertices[3*quads[4*i+1]+1], vertices[3*quads[4*i+1]+2]);
-		glVertex3d(vertices[3*quads[4*i+2]], vertices[3*quads[4*i+2]+1], vertices[3*quads[4*i+2]+2]);
-
-		glVertex3d(vertices[3*quads[4*i+2]], vertices[3*quads[4*i+2]+1], vertices[3*quads[4*i+2]+2]);
-		glVertex3d(vertices[3*quads[4*i+3]], vertices[3*quads[4*i+3]+1], vertices[3*quads[4*i+3]+2]);
-		glVertex3d(vertices[3*quads[4*i]],   vertices[3*quads[4*i]+1],   vertices[3*quads[4*i]+2]);
+		glVertex3d(vertices[3*triangles[3*i]],   vertices[3*triangles[3*i]+1],   vertices[3*triangles[3*i]+2]);
+		glVertex3d(vertices[3*triangles[3*i+1]], vertices[3*triangles[3*i+1]+1], vertices[3*triangles[3*i+1]+2]);
+		glVertex3d(vertices[3*triangles[3*i+2]], vertices[3*triangles[3*i+2]+1], vertices[3*triangles[3*i+2]+2]);
 		glEnd();
 
 	}

@@ -59,7 +59,7 @@ bool CVX_MaterialLink::updateAll()
 	zetaGlobal = 0.5f*(vox1Mat->zetaGlobal + vox2Mat->zetaGlobal);
 	zetaCollision= 0.5f*(vox1Mat->zetaCollision + vox2Mat->zetaCollision);
 
-	extScale=Vec3D<>(1.0, 1.0, 1.0);
+	extScale=Vec3D<double>(1.0, 1.0, 1.0);
 
 	//failure stress (f) is the minimum of the two failure stresses, or if both are -1.0f it should also be -1.0f to denote no failure specified
 	float stressFail=-1.0f, /*strainFail=-1.0f,*/ f1=vox1Mat->sigmaFail, f2=vox2Mat->sigmaFail;
@@ -90,13 +90,13 @@ bool CVX_MaterialLink::updateAll()
 			float thisModulus = 2.0f*modulus1*modulus2/(modulus1+modulus2);
 
 			//add to the new strain/stress values
-			int lastDataIndex = newStrainValues.size()-1;
+			int lastDataIndex = (int)(newStrainValues.size()-1);
 
 			newStrainValues.push_back(strain);
 			newStressValues.push_back(newStressValues[lastDataIndex] + thisModulus*(strain - newStrainValues[lastDataIndex])); //springs in series equation
 		}
 
-		setModel(newStrainValues.size(), &newStrainValues[0], &newStressValues[0]);
+		setModel((int)(newStrainValues.size()), &newStrainValues[0], &newStressValues[0]);
 
 		//override failure points in case no failure was specified before (as possible in combos of linear and bilinear materials)
 		//yield point is handled correctly in setModel.
@@ -104,18 +104,25 @@ bool CVX_MaterialLink::updateAll()
 		epsilonFail = stressFail==-1.0f ? -1.0f : strain(stressFail);
 	}
 
+	//previous behavior:
+	//nu = 2*(vox1Mat->nu*vox2Mat->nu)/(vox1Mat->nu+vox2Mat->nu);
+
 	//poissons ratio: choose such that Ehat ends up according to spring in series of Ehat1 and EHat2
 	if (vox1Mat->nu==0 && vox2Mat->nu==0) nu = 0;
 	else { //poissons ratio: choose such that Ehat ends up according to spring in series of Ehat1 and EHat2
 		float tmpEHat = 2*vox1Mat->_eHat*vox2Mat->_eHat/(vox1Mat->_eHat+vox2Mat->_eHat);
 		float tmpE = youngsModulus();
 		//completing the square algorithm to solve for nu.
-		//eHat = E/((1-2nu)(1+nu)) -> E/EHat = -2nu^2-nu+1 -> nu^2+0.5nu = (EHat+E)/(2EHat)
 		float c2 = (tmpEHat-tmpE)/(2*tmpEHat)+0.0625; //nu^2+0.5nu+0.0625 = c2 -> (nu+0.25)^2 = c2
 		nu = sqrt(c2)-0.25; //from solving above
 	}
 
-	return updateDerived();
+
+	bool retVal =  updateDerived();
+
+	//previous behavior:
+	//_eHat = 2*vox1Mat->_eHat*vox2Mat->_eHat/(vox1Mat->_eHat+vox2Mat->_eHat); //hack...
+	return retVal;
 }
 
 bool CVX_MaterialLink::updateDerived() 
