@@ -12,7 +12,7 @@ VOXELYZE_LIB_VERSION = lib$(VOXELYZE_VERSION).a
 CXX=g++
 CC=g++
 INCLUDE= -I./include
-FLAGS = -O3 -std=c++11 -DPARDISO_5=0  -DUSE_OPEN_GL=1  -Wall $(INCLUDE)
+FLAGS = -O3 -std=c++11 -DUSE_OPEN_GL=1  -Wall $(INCLUDE)
 
 VOXELYZE_SRC = \
 	src/Voxelyze.cpp \
@@ -42,13 +42,12 @@ VOXELYZE_OBJS = \
 	src/VX_MeshRender.o \
     src/eigen/eigen.o \
     src/Array3Df.o
-		
-	
+
 .PHONY: clean all
 
 #dummy target that builds everything for the library
 all: $(VOXELYZE_LIB_VERSION)
-	
+
 
 # Auto sorts out dependencies (but leaves .d files):
 %.o: %.cpp
