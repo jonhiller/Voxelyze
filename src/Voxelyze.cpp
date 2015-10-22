@@ -89,7 +89,7 @@ bool CVoxelyze::saveJSON(const char* jsonFilePath)
 		rapidjson_Writer w(s);
 //		rapidjson::PrettyWriter<rapidjson::StringBuffer> w(s);
 		writeJSON(w);
-		
+
 		t << s.GetString();
 		t.close();
 		return true;
@@ -103,9 +103,18 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 	clear();
 
 	if (!vxl.IsObject()) {return false;}
-	
+
 	if (!vxl.HasMember("voxelSize") || !vxl["voxelSize"].IsDouble()) {return false;}
 	voxSize = vxl["voxelSize"].GetDouble();
+
+	if(vxl.HasMember("gravityAcceleration"))
+		setGravity(vxl["gravityAcceleration"].GetDouble());
+	if(vxl.HasMember("floorEnabled"))
+		enableFloor(vxl["floorEnabled"].GetBool());
+	if(vxl.HasMember("relativeAmbientTemperature"))
+		setAmbientTemperature(vxl["relativeAmbientTemperature"].GetDouble());
+	if(vxl.HasMember("collisionsEnabled"))
+		enableCollisions(vxl["collisionsEnabled"].GetBool());
 
 	if(!vxl.HasMember("materials") || !vxl["materials"].IsArray()) {return false;}
 	rapidjson::Value& m = vxl["materials"];
@@ -220,7 +229,7 @@ bool CVoxelyze::writeJSON(rapidjson_Writer& w)
 		for (int i=0; i<(int)exts.size(); i++){
 			CVX_External* e = exts[i];
 			w.StartObject();
-	
+
 			if (e->isFixedAny()){ //if anything is fixed
 				w.Key("fixed");
 				w.StartArray();
@@ -308,11 +317,11 @@ float CVoxelyze::recommendedTimeStep() const
 
 	if (MaxFreq2 <= 0.0f){ //didn't find anything (i.e no links) check for individual voxelss
 		for (std::vector<CVX_Voxel*>::const_iterator it=voxelsList.begin(); it != voxelsList.end(); it++){ //for each link
-			float thisMaxFreq2 = (*it)->mat->youngsModulus()*(*it)->mat->nomSize/(*it)->mat->mass(); 
+			float thisMaxFreq2 = (*it)->mat->youngsModulus()*(*it)->mat->nomSize/(*it)->mat->mass();
 			if (thisMaxFreq2 > MaxFreq2) MaxFreq2 = thisMaxFreq2;
 		}
 	}
-	
+
 	if (MaxFreq2 <= 0.0f) return 0.0f;
 	else return 1.0f/(6.283185f*sqrt(MaxFreq2)); //the optimal timestep is to advance one radian of the highest natural frequency
 }
@@ -367,7 +376,7 @@ CVX_Material* CVoxelyze::addMaterial(float youngsModulus, float density)
 		CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(youngsModulus, density, voxSize);
 		pMat->setGravityMultiplier(grav);
 		voxelMats.push_back(pMat);
-		return pMat; 
+		return pMat;
 	}
 	catch (std::bad_alloc&){return NULL;}
 }
@@ -377,7 +386,7 @@ CVX_Material* CVoxelyze::addMaterial(rapidjson::Value& mat)
 	CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(mat, voxSize);
 	pMat->setGravityMultiplier(grav);
 	voxelMats.push_back(pMat);
-	return pMat; 
+	return pMat;
 }
 
 CVX_Material* CVoxelyze::addMaterial(const CVX_Material& mat)
@@ -385,7 +394,7 @@ CVX_Material* CVoxelyze::addMaterial(const CVX_Material& mat)
 	CVX_MaterialVoxel* pMat = new CVX_MaterialVoxel(mat, voxSize);
 	pMat->setGravityMultiplier(grav);
 	voxelMats.push_back(pMat);
-	return pMat; 
+	return pMat;
 }
 
 bool CVoxelyze::removeMaterial(CVX_Material* toRemove)
@@ -413,7 +422,7 @@ bool CVoxelyze::removeMaterial(CVX_Material* toRemove)
 bool CVoxelyze::replaceMaterial(CVX_Material* replaceMe, CVX_Material* replaceWith)
 {
 	if (!exists((CVX_MaterialVoxel*)replaceMe) || !exists((CVX_MaterialVoxel*)replaceWith)) return false;
-	
+
 	//switch all voxel references
 	for (int iz=indexMinZ(); iz<=indexMaxZ(); iz++){
 		for (int iy=indexMinY(); iy<=indexMaxY(); iy++){
@@ -432,7 +441,7 @@ CVX_Voxel* CVoxelyze::setVoxel(CVX_Material* material, int xIndex, int yIndex, i
 		removeVoxel(xIndex, yIndex, zIndex);
 		return NULL;
 	}
-	
+
 	CVX_Voxel* pV = voxels(xIndex, yIndex, zIndex);
 	if (pV != NULL){
 		replaceVoxel((CVX_MaterialVoxel*)material, xIndex, yIndex, zIndex);
@@ -458,7 +467,7 @@ CVX_Voxel* CVoxelyze::addVoxel(CVX_MaterialVoxel* newVoxelMaterial, int xIndex, 
 
 		//add any possible links utilizing this voxel
 		for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-			addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); 
+			addLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i);
 		}
 		return pV;
 	}
@@ -483,11 +492,11 @@ void CVoxelyze::removeVoxel(int xIndex, int yIndex, int zIndex)
 	}
 
 	//make sure no references are left in the list This should be compiled away in release
-	for (std::vector<CVX_Voxel*>::iterator it = voxelsList.begin(); it!=voxelsList.end(); it++) assert(*it != pV); 
+	for (std::vector<CVX_Voxel*>::iterator it = voxelsList.begin(); it!=voxelsList.end(); it++) assert(*it != pV);
 
 	//remove any links to this voxel
 	for (int i=0; i<6; i++){ //from X_POS to Z_NEG (0-5 enums)
-		removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i); 
+		removeLink(xIndex, yIndex, zIndex, (CVX_Voxel::linkDirection)i);
 	}
 }
 
@@ -527,7 +536,7 @@ CVX_Link* CVoxelyze::addLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::link
 		yIndex+yIndexVoxelOffset(direction),
 		zIndex+zIndexVoxelOffset(direction));
 	if (voxel1 == NULL || voxel2 == NULL) return NULL; //if no voxel at either position, don't make a link
-	
+
 
 	//make the link and add it to the array+list
 	try {
@@ -554,10 +563,10 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 	if (pL==NULL) return; //no link here to see!
 
 	//remove the reference in the appropriate link 3d array
-	links[CVX_Voxel::toAxis(direction)].removeValue( 
+	links[CVX_Voxel::toAxis(direction)].removeValue(
 		xIndex + xIndexLinkOffset(direction),
 		yIndex + yIndexLinkOffset(direction),
-		zIndex + zIndexLinkOffset(direction)); 
+		zIndex + zIndexLinkOffset(direction));
 
 	//remove the reference in the list/
 	//also, check all other links and if nobody else uses this CVX_MaterialLink erase that, too.
@@ -575,9 +584,9 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 			if (*it == thisLinkMat){ linkMats.erase(it); break;} //assume there is only one.
 		}
 	}
-	
+
 	//make sure no references are left in the list. This should be compiled away in release
-	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++) assert(*it != pL); 
+	for (std::vector<CVX_Link*>::iterator it = linksList.begin(); it!=linksList.end(); it++) assert(*it != pL);
 
 	//remove the reference to this link from one voxel (if it exists)
 	CVX_Voxel* voxel1 = voxels(xIndex, yIndex, zIndex);
@@ -613,7 +622,7 @@ void CVoxelyze::updateLink(CVX_Link* pLink)
 	//else { //otherwise make a new one.
 
 	//}
-	
+
 }
 
 bool CVoxelyze::exists(const CVX_MaterialVoxel* toCheck)
@@ -664,7 +673,7 @@ void CVoxelyze::enableCollisions(bool enabled)
 
 
 
-CVX_MaterialLink* CVoxelyze::combinedMaterial(CVX_MaterialVoxel* mat1, CVX_MaterialVoxel* mat2) 
+CVX_MaterialLink* CVoxelyze::combinedMaterial(CVX_MaterialVoxel* mat1, CVX_MaterialVoxel* mat2)
 {
 	for (std::list<CVX_MaterialLink*>::iterator it = linkMats.begin(); it != linkMats.end(); it++){
 		CVX_MaterialLink* thisMat = *it;
@@ -685,7 +694,7 @@ void CVoxelyze::setVoxelSize(double voxelSize) //sets the voxel size.
 {
 	double scaleFactor = voxelSize/voxSize; //scaling factor
 	voxSize = voxelSize;
-	
+
 	//update materials
 	for (std::vector<CVX_MaterialVoxel*>::iterator it=voxelMats.begin(); it != voxelMats.end(); it++){
 		(*it)->setNominalSize(voxelSize);
@@ -809,7 +818,7 @@ float CVoxelyze::stateInfo(stateInfoType info, valueType type)
 			switch (type){
 				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
 				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
-				case TOTAL: case AVERAGE: returnVal += thisVal; 
+				case TOTAL: case AVERAGE: returnVal += thisVal;
 			}
 		}
 		if (type == AVERAGE) returnVal /= linkCount();
@@ -831,7 +840,7 @@ float CVoxelyze::stateInfo(stateInfoType info, valueType type)
 			switch (type){
 				case MIN: if (thisVal < returnVal) returnVal = thisVal; break;
 				case MAX: if (thisVal > returnVal) returnVal = thisVal; break;
-				case TOTAL: case AVERAGE: returnVal += thisVal; 
+				case TOTAL: case AVERAGE: returnVal += thisVal;
 			}
 		}
 		if (type == AVERAGE) returnVal /= voxelCount();
@@ -839,5 +848,3 @@ float CVoxelyze::stateInfo(stateInfoType info, valueType type)
 
 	return returnVal;
 }
-
-
