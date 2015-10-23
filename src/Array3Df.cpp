@@ -75,7 +75,7 @@ bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite){
 
 	return true;
 }
-		  
+
 bool CArray3Df::readJSON(rapidjson::Value& v){
 	clear();
 
@@ -123,7 +123,7 @@ bool CArray3Df::readJSON(rapidjson::Value& v){
 	return true;
 }
 
-Vec3Df CArray3Df::indexToLocation(Index3D& index)
+Vec3Df CArray3Df::indexToLocation(const Index3D& index)
 {
 	return aspc*Vec3Df((float)index.x, (float)index.y, (float)index.z);
 }
@@ -142,14 +142,14 @@ Vec3Df CArray3Df::locationToContinuousIndex(Vec3Df& location) //returns location
 void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
 {
 	if (defaultValue != 0.0f) return;
-	
+
 	if (aSize == multiplyBy.size() && aOff == multiplyBy.offset()){ //operate directly on buffer data
 		int numEl = (int)data.size();
 		for (int i=0; i<numEl; i++) data[i] *= multiplyBy.data[i];
 	}
 	else {
 		for (int k=cMin.x; k<=cMax.x; k++){
-			for (int j=cMin.y; j<=cMax.y; j++){ 
+			for (int j=cMin.y; j<=cMax.y; j++){
 				for (int i=cMin.z; i<=cMax.z; i++){
 					at(i,j,k) *= multiplyBy(i,j,k);
 				}
@@ -162,7 +162,7 @@ void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
 void CArray3Df::divideElements(CArray3Df& divideBy)
 {
 	if (defaultValue != 0.0f) return;
-	
+
 	if (aSize == divideBy.size() && aOff == divideBy.offset()){ //operate directly on buffer data
 		int numEl = (int)data.size();
 		for (int i=0; i<numEl; i++) {
@@ -173,7 +173,7 @@ void CArray3Df::divideElements(CArray3Df& divideBy)
 	}
 	else {
 		for (int k=cMin.x; k<=cMax.x; k++){
-			for (int j=cMin.y; j<=cMax.y; j++){ 
+			for (int j=cMin.y; j<=cMax.y; j++){
 				for (int i=cMin.z; i<=cMax.z; i++){
 					float divideByValue = divideBy(i,j,k);
 					if (divideByValue == 0) at(i,j,k) = 0;
@@ -187,7 +187,7 @@ void CArray3Df::divideElements(CArray3Df& divideBy)
 void CArray3Df::multiplyElements(float multiplyBy)
 {
 	if (defaultValue != 0.0f) return;
-	
+
 	int numEl = (int)data.size();
 	for (int i=0; i<numEl; i++) data[i] *= multiplyBy;
 }
@@ -297,7 +297,7 @@ void CArray3Df::linearBlur(float radius)
 	CArray3Df arrCopy(*this);
 
 	for (int k=min.z; k<=max.z; k++){
-		for (int j=min.y; j<=max.y; j++){ 
+		for (int j=min.y; j<=max.y; j++){
 			for (int i=min.x; i<=max.x; i++){
 				float sum = 0;
 				float newValue = 0;
@@ -307,7 +307,7 @@ void CArray3Df::linearBlur(float radius)
 
 							float fac = std::max(0.0f, fRad-(float)sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
 							newValue += fac*arrCopy(l,m,n);
-							sum += fac; 
+							sum += fac;
 
 						}
 					}
@@ -330,7 +330,7 @@ void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
 
 		Index3D min = minAllocated(), max = maxAllocated();
 		for (int k=min.z; k<=max.z; k++){
-			for (int j=min.y; j<=max.y; j++){ 
+			for (int j=min.y; j<=max.y; j++){
 				for (int i=min.x; i<=max.x; i++){
 					Vec3Df thisLocation = indexToLocation(Index3D(i,j,k));
 					Vec3Df thatContinuousIndex = sampleFrom->locationToContinuousIndex(thisLocation);
@@ -441,7 +441,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 	Index3D /*osMin = offset(),*/ osMax = offset() + size() - Index3D(1,1,1);
 
 	for (int k=min.z; k<=max.z; k++){
-		for (int j=min.y; j<=max.y; j++){ 
+		for (int j=min.y; j<=max.y; j++){
 			for (int i=min.x; i<=max.x; i++){
 
 				//for the oversample:
@@ -452,8 +452,8 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 							int curJ = j*oSample+j2;
 							int curK = k*oSample+k2;
 
-							if (curI > osMax.x || curJ > osMax.y || curK > osMax.z) continue; 
-							
+							if (curI > osMax.x || curJ > osMax.y || curK > osMax.z) continue;
+
 							//interpolate homogenization
 							float xp = (float)i2/(float)oSample;
 							float yp = (float)j2/(float)oSample;
@@ -484,7 +484,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 //	for (int i=1; i<oSample; i++) aspc /= 2;
 }
 
-	
+
 //trilinear interpolation
 
 float CArray3Df::interpolate(Vec3Df interpIndex, interpolateType type)
@@ -601,7 +601,7 @@ float CArray3Df::interpolateTriCubic(Vec3D<float> interpIndex)
 			0.125f*(at(xi+1,yi+2,zi+2)-at(xi-1,yi+2,zi+2)-at(xi+1,yi,zi+2)+at(xi-1,yi,zi+2)-at(xi+1,yi+2,zi)+at(xi-1,yi+2,zi)+at(xi+1,yi,zi)-at(xi-1,yi,zi)),
 			0.125f*(at(xi+2,yi+2,zi+2)-at(xi,yi+2,zi+2)-at(xi+2,yi,zi+2)+at(xi,yi,zi+2)-at(xi+2,yi+2,zi)+at(xi,yi+2,zi)+at(xi+2,yi,zi)-at(xi,yi,zi))
 		};
-		
+
 		float coefs[64]; //should be cached per voxel...
 
 		// Convert voxel values and partial derivatives to interpolation coefficients.
@@ -616,8 +616,8 @@ float CArray3Df::interpolateTriCubic(Vec3D<float> interpIndex)
 		//_i2 = yi;
 		//_i3 = zi;
 		//_initialized = true;
-    
-		
+
+
 	// Evaluate the interpolation within this grid voxel.
 //    dx -= xi;
 //    dy -= yi;
