@@ -22,9 +22,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include <assert.h>
 
 #include "json.h"
-//#include "rapidjson/prettywriter.h"
-//#include "rapidjson/stringbuffer.h"
-//#include "rapidjson/document.h"
 
 CVoxelyze::CVoxelyze(double voxelSize)
 {
@@ -72,13 +69,21 @@ bool CVoxelyze::loadJSON(const char* jsonFilePath)
 
 		rapidjson::Document doc;
 		doc.Parse(buffer.str().c_str());
-		readJSON(doc);
+		if (doc.HasParseError()) {
+			std::cerr << "JSON parse error (offset: "
+							  << 	(unsigned)doc.GetErrorOffset() << "): "
+								<< GetParseError_En(doc.GetParseError())
+								<< std::endl;
+			t.close();
+			throw std::ios_base::failure(GetParseError_En(doc.GetParseError()));
+		}
+		else
+			readJSON(doc);
 
 		t.close();
 		return true;
 	}
 	return false;
-	//else error!
 }
 
 bool CVoxelyze::saveJSON(const char* jsonFilePath)
