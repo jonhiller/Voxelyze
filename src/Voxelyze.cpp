@@ -252,6 +252,8 @@ bool CVoxelyze::doLinearSolve() //linearizes at current point and solves
 
 	pSolver->solve(true); //do smart structure changed...
 
+
+
 	return true;
 }
 

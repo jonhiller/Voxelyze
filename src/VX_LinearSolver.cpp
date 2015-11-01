@@ -190,6 +190,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 
 	updateProgress(0.9f, "Processing results...");
 	postResults();
+
 	iteration++;
 	return true;
 }
@@ -471,12 +472,14 @@ void CVX_LinearSolver::convertFrom1Base()
 void CVX_LinearSolver::postResults() //overwrites state of voxelyze object with the results
 {
 	int vCount = vx->voxelCount();
+
 	for (int i=0; i<vCount; i++){
 		CVX_Voxel* pVox = vx->voxel(i);
 		pVox->pos = pVox->originalPosition() + Vec3D<double>(x[6*i], x[6*i+1], x[6*i+2]);
 		pVox->linMom = Vec3D<double>(0,0,0);
 		pVox->orient = Quat3D<double>(Vec3D<double>(x[6*i+3], x[6*i+4], x[6*i+5]));
 		pVox->angMom = Vec3D<double>(0,0,0);
+
 	}
 
 	int lCount = vx->linkCount();
