@@ -42,8 +42,12 @@ CVX_MeshRender::CVX_MeshRender(CVoxelyze* voxelyzeInstance)
 	generateMesh();
 }
 
-void CVX_MeshRender::generateMesh()
+void CVX_MeshRender::generateMesh(voxelFilter filterType, float minValue, float maxValue)
 {
+	float minType = currentMinimum(filterType), maxType = currentMaximum(filterType);
+	float actMinValue = minType + minValue*(maxType-minType); //in filter units
+	float actMaxValue = minType + maxValue*(maxType-minType); //in filter units
+
 	vertices.clear();
 	vertexLinks.clear();
 
@@ -70,11 +74,15 @@ void CVX_MeshRender::generateMesh()
 	int vCount = vx->voxelCount();
 	for (int k=0; k<vCount; k++){
 		CVX_Voxel* pV = vx->voxel(k);
+		if (!voxelVisible(pV, filterType, actMinValue, actMaxValue)) continue;
+
 		int x=pV->indexX(), y=pV->indexY(), z=pV->indexZ();
 
 		Index3D thisVox(x, y, z);
 		for (int i=0; i<6; i++){ //for each direction that a quad face could exist
-			if (pV->adjacentVoxel((CVX_Voxel::linkDirection)i)) continue;
+			CVX_Voxel* pNeighbor = pV->adjacentVoxel((CVX_Voxel::linkDirection)i);
+			if (pNeighbor && voxelVisible(pNeighbor, filterType, actMinValue, actMaxValue)) continue;
+
 			int theseInds[4]; //ccw order of voxel endices for this quad
 			for (int j=0; j<4; j++){ //for each corner of the (exposed) face in this direction
 				CVX_Voxel::voxelCorner thisCorner = CwLookup[i][j];
@@ -113,10 +121,13 @@ void CVX_MeshRender::generateMesh()
 				int thisInd = vIndMap[Index3D(x,y,z)];
 				if (thisInd == -1) continue;
 
+				CVX_Voxel* vThis = vx->voxel(x, y, z);
+
 				//backwards links
 				for (int i=0; i<8; i++){ //check all 8 possible voxels that could be connected...
 					CVX_Voxel* pV = vx->voxel(x-(i&(1<<2)?1:0), y-(i&(1<<1)?1:0), z-(i&(1<<0)?1:0));
 					if (pV) vertexLinks[8*thisInd + i] = pV;
+					//if (pV && voxelVisible(pV, filterType, actMinValue, actMaxValue)) vertexLinks[8*thisInd + i] = pV;
 				}
 
 				//lines
@@ -124,11 +135,19 @@ void CVX_MeshRender::generateMesh()
 					int isX = (i==0?1:0), isY = (i==1?1:0), isZ = (i==2?1:0);
 					int p2Ind = vIndMap[Index3D(x+isX, y+isY, z+isZ)];
 					if (p2Ind != -1){ //for x: voxel(x,y,z) (x,y-1,z) (x,y-1,z-1) (x,y,z-1) -- y: voxel(x,y,z) (x-1,y,z) (x-1,y,z-1) (x,y,z-1) -- z: voxel(x,y,z) (x,y-1,z) (x-1,y-1,z) (x-1,y,z)
-						if (vx->voxel(x,			y,			z) ||
-							vx->voxel(x-isY,		y-isX-isZ,	z) ||
-							vx->voxel(x-isY-isZ,	y-isX-isZ,	z-isX-isY) ||
-							vx->voxel(x-isZ,		y,			z-isX-isY)) {
-							
+						CVX_Voxel* vA = vx->voxel(x-isY,		y-isX-isZ,	z);
+						CVX_Voxel* vB = vx->voxel(x-isY-isZ,	y-isX-isZ,	z-isX-isY);
+						CVX_Voxel* vC = vx->voxel(x-isZ,		y,			z-isX-isY);
+
+						//if (vx->voxel(x,			y,			z) ||
+						//	vx->voxel(x-isY,		y-isX-isZ,	z) ||
+						//	vx->voxel(x-isY-isZ,	y-isX-isZ,	z-isX-isY) ||
+						//	vx->voxel(x-isZ,		y,			z-isX-isY)) {
+						if (	(vThis && voxelVisible(vThis, filterType, actMinValue, actMaxValue)) ||
+								(vA && voxelVisible(vA, filterType, actMinValue, actMaxValue)) ||
+								(vB && voxelVisible(vB, filterType, actMinValue, actMaxValue)) ||
+								(vC && voxelVisible(vC, filterType, actMinValue, actMaxValue))) {
+
 							lines.push_back(thisInd); lines.push_back(p2Ind);
 						}
 					}
@@ -244,6 +263,57 @@ float CVX_MeshRender::linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType 
 		if(thisVal>voxMax) voxMax=thisVal;
 	}
 	return voxMax;
+}
+
+bool CVX_MeshRender::voxelVisible(CVX_Voxel* pV, voxelFilter filterType, float minValue, float maxValue)
+{
+	switch (filterType){
+		case VF_NONE: return true;
+		case VF_RANGE_X: return (pV->indexX() >= minValue && pV->indexX() <= maxValue);
+		case VF_RANGE_Y: return (pV->indexY() >= minValue && pV->indexY() <= maxValue);
+		case VF_RANGE_Z: return (pV->indexZ() >= minValue && pV->indexZ() <= maxValue);
+		case VF_STIFFNESS: return (pV->material()->youngsModulus() >= minValue && pV->material()->youngsModulus() <= maxValue);
+		case VF_STRAIN_ENERGY: return (pV->strainEnergy() >= minValue && pV->strainEnergy() <= maxValue);
+		default: return true;
+	}
+}
+
+float CVX_MeshRender::currentMinimum(voxelFilter filterType)
+{
+	switch (filterType){
+		case VF_NONE: return 0;
+		case VF_RANGE_X: return vx->indexMinX();
+		case VF_RANGE_Y: return vx->indexMinY();
+		case VF_RANGE_Z: return vx->indexMinZ();
+		case VF_STIFFNESS: {
+			float minStiff = FLT_MAX;
+			for (int i=0; i<vx->materialCount(); i++){
+				if (vx->material(i)->youngsModulus() < minStiff) minStiff = vx->material(i)->youngsModulus();
+			}
+			return minStiff;
+		}
+		case VF_STRAIN_ENERGY: return vx->stateInfo(CVoxelyze::STRAIN_ENERGY, CVoxelyze::MIN);
+		default: return true;
+	}
+}
+
+float CVX_MeshRender::currentMaximum(voxelFilter filterType)
+{
+	switch (filterType){
+		case VF_NONE: return 1;
+		case VF_RANGE_X: return vx->indexMaxX();
+		case VF_RANGE_Y: return vx->indexMaxY();
+		case VF_RANGE_Z: return vx->indexMaxZ();
+		case VF_STIFFNESS: {
+			float maxStiff = 0;
+			for (int i=0; i<vx->materialCount(); i++){
+				if (vx->material(i)->youngsModulus() > maxStiff) maxStiff = vx->material(i)->youngsModulus();
+			}
+			return maxStiff;
+		}
+		case VF_STRAIN_ENERGY: return vx->stateInfo(CVoxelyze::STRAIN_ENERGY, CVoxelyze::MAX);
+		default: return true;
+	}
 }
 
 

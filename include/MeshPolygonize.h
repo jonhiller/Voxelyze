@@ -538,10 +538,10 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 				//Vec3Df thisInd(ix, iy, iz);
 				//Vec3Df min(scale*(thisInd+Vec3Df(0.5, 0.5, 0.5)));
 				//Vec3Df max = min + Vec3Df(scale, scale, scale);
-				Vec3Df min(scale*ix, scale*iy, scale*iz);
-				Vec3Df max(scale*(ix+1), scale*(iy+1), scale*(iz+1));
+				Vec3Df lmin(scale*ix, scale*iy, scale*iz);
+				Vec3Df lmax(scale*(ix+1), scale*(iy+1), scale*(iz+1));
 
-				Vec3Df qefPt = QEF(tryInts, tryNorms, min, max);
+				Vec3Df qefPt = QEF(tryInts, tryNorms, lmin, lmax);
 				vertInds.addValue(ix, iy, iz, pMeshOut->addVertex(qefPt));
 			}
 		}

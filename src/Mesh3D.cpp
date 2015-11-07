@@ -9,14 +9,7 @@ Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
-#include <string>
-#include "Mesh3D.h"
-#include "MeshPolygonize.h"
-#include <unordered_map>
 
-//for file output
-#include <iostream>
-#include <fstream>
 
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
@@ -31,6 +24,15 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 		#endif
 	#endif
 #endif
+
+#include <string>
+#include "Mesh3D.h"
+#include "MeshPolygonize.h"
+#include <unordered_map>
+
+//for file output
+#include <iostream>
+#include <fstream>
 
 #define STL_LABEL_SIZE 80
 
