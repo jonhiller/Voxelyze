@@ -41,12 +41,12 @@ class CVX_External
 public:
 	CVX_External();
 	~CVX_External(); //!<destructor
-	CVX_External(const CVX_External& eIn) {*this = eIn;} //!< Copy constructor
+	CVX_External(const CVX_External& eIn) {_extRotationQ = 0; mfc = 0; *this = eIn;} //!< Copy constructor
 	CVX_External& operator=(const CVX_External& eIn); //!< Equals operator
-	inline bool operator==(const CVX_External& b) {return dofFixed==b.dofFixed && extForce==b.extForce && extMoment==b.extMoment && extTranslation==b.extTranslation && extRotation==b.extRotation;} //!< comparison operator
+	bool operator==(const CVX_External& b); //!< comparison operator
 
 	void reset(); //!< Resets this external to defaults - i.e., no effect on a voxel  (forces, fixed, displacements, etc) 
-	bool isEmpty() {return (dofFixed == 0 && extForce==Vec3D<float>() && extMoment==Vec3D<float>());} //!< returns true if this external is empty - i.e is exerting no effect on a voxel
+	bool isEmpty() {return (dofFixed == 0 && extForce==Vec3D<float>() && extMoment==Vec3D<float>() && !mfc);} //!< returns true if this external is empty - i.e is exerting no effect on a voxel
 
 	bool isFixed(dofComponent dof) const {return dofIsSet(dofFixed, dof);}  //!< Returns true if the specified degree of freedom is fixed for this voxel. @param[in] dof Degree of freedom to query according to the dofComponent enum.
 	bool isFixedAll() const {return dofIsAllSet(dofFixed);} //!< Returns true if all 6 degrees of freedom are fixed for this voxel.
@@ -88,13 +88,19 @@ public:
 	void clearForce(){extForce = Vec3D<float>();} //!< Clears all applied forces from this voxel.
 	void clearMoment(){extMoment = Vec3D<float>();} //!< Clears all applied moments from this voxel.
 	
-	
+	void setMfc(double cX = 0, double cY = 0, double cZ = 0, double cRX = 0, double cRY = 0, double cRZ = 0); //!< Applies a multi-freedom constraint to this voxel (Advanced). Currently only observed in the linear solver. Assumed form cX*Ux + cY*uY + ... + cRZ*uRY = 0, where u_ is the displacement of the indicated degree of freedom. @param[in] cX X displacement coefficient.  @param[in] cY Y displacement coefficient.  @param[in] cZ Z displacement coefficient. @param[in] cRX X rotation coefficient. @param[in] cRY Y rotation coefficient. @param[in] cRZ Z rotation coefficient.
+	void clearMfc(); //!< Clears the multi-freedom constraint from this voxel.
+	bool hasMfc() { return mfc; } //!< Returns true if this external contains a multifuction constraint.
+	double* mfcElements() { return mfc; } //!< returns a pointer to the first element (X coefficient) of the mfc array. Length is guaranteed to be 6 - the pointer, if non-null, can safely be used to access all 6 elements. 
+
 private:
 	dofObject dofFixed;
 	
 	Vec3D<float> extForce, extMoment; //External force, moment applied to these voxels (N, N-m) if relevant DOF are unfixed
 	Vec3D<double> extTranslation, extRotation;
 	Quat3D<double>* _extRotationQ; //cached quaternion rotation (pointer to only create if needed)
+
+	double* mfc; // MultiFreedom Constraint definition. Assumed linear single point homogenous. Assumed mfc[0]*ux + mfc[1]*uy + ... = 0. Always initialized to size 6 if present.
 
 	void rotationChanged(); //called to keep cached quaternion rotation in sync
 };
