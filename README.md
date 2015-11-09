@@ -54,3 +54,5 @@ Compiling Voxelyze
 
 The Voxelyze code is structured as a library and compiles on windows and linux. An included Visual Studio project compiles Voxelyze to a static *.lib, and the usual "make" can be executed on linux to build a static *.a library.
 
+Define "USE_OMP" in the preprocessor to enable multithreaded solving.
+
