@@ -28,11 +28,12 @@ public:
 
 	CArray3Df() : CArray3D() {aspc=1.0f;}
 	CArray3Df(const CArray3Df& rArray){*this = rArray;}
-	CArray3Df(const Index3D& size, const Index3D& offset = Index3D()) : CArray3D(){aspc=1.0f; resize(size, offset);}
+	CArray3Df(const Index3D& size, const Index3D& offset = Index3D()) : CArray3D() { aspc = 1.0f; resize(size, offset); }
+	CArray3Df(Index3D& min, Index3D& max, const float spacing, const float defaultValue = 0.0f) : CArray3D() { setDefaultValue(defaultValue); aspc = spacing; resizeToMinMax(min, max); }
 	CArray3Df& operator=(const CArray3Df& rArray); //!Operator "=" overload
 	CArray3Df& operator=(const CArray3D<float>& rArray); //!Operator "=" overload
 
-	bool writeJSON(rapidjson_Writer& w, float minMagToWrite = 0);
+	bool writeJSON(rapidjson_Writer& w, float minMagToWrite = 0) const;
 	bool readJSON(rapidjson::Value& v);
 
 	void multiplyElements(CArray3Df& multiplyBy); //element-wise scaling. Only applied if default array value is zero.
@@ -40,28 +41,30 @@ public:
 	void multiplyElements(float multiplyBy); //scale all elements equally. Only applied if default array value is zero.
 	void sqrtElements(); //square roots all elements. Negative values end up zero. Only applied if default array value is zero.
 
-	float maxMagnitude(); //returns the maximum magnitude (positive or negative) in this array
+	float maxMagnitude() const; //returns the maximum magnitude (positive or negative) in this array
 
 	//a value representing the space between array indices (in some sort of real unit, so scale indices by)
 	void setSpacing(float arraySpacing){aspc=arraySpacing;}
-	float spacing(){return aspc;}
+	float spacing() const {return aspc;}
 
-	Vec3Df indexToLocation(const Index3D& index);
-	Index3D locationToIndex(Vec3Df& location); //returns nearest (normal rounding)
-	Vec3Df locationToContinuousIndex(Vec3Df& location); //returns location, in index scale, but without truncating to integer
+	Vec3Df indexToLocation(const Index3D& index) const;
+	Index3D locationToIndex(const Vec3Df& location) const; //returns nearest (normal rounding)
+	Vec3Df locationToContinuousIndex(const Vec3Df& location) const; //returns location, in index scale, but without truncating to integer
 
 	void gaussianBlur(float sigma = 1.0f, float extent = 3.0f);
 	void linearBlur(float radius = 1.0f);
 
 	void sampleFromArray(CArray3Df* sampleFrom); //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
 
-	Vec3Df arrayGradient(Index3D index);
+	Vec3Df arrayGradient(const Index3D& index) const;
+	Vec3Df arrayGradientInterp(const Index3D& index, float delta, interpolateType type = TRILINEAR) const; //delta in voxel units. i.e. 0.5 = 1/2 aspc 
+
 	void oversample(int oSample, interpolateType type = TRILINEAR); //oversample self
 	void oversample(CArray3Df& in, int oSample, interpolateType type = TRILINEAR);
-	float interpolate(Vec3Df interpIndex, interpolateType type);
-	float interpolateTriLinear(Vec3Df interpIndex);
-	float interpolateTriLinearAvg(Vec3Df interpIndex);
-	float interpolateTriCubic(Vec3Df interpIndex);
+	float interpolate(const Vec3Df& interpIndex, interpolateType type) const;
+	float interpolateTriLinear(const Vec3Df& interpIndex) const;
+	float interpolateTriLinearAvg(const Vec3Df& interpIndex) const;
+	float interpolateTriCubic(const Vec3Df& interpIndex) const;
 
 private:
 	void normalizeLinearKernel(std::vector<float>* kernel);

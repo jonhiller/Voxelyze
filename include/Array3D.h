@@ -111,6 +111,17 @@ public:
 		for (int i=0; i<dataSize; i++) data[i] = defaultValue;
 	}
 
+	//!< Fills all currently allocated elements with the specified fillValue. If fillValue equals the defualt value, the array will be cleared but allocation will no change. @param[in] fillValue the Value to fill the array with.
+	void fill(T fillValue) {
+		if (fillValue == defaultValue) clear();
+		else {
+			int dataSize = (int)(data.size());
+			for (int i = 0; i<dataSize; i++) data[i] = fillValue; //replace all old defaults with new default
+			cMin = minAllocated();
+			cMax = maxAllocated();
+		}
+	}
+
 	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
 	void setDefaultValue(T newDefaultValue){
 		int linSize = (int)(data.size());
@@ -180,6 +191,18 @@ public:
 		return true;
 	}
 	bool resize(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0){return resize(Index3D(iSize, jSize, kSize), Index3D(iOffset, jOffset, kOffset));} //!< Resize the internal data allocation to new specified sizes and offsets in i j and k. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from iOffset to iOffset+iSize (and the same for j and k. @param[in] iSize the number of elements in i. @param[in] jSize the number of elements in j. @param[in] kSize the number of elements in k. @param[in] iOffset the offset of allocated i elements. @param[in] jOffset the offset of allocated j elements. @param[in] kOffset the offset of allocated k elements.
+
+	//!< Resize the internal data allocation based on min and max indices. Each element of maxIndices should be equal or greater to the corresponding element in minIndices. Any data ouside the new range is discarded. The range of allocated values in a given dimension includes both the min and max index. @param[in] minIndex The minimum index to allocate. @param[in] maxIndex The maximum index to allocate. 
+	bool resizeToMinMax(Index3D& minIndex, Index3D& maxIndex) {
+		if (maxIndex.x < minIndex.x) maxIndex.x = minIndex.x;
+		if (maxIndex.y < minIndex.y) maxIndex.y = minIndex.y;
+		if (maxIndex.z < minIndex.z) maxIndex.z = minIndex.z;
+
+		return resize(maxIndex - minIndex + Index3D(1,1,1), minIndex);
+	} 
+
+	bool resizeToMinMax(int iMin, int jMin, int kMin, int iMax, int jMax, int kMax) { return resizeToMinMax(Index3D(iMin, jMin, kMin), Index3D(iMax, jMax, kMax)); } //!< Resize the internal data allocation based on min and max indices. Each element of the max indices should be equal or greater to the corresponding element of the min Indices. Any data ouside the new range is discarded. The range of allocated values in a given dimension includes both the min and max index.  @param[in] iMin the minimum element in i. @param[in] jMin the minimum element in j. @param[in] kMin the minimum element in k. @param[in] iMax the maximum element in i. @param[in] jMax the maximum element in j. @param[in] kMax the maximum element in k.
+
 
 	//! Deallocates as much memory as possible by reducing the allocated area to minimum span of existing elements.
 	bool shrink_to_fit(){

@@ -26,7 +26,7 @@ CArray3Df& CArray3Df::operator=(const CArray3D<float>& rArray)
 	return *this;
 }
 
-bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite){
+bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite) const {
 	w.StartObject();
 	w.Key("spacing");
 	w.Double(aspc);
@@ -123,18 +123,18 @@ bool CArray3Df::readJSON(rapidjson::Value& v){
 	return true;
 }
 
-Vec3Df CArray3Df::indexToLocation(const Index3D& index)
+Vec3Df CArray3Df::indexToLocation(const Index3D& index) const
 {
 	return aspc*Vec3Df((float)index.x, (float)index.y, (float)index.z);
 }
 
-Index3D CArray3Df::locationToIndex(Vec3Df& location)
+Index3D CArray3Df::locationToIndex(const Vec3Df& location) const
 {
 	Vec3Df xformed = (location+0.5*Vec3Df(aspc, aspc, aspc))/aspc;
 	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
 }
 
-Vec3Df CArray3Df::locationToContinuousIndex(Vec3Df& location) //returns location, in index scale, but without truncating to integer
+Vec3Df CArray3Df::locationToContinuousIndex(const Vec3Df& location) const //returns location, in index scale, but without truncating to integer
 {
 	return location/aspc;
 }
@@ -202,7 +202,7 @@ void CArray3Df::sqrtElements()
 	}
 }
 
-float CArray3Df::maxMagnitude()
+float CArray3Df::maxMagnitude() const
 {
 	float maxVal = 0;
 	int numEl = (int)data.size();
@@ -409,13 +409,22 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 }
 
 
-//simplest of finite difference methods. Provide a gridSpacing value (in real units between grid point) for a quantitaive gradient.
-Vec3Df CArray3Df::arrayGradient(Index3D index)
+//simplest of finite difference methods.
+Vec3Df CArray3Df::arrayGradient(const Index3D& index) const
 {
 	return Vec3Df(
 		(at(index-Index3D(1,0,0)) - at(index+Index3D(1,0,0)))/(2*aspc),
 		(at(index-Index3D(0,1,0)) - at(index+Index3D(0,1,0)))/(2*aspc),
 		(at(index-Index3D(0,0,1)) - at(index+Index3D(0,0,1)))/(2*aspc));
+}
+
+Vec3Df CArray3Df::arrayGradientInterp(const Index3D& index, float delta, interpolateType type) const
+{
+	Vec3Df thisLoc(index.x, index.y, index.z);
+	return Vec3Df(
+		(interpolate(thisLoc - Vec3Df(delta, 0, 0), type) - interpolate(thisLoc + Vec3Df(delta, 0, 0), type)) / (2 * delta * aspc),
+		(interpolate(thisLoc - Vec3Df(0, delta, 0), type) - interpolate(thisLoc + Vec3Df(0, delta, 0), type)) / (2 * delta * aspc),
+		(interpolate(thisLoc - Vec3Df(0, 0, delta), type) - interpolate(thisLoc + Vec3Df(0, 0, delta), type)) / (2 * delta * aspc));
 }
 
 void CArray3Df::oversample(int oSample, interpolateType type)
@@ -487,7 +496,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 
 //trilinear interpolation
 
-float CArray3Df::interpolate(Vec3Df interpIndex, interpolateType type)
+float CArray3Df::interpolate(const Vec3Df& interpIndex, interpolateType type) const
 {
 	switch (type){
 		case TRILINEAR: return interpolateTriLinear(interpIndex);
@@ -498,7 +507,7 @@ float CArray3Df::interpolate(Vec3Df interpIndex, interpolateType type)
 }
 
 
-float CArray3Df::interpolateTriLinear(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriLinear(const Vec3Df& interpIndex) const
 {
 	int i = floor(interpIndex.x), j = floor(interpIndex.y), k = floor(interpIndex.z);
 	float xp = interpIndex.x - i, yp = interpIndex.y - j, zp = interpIndex.z - k;
@@ -514,7 +523,7 @@ float CArray3Df::interpolateTriLinear(Vec3D<float> interpIndex)
 	return val;
 }
 
-float CArray3Df::interpolateTriLinearAvg(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriLinearAvg(const Vec3Df& interpIndex) const
 {
 	float avgSum = 0;
 	float eps = 0.5f;
@@ -527,7 +536,7 @@ float CArray3Df::interpolateTriLinearAvg(Vec3D<float> interpIndex)
 	return avgSum / 6.0f;
 }
 
-float CArray3Df::interpolateTriCubic(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
 {
 	int xi = floor(interpIndex.x), yi = floor(interpIndex.y), zi = floor(interpIndex.z);
 	float dx = interpIndex.x - xi, dy = interpIndex.y - yi, dz = interpIndex.z - zi;
