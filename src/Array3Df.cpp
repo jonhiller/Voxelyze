@@ -139,6 +139,12 @@ Vec3Df CArray3Df::locationToContinuousIndex(const Vec3Df& location) const //retu
 	return location/aspc;
 }
 
+Index3D CArray3Df::continuousIndexToIndex(const Vec3Df& cIndex) const
+{
+	Vec3Df xformed = cIndex + Vec3Df(0.5, 0.5, 0.5);
+	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
+}
+
 void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
 {
 	if (defaultValue != 0.0f) return;
@@ -190,6 +196,14 @@ void CArray3Df::multiplyElements(float multiplyBy)
 
 	int numEl = (int)data.size();
 	for (int i=0; i<numEl; i++) data[i] *= multiplyBy;
+}
+
+void CArray3Df::addElements(float add)
+{
+	defaultValue += add;
+
+	int numEl = (int)data.size();
+	for (int i = 0; i<numEl; i++) data[i] += add;
 }
 
 void CArray3Df::sqrtElements()
@@ -306,6 +320,10 @@ void CArray3Df::linearBlur(float radius)
 						for (int n = std::max(min.z, k-fRadI); n <= std::min(max.z, k+fRadI); n++){
 
 							float fac = std::max(0.0f, fRad-(float)sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
+							
+					//		if (fac > fRad /2) fac = fRad;
+					//		else fac = 0;
+
 							newValue += fac*arrCopy(l,m,n);
 							sum += fac;
 
@@ -318,6 +336,42 @@ void CArray3Df::linearBlur(float radius)
 		}
 	}
 }
+
+void CArray3Df::stepBlur(float radius)
+{
+	//	Index3D min = offset(), max = min + size()-Index3D(1,1,1);
+	Index3D min = minAllocated(), max = maxAllocated();
+
+	float fRad = radius; //filtering radius in voxels
+	int fRadI = (int)(1 + fRad); //number of voxels to search up and down.
+
+	CArray3Df arrCopy(*this);
+
+	for (int k = min.z; k <= max.z; k++) {
+		for (int j = min.y; j <= max.y; j++) {
+			for (int i = min.x; i <= max.x; i++) {
+				float sum = 0;
+				float newValue = 0;
+				for (int l = std::max(min.x, i - fRadI); l <= std::min(max.x, i + fRadI); l++) {
+					for (int m = std::max(min.y, j - fRadI); m <= std::min(max.y, j + fRadI); m++) {
+						for (int n = std::max(min.z, k - fRadI); n <= std::min(max.z, k + fRadI); n++) {
+
+							float rad = (float)sqrt((float)(i - l)*(i - l) + (j - m)*(j - m) + (k - n)*(k - n)); 
+							float fac = rad <= radius ? 1.0 : 0.0;
+
+							newValue += fac*arrCopy(l, m, n);
+							sum += fac;
+
+						}
+					}
+				}
+
+				addValue(i, j, k, newValue / sum, false);
+			}
+		}
+	}
+}
+
 
 //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
 void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
@@ -356,21 +410,23 @@ void CArray3Df::normalizeLinearKernel(std::vector<float>* kernel)
 void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 {
 	CArray3Df arrCopy(*this);
-	Index3D min = offset(), max = min + size();
+	Index3D min = offset(), max = min + size()-Index3D(1,1,1);
 	int numOut = (int)(kernel->size()-1)/2;
 
 	//apply in X:
 	for (int ak=min.z; ak<=max.z; ak++){
 		for (int aj=min.y; aj<=max.y; aj++){
 			for (int ai=min.x; ai<=max.x; ai++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int ti=-numOut; ti<=numOut; ti++){
 					int thisI = ai+ti;
 					if (thisI >= min.x && thisI <= max.x){
-						acc += (*kernel)[ti+numOut]*arrCopy(thisI, aj, ak);
+						float kern = (*kernel)[ti + numOut];
+						div += kern;
+						acc += kern*arrCopy(thisI, aj, ak);
 					}
 				}
-				addValue(ai, aj, ak, acc, false);
+				addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
@@ -379,14 +435,16 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 	for (int ak=min.z; ak<=max.z; ak++){
 		for (int ai=min.x; ai<=max.x; ai++){
 			for (int aj=min.y; aj<=max.y; aj++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int tj=-numOut; tj<=numOut; tj++){
 					int thisJ = aj+tj;
 					if (thisJ >= min.y && thisJ <= max.y){
-						acc += (*kernel)[tj+numOut]* (*this)(ai, thisJ, ak);
+						float kern = (*kernel)[tj + numOut];
+						div += kern;
+						acc += kern * (*this)(ai, thisJ, ak);
 					}
 				}
-				arrCopy.addValue(ai, aj, ak, acc, false);
+				arrCopy.addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
@@ -395,14 +453,16 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 	for (int aj=min.y; aj<=max.y; aj++){
 		for (int ai=min.x; ai<=max.x; ai++){
 			for (int ak=min.z; ak<=max.z; ak++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int tk=-numOut; tk<=numOut; tk++){
 					int thisK = ak+tk;
 					if (thisK >= min.z && thisK <= max.z){
-						acc += (*kernel)[tk+numOut]*arrCopy(ai, aj, thisK);
+						float kern = (*kernel)[tk + numOut];
+						div += kern;
+						acc += kern * arrCopy(ai, aj, thisK);
 					}
 				}
-				addValue(ai, aj, ak, acc, false);
+				addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
@@ -418,13 +478,12 @@ Vec3Df CArray3Df::arrayGradient(const Index3D& index) const
 		(at(index-Index3D(0,0,1)) - at(index+Index3D(0,0,1)))/(2*aspc));
 }
 
-Vec3Df CArray3Df::arrayGradientInterp(const Index3D& index, float delta, interpolateType type) const
+Vec3Df CArray3Df::arrayGradientInterp(const Vec3Df& cIndex, float delta, interpolateType type) const
 {
-	Vec3Df thisLoc(index.x, index.y, index.z);
 	return Vec3Df(
-		(interpolate(thisLoc - Vec3Df(delta, 0, 0), type) - interpolate(thisLoc + Vec3Df(delta, 0, 0), type)) / (2 * delta * aspc),
-		(interpolate(thisLoc - Vec3Df(0, delta, 0), type) - interpolate(thisLoc + Vec3Df(0, delta, 0), type)) / (2 * delta * aspc),
-		(interpolate(thisLoc - Vec3Df(0, 0, delta), type) - interpolate(thisLoc + Vec3Df(0, 0, delta), type)) / (2 * delta * aspc));
+		(interpolate(cIndex - Vec3Df(delta, 0, 0), type) - interpolate(cIndex + Vec3Df(delta, 0, 0), type)) / (2 * delta * aspc),
+		(interpolate(cIndex - Vec3Df(0, delta, 0), type) - interpolate(cIndex + Vec3Df(0, delta, 0), type)) / (2 * delta * aspc),
+		(interpolate(cIndex - Vec3Df(0, 0, delta), type) - interpolate(cIndex + Vec3Df(0, 0, delta), type)) / (2 * delta * aspc));
 }
 
 void CArray3Df::oversample(int oSample, interpolateType type)

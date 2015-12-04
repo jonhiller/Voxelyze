@@ -86,6 +86,7 @@ public:
 		aOff = rArray.aOff;
 		cMin = rArray.cMin;
 		cMax = rArray.cMax;
+		edgeContinue = rArray.edgeContinue;
 		return *this;
 	}
 
@@ -101,6 +102,7 @@ public:
 		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
 		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 		data.clear();
+		edgeContinue = false;
 	}
 
 	//!Erases all data from the array but leaves memory allocated
@@ -140,8 +142,16 @@ public:
 
 	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
 	const T& at(const Index3D& i3D) const { 
-		int i = getIndex(i3D);
-		return i == -1 ? defaultValue : data[i];
+		if (edgeContinue) {
+			Index3D thisIndex(i3D.x < cMin.x ? cMin.x : (i3D.x > cMax.x ? cMax.x : i3D.x),
+				i3D.y < cMin.y ? cMin.y : (i3D.y > cMax.y ? cMax.y : i3D.y),
+				i3D.z < cMin.z ? cMin.z : (i3D.z > cMax.z ? cMax.z : i3D.z));
+			return data[getIndex(thisIndex)];
+		}
+		else {
+			int i = getIndex(i3D);
+			return i == -1 ? defaultValue : data[i];
+		}
 	} 
 	const T& at(int i, int j, int k) const {return at(Index3D(i,j,k));} //!< Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i the i index in question. @param[in] j the j index in question. @param[in] k the k index in question.
 
@@ -298,6 +308,11 @@ public:
 		}
 		ofile.close();
 	}
+
+	void setEdgeContinue(bool continueEdge) {
+		edgeContinue = continueEdge;
+	}
+
 protected:
 
 	int getIndex(const Index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
@@ -333,7 +348,7 @@ protected:
 	std::vector<T> data;
 	Index3D aSize, aOff; //allocated size and offset
 	Index3D cMin, cMax; //current minimum and maximum values in x/y/x currently in 
-
+	bool edgeContinue;
 };
 
 #endif

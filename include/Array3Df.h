@@ -28,7 +28,7 @@ public:
 
 	CArray3Df() : CArray3D() {aspc=1.0f;}
 	CArray3Df(const CArray3Df& rArray){*this = rArray;}
-	CArray3Df(const Index3D& size, const Index3D& offset = Index3D()) : CArray3D() { aspc = 1.0f; resize(size, offset); }
+	CArray3Df(const Index3D& size, const Index3D& offset = Index3D(0,0,0)) : CArray3D() { aspc = 1.0f; resize(size, offset); }
 	CArray3Df(Index3D& min, Index3D& max, const float spacing, const float defaultValue = 0.0f) : CArray3D() { setDefaultValue(defaultValue); aspc = spacing; resizeToMinMax(min, max); }
 	CArray3Df& operator=(const CArray3Df& rArray); //!Operator "=" overload
 	CArray3Df& operator=(const CArray3D<float>& rArray); //!Operator "=" overload
@@ -39,6 +39,7 @@ public:
 	void multiplyElements(CArray3Df& multiplyBy); //element-wise scaling. Only applied if default array value is zero.
 	void divideElements(CArray3Df& divideBy); //element-wise inverse scaling (i.e. dividing be each element of divideByBy. divideByBy Values of zero will result in zero, not INF. Only applied if default array value is zero.
 	void multiplyElements(float multiplyBy); //scale all elements equally. Only applied if default array value is zero.
+	void addElements(float add); //add to all elements equally. Changes the default value, too.
 	void sqrtElements(); //square roots all elements. Negative values end up zero. Only applied if default array value is zero.
 
 	float maxMagnitude() const; //returns the maximum magnitude (positive or negative) in this array
@@ -50,14 +51,17 @@ public:
 	Vec3Df indexToLocation(const Index3D& index) const;
 	Index3D locationToIndex(const Vec3Df& location) const; //returns nearest (normal rounding)
 	Vec3Df locationToContinuousIndex(const Vec3Df& location) const; //returns location, in index scale, but without truncating to integer
+	Vec3Df indexToContinuousIndex(const Index3D& index) const { return Vec3Df(index.x, index.y, index.z); }
+	Index3D continuousIndexToIndex(const Vec3Df& cIndex) const;
 
 	void gaussianBlur(float sigma = 1.0f, float extent = 3.0f);
 	void linearBlur(float radius = 1.0f);
+	void stepBlur(float radius = 1.0f);
 
 	void sampleFromArray(CArray3Df* sampleFrom); //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
 
 	Vec3Df arrayGradient(const Index3D& index) const;
-	Vec3Df arrayGradientInterp(const Index3D& index, float delta, interpolateType type = TRILINEAR) const; //delta in voxel units. i.e. 0.5 = 1/2 aspc 
+	Vec3Df arrayGradientInterp(const Vec3Df& cIndex, float delta, interpolateType type = TRILINEAR) const; //delta in voxel units. i.e. 0.5 = 1/2 aspc 
 
 	void oversample(int oSample, interpolateType type = TRILINEAR); //oversample self
 	void oversample(CArray3Df& in, int oSample, interpolateType type = TRILINEAR);
