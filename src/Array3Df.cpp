@@ -374,7 +374,7 @@ void CArray3Df::stepBlur(float radius)
 
 
 //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
-void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
+void CArray3Df::sampleFromArray(CArray3Df* sampleFrom, interpolateType type)
 {
 	if (sampleFrom->size() == size() && sampleFrom->offset() == offset() && sampleFrom->spacing() == spacing()){
 		*this = *sampleFrom; //if equal, just copy over.
@@ -388,7 +388,7 @@ void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
 				for (int i=min.x; i<=max.x; i++){
 					Vec3Df thisLocation = indexToLocation(Index3D(i,j,k));
 					Vec3Df thatContinuousIndex = sampleFrom->locationToContinuousIndex(thisLocation);
-					float interpDens = sampleFrom->interpolateTriLinear(thatContinuousIndex);
+					float interpDens = sampleFrom->interpolate(thatContinuousIndex, type);
 
 					addValue(i,j,k,interpDens,false);
 				}

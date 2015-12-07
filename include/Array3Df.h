@@ -58,7 +58,7 @@ public:
 	void linearBlur(float radius = 1.0f);
 	void stepBlur(float radius = 1.0f);
 
-	void sampleFromArray(CArray3Df* sampleFrom); //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
+	void sampleFromArray(CArray3Df* sampleFrom, interpolateType type = TRILINEAR); //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
 
 	Vec3Df arrayGradient(const Index3D& index) const;
 	Vec3Df arrayGradientInterp(const Vec3Df& cIndex, float delta, interpolateType type = TRILINEAR) const; //delta in voxel units. i.e. 0.5 = 1/2 aspc 
