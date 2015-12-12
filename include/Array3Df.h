@@ -21,9 +21,11 @@ class CArray3Df : public CArray3D<float>
 public:
 
 	enum interpolateType {
+		NEAREST_NEIGHBOR,
 		TRILINEAR,
 		TRICUBIC,
-		AVG_TRILINEAR //looks +/- 1/2 grid size in all three dimensions and averages the 6 bilinear interpolations. Has a smoothing effect.
+		AVG_TRILINEAR, //looks +/- 1/2 grid size in all three dimensions and averages the 6 bilinear interpolations. Has a smoothing effect.
+		AVG_TRILINEAR2 //looks +/- 1/2 grid size in all three dimensions and averages the 6 bilinear interpolations. Has a smoothing effect.
 	};
 
 	CArray3Df() : CArray3D() {aspc=1.0f;}
@@ -66,8 +68,10 @@ public:
 	void oversample(int oSample, interpolateType type = TRILINEAR); //oversample self
 	void oversample(CArray3Df& in, int oSample, interpolateType type = TRILINEAR);
 	float interpolate(const Vec3Df& interpIndex, interpolateType type) const;
+	float interpolateNearestNeighbor(const Vec3Df& interpIndex) const;
 	float interpolateTriLinear(const Vec3Df& interpIndex) const;
 	float interpolateTriLinearAvg(const Vec3Df& interpIndex) const;
+	float interpolateTriLinearAvg2(const Vec3Df& interpIndex) const;
 	float interpolateTriCubic(const Vec3Df& interpIndex) const;
 
 private:

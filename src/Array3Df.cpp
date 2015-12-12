@@ -558,13 +558,20 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 float CArray3Df::interpolate(const Vec3Df& interpIndex, interpolateType type) const
 {
 	switch (type){
+		case NEAREST_NEIGHBOR: return interpolateNearestNeighbor(interpIndex);
 		case TRILINEAR: return interpolateTriLinear(interpIndex);
 		case TRICUBIC: return interpolateTriCubic(interpIndex);
 		case AVG_TRILINEAR: return interpolateTriLinearAvg(interpIndex);
+		case AVG_TRILINEAR2: return interpolateTriLinearAvg2(interpIndex);
 		default: return interpolateTriLinear(interpIndex);
 	}
 }
 
+
+float CArray3Df::interpolateNearestNeighbor(const Vec3Df& interpIndex) const
+{
+	return at((int)floor(interpIndex.x + 0.5f), (int)floor(interpIndex.y + 0.5f), (int)floor(interpIndex.z + 0.5f));
+}
 
 float CArray3Df::interpolateTriLinear(const Vec3Df& interpIndex) const
 {
@@ -593,6 +600,20 @@ float CArray3Df::interpolateTriLinearAvg(const Vec3Df& interpIndex) const
 	avgSum += interpolateTriLinear(interpIndex+Vec3Df(0, 0, eps));
 	avgSum += interpolateTriLinear(interpIndex+Vec3Df(0, 0, -eps));
 	return avgSum / 6.0f;
+}
+
+float CArray3Df::interpolateTriLinearAvg2(const Vec3Df& interpIndex) const
+{
+	float avgSum = 0;
+	float eps = 0.5f;
+	avgSum += 2 * interpolateTriLinear(interpIndex);
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(eps, 0, 0));
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(-eps, 0, 0));
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(0, eps, 0));
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(0, -eps, 0));
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(0, 0, eps));
+	avgSum += interpolateTriLinear(interpIndex + Vec3Df(0, 0, -eps));
+	return avgSum / 8.0f;
 }
 
 float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
