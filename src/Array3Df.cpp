@@ -386,7 +386,8 @@ void CArray3Df::sampleFromArray(CArray3Df* sampleFrom, interpolateType type)
 		for (int k=min.z; k<=max.z; k++){
 			for (int j=min.y; j<=max.y; j++){
 				for (int i=min.x; i<=max.x; i++){
-					Vec3Df thisLocation = indexToLocation(Index3D(i,j,k));
+					Index3D thisIndex(i,j,k);
+					Vec3Df thisLocation = indexToLocation(thisIndex);
 					Vec3Df thatContinuousIndex = sampleFrom->locationToContinuousIndex(thisLocation);
 					float interpDens = sampleFrom->interpolate(thatContinuousIndex, type);
 
