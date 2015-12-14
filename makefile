@@ -29,7 +29,8 @@ VOXELYZE_SRC = \
 	src/Mesh3D.cpp \
 	src/VX_MeshRender.cpp \
 	src/eigen/eigen.cpp \
-	src/Array3Df.cpp
+	src/Array3Df.cpp \
+	src/Poly2D.cpp
 VOXELYZE_OBJS = \
 	src/Voxelyze.o \
 	src/VX_Voxel.o \
@@ -43,7 +44,8 @@ VOXELYZE_OBJS = \
 	src/Mesh3D.o \
 	src/VX_MeshRender.o \
 	src/eigen/eigen.o \
-	src/Array3Df.o
+	src/Array3Df.o \
+	src/Poly2D.o
 
 .PHONY: clean all ogl pardiso ogl_pardiso
 
