@@ -34,11 +34,7 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	mnum = 1; //Which factorization to use.
 	msglvl = 0; //Print statistical information
 	error = 0; //Initialize error flag
-#ifdef USE_DIRECT
-	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#else
-	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#endif
+
 
 
 	progressTick = 0;
@@ -48,6 +44,12 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	cancelFlag = false;
 
 #ifdef PARDISO_5
+	#ifdef USE_DIRECT
+	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#else
+	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#endif
+
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error); //initialize pardiso
 #endif
 }
@@ -126,9 +128,11 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 	//dparm[0] = 5;
 
 
-	int idum = 0; //Integer dummy var
+
 
 #ifdef PARDISO_5
+	int idum = 0; //Integer dummy var
+
 	updateProgress(0.02f, "Pardiso: Analyzing...");
 	phase = 13;
 #ifndef USE_DIRECT
@@ -407,7 +411,7 @@ void CVX_LinearSolver::consolidateA() //gets rid of all the zeros for quicker so
 			if (checkPenalty && penaltyElements[penalFactIndex].first == index + shift) {
 				penaltyElements[penalFactIndex].first = index;
 				penalFactIndex++; //found this one! on to the next.
-				if (penalFactIndex == penaltyElements.size()) checkPenalty = false; //stop when we've found the last one.
+				if (penalFactIndex == (int)penaltyElements.size()) checkPenalty = false; //stop when we've found the last one.
 			}
 
 			index++;

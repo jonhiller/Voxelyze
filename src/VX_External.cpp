@@ -49,7 +49,7 @@ bool CVX_External::operator==(const CVX_External& b)
 {
 	//a bit of work to determin equality of mfc
 	bool mfcEqual = true;
-	if ((!mfc && b.mfc) || (mfc && !b.mfc) mfcEqual = false;
+	if ((!mfc && b.mfc) || (mfc && !b.mfc)) mfcEqual = false;
 	if (mfc && b.mfc) {
 		for (int i = 0; i < 6; i++) {
 			if (mfc[i] != b.mfc[i]) {
