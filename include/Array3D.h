@@ -122,6 +122,10 @@ public:
 	Index3D maxIndices() const {return cMax;} //!< Returns the maximum i, j, and k indices utilized by any element in the array
 	Index3D size() const {return aSize;} //!< Returns the currently allocated size of the array
 	Index3D offset() const {return aOff;} //!< Returns the offset (i.e. location of most negative corner) of the currently allocated array
+	Index3D minAllocated() const {return offset();}
+	Index3D maxAllocated() const {return aOff + aSize - Index3D(1,1,1);}
+
+
 
 	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
 	const T& at(const Index3D& i3D) const { 
@@ -182,17 +186,18 @@ public:
 		return resize(cMax-cMin+Index3D(1,1,1), cMin);
 	}
 
-	//!Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] index the index to add this value at. @param[in] value The value to add.
-	bool addValue(const Index3D& index, T value){
+	//!Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] index the index to add this value at. @param[in] value The value to add. @param[in] removeIfDefault if true, the routine will delete the number at this location instead of just setting it to the defualt value. Call updateMinMax() at any time after to re-sychronize.
+	bool addValue(const Index3D& index, T value, bool removeIfDefault = true){
 		int ThisIndex = getIndex(index);
 
-		if (value==defaultValue){
+		if (removeIfDefault && value==defaultValue){
 			if (ThisIndex != -1 && data[ThisIndex] != defaultValue) removeValue(index); //catch if adding default value (equivalent to removeValue). Call removeValue to keep min and max up-to-date
 			return true;
 		}
 
 		if (ThisIndex != -1){data[ThisIndex] = value;}
 		else { //reallocation required
+			if (value==defaultValue) return true;
 			int attempt=0;
 			bool success=false;
 			int scaleDivisor = 1; //attempts to add asize/scaleDivisor to any dimension that is exceeded
@@ -241,7 +246,7 @@ public:
 		if (index.z > cMax.z) cMax.z = index.z;
 		return true;
 	}
-	bool addValue(int i, int j, int k, T value){return addValue(Index3D(i,j,k), value);} //!< Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] i The i index to add this value at. @param[in] j The j index to add this value at. @param[in] k The k index to add this value at. @param[in] value The value to add.
+	bool addValue(int i, int j, int k, T value, bool removeIfDefault = true){return addValue(Index3D(i,j,k), value, removeIfDefault);} //!< Adds a value to the array or overwrites what was there. Allocates more space if needed in a (semi smart) manner. Use removeValue to remove it. @param[in] i The i index to add this value at. @param[in] j The j index to add this value at. @param[in] k The k index to add this value at. @param[in] value The value to add. @param[in] removeIfDefault if true, the routine will delete the number at this location instead of just setting it to the defualt value. Call updateMinMax() at any time after to re-sychronize.
 
 
 	//! Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use shrink_to_fit() to try to reduce the memory usage after removing element(s). @param[in] index the index to remove a value from if it exists.
@@ -249,7 +254,8 @@ public:
 		int ThisIndex = getIndex(index);
 		if (ThisIndex == -1 || data[ThisIndex] == defaultValue) return; //already not there...
 		data[ThisIndex] = defaultValue;
-		UpdateMinMax();
+		if (index.x == cMin.x || index.x == cMax.x || index.y == cMin.y || index.y == cMax.y || index.z == cMin.z || index.z == cMax.z)
+			UpdateMinMax();
 	}
 	void removeValue(int i, int j, int k){removeValue(Index3D(i,j,k));} //!< Removes any value at the specified index and returns its value to the default value. Never triggers a reallocation - use shrink_to_fit() to try to reduce the memory usage after removing element(s). Use removeValue to remove it. @param[in] i The i index to remove a value from if it exists. @param[in] j The j index to remove a value from if it exists. @param[in] k The k index to remove a value from if it exists.
 

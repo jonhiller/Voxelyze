@@ -199,7 +199,7 @@ void CMesh3D::splitVerticesByAngle(float seamAngleDegrees)
 	int vCount = vertexCount();
 	int tCount = triangleCount();
 
-	int lTri[256], lVert[256], lTriGroup[256], lTriGroupToVertIndex[256]; //assume maximum 256 triangles fanning out from this vertex
+	int lTri[256], /*lVert[256],*/ lTriGroup[256], lTriGroupToVertIndex[256]; //assume maximum 256 triangles fanning out from this vertex
 	for (int i=0; i<vCount; i++){ //for each vertex (although, not duplicate ones that are added in process
 		int lTriCount = 0;
 		for (int j=0; j<tCount; j++){ //for each vertex
@@ -652,7 +652,9 @@ float CMesh3D::distanceFromSurface(Vec3D<float>* point, float maxDistance, Vec3D
 		if (!allAbove && !allBelow){ //within range to consider further
 			float u, v;
 			Vec3D<float> toIntersect;
-			bool result = GetTriDist(thisTriIndex, point, u, v, toIntersect);
+			//bool result = GetTriDist(thisTriIndex, point, u, v, toIntersect);
+			GetTriDist(thisTriIndex, point, u, v, toIntersect);
+			
 			//float area = GetTriArea(TriLine[i]);
 			float dist2 = toIntersect.Length2();
 			//if (dist2a < 0)
@@ -838,16 +840,16 @@ bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, 
 	//http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
 
 	//Regions:
-	//    E1 (t)
-	// \ 2|
-	//   \|
-	//	  |\
-	//    |  \    1
-	//  3 |    \
-	//    | 0    \
-	// ___|________\____   E0 (s)
-	//    |          \ 6
-	// 4  |    5       \
+	//    E1 (t)						//
+	// \ 2|								//
+	//   \|								//
+	//	  |\							//
+	//    |  \    1 					//
+	//  3 |    \						//
+	//    | 0    \						//
+	// ___|________\____   E0 (s)		//
+	//    |          \ 6				//
+	// 4  |    5       \				//
 
 //	Vec3D<float> B = *GetpFacetVertex(FacetIndex, 0);
 //	Vec3D<float> E0 = *GetpFacetVertex(FacetIndex, 1) - B; //(s)
@@ -862,7 +864,7 @@ bool CMesh3D::GetTriDist(const int TriangleIndex, const Vec3D<float>* pPointIn, 
 	float c = E1.Dot(E1);
 	float d = E0.Dot(D);
 	float e = E1.Dot(D);
-	float f = D.Dot(D);
+	//float f = D.Dot(D);
 
 	float det=a*c-b*b;
 	float s = b*e-c*d;

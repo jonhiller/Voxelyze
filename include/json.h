@@ -5,6 +5,7 @@
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
 
 typedef rapidjson::Writer<rapidjson::StringBuffer> rapidjson_CompactWriter;
 typedef rapidjson::PrettyWriter<rapidjson::StringBuffer> rapidjson_PrettyWriter;

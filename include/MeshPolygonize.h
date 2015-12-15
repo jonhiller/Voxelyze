@@ -412,7 +412,8 @@ static Vec3Df QEF(const std::vector<Vec3Df>& intersects, const std::vector<Vec3D
 		pt /= (float)numInt;
 
 		// Solve
-		float error = calcPoint( ata, &atb[0], btb, &pt[0], &mp[0], 0, 0 ) ;
+		//float error = calcPoint( ata, &atb[0], btb, &pt[0], &mp[0], 0, 0 ) ;
+		calcPoint( ata, &atb[0], btb, &pt[0], &mp[0], 0, 0 ) ;
 
 		Vec3Df returnVec = mp;
 
@@ -518,7 +519,7 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 				std::vector<Vec3Df> tryInts, tryNorms; //edge intersections and normals to QEF
 				Vec3Df tmpNorm;
 
-				Vec3Df vertList[12]; //list of each vertex location for each edge (if the iso surface intersects this edge)
+				//Vec3Df vertList[12]; //list of each vertex location for each edge (if the iso surface intersects this edge)
 				for (int i=0; i<12; i++){ //for each edge
 					if (thisEdgeMask & (1<<i)){
 						int v0 = edgeToVert[i][0], v1 = edgeToVert[i][1];
@@ -557,9 +558,9 @@ static void meshFrom3dArrayDC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 					//if (j==1) continue;
 
 					float vThis = values(ix, iy, iz); //this value
-					int ixt = ix + ((j==vec3_X)?1:0);
-					int iyt = iy + ((j==vec3_Y)?1:0);
-					int izt = iz + ((j==vec3_Z)?1:0);
+					//int ixt = ix + ((j==vec3_X)?1:0);
+					//int iyt = iy + ((j==vec3_Y)?1:0);
+					//int izt = iz + ((j==vec3_Z)?1:0);
 
 					float vThat = values(ix + ((j==vec3_X)?1:0), iy + ((j==vec3_Y)?1:0), iz + ((j==vec3_Z)?1:0)); //value in the +X, +Y, or +Z direction
 					
