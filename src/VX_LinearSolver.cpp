@@ -12,7 +12,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_LinearSolver.h"
 #include "Voxelyze.h"
 #include "VX_MaterialLink.h"
-#include <iostream>
+
 
 //VERSION 5
 //#define USE_DIRECT
@@ -51,6 +51,8 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 #endif
 
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error); //initialize pardiso
+
+	if (error != 0) std::cout << "Pardiso init error: " << error << "\n";
 #endif
 }
 
@@ -157,7 +159,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 //	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &dof, &a[0], &ia[0], &ja[0], &idum, &nrhs, iparm, &msglvl, &b[0], &x[0], &error, dparm);
 
 	if (error != 0){
-		std::cout << "error: " << error << "\n";
+		std::cout << "pardiso error: " << error << "\n";
 
 		Success=false;
 		switch (error){

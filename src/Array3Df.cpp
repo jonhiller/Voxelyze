@@ -67,7 +67,7 @@ bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite) const {
 	int dataSize = (int)data.size();
 	for (int i=0; i<dataSize; i++){
 		float thisData = data[i];
-		if (abs(thisData)<minMagToWrite) w.Double(0.0);
+		if (fabs(thisData)<minMagToWrite) w.Double(0.0);
 		else w.Double(data[i]);
 	}
 	w.EndArray();
@@ -221,7 +221,7 @@ float CArray3Df::maxMagnitude() const
 	float maxVal = 0;
 	int numEl = (int)data.size();
 	for (int i=0; i<numEl; i++)
-		if (abs(data[i]) > maxVal) maxVal = abs(data[i]);
+		if (fabs(data[i]) > maxVal) maxVal = fabs(data[i]);
 
 	return maxVal;
 }

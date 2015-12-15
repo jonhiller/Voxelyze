@@ -17,7 +17,7 @@ class CVoxelyze;
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-
+#include <iostream>
 
 #ifdef PARDISO_5
 #ifdef _WIN32
