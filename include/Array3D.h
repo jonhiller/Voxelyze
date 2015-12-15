@@ -86,6 +86,7 @@ public:
 		aOff = rArray.aOff;
 		cMin = rArray.cMin;
 		cMax = rArray.cMax;
+		edgeContinue = rArray.edgeContinue;
 		return *this;
 	}
 
@@ -101,6 +102,7 @@ public:
 		cMin = Index3D(INT_MAX, INT_MAX, INT_MAX);
 		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 		data.clear();
+		edgeContinue = false;
 	}
 
 	//!Erases all data from the array but leaves memory allocated
@@ -109,6 +111,17 @@ public:
 		cMax = Index3D(INT_MIN, INT_MIN, INT_MIN);
 		int dataSize = (int)data.size();
 		for (int i=0; i<dataSize; i++) data[i] = defaultValue;
+	}
+
+	//!< Fills all currently allocated elements with the specified fillValue. If fillValue equals the defualt value, the array will be cleared but allocation will no change. @param[in] fillValue the Value to fill the array with.
+	void fill(T fillValue) {
+		if (fillValue == defaultValue) clear();
+		else {
+			int dataSize = (int)(data.size());
+			for (int i = 0; i<dataSize; i++) data[i] = fillValue; //replace all old defaults with new default
+			cMin = minAllocated();
+			cMax = maxAllocated();
+		}
 	}
 
 	//!Sets the value to which all new allocations default to. @param[in] newDefaultValue the value returned from any index that has not been set otherwise.
@@ -129,8 +142,16 @@ public:
 
 	//! Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i3D the 3D index (i,j,k) in question.
 	const T& at(const Index3D& i3D) const { 
-		int i = getIndex(i3D);
-		return i == -1 ? defaultValue : data[i];
+		if (edgeContinue) {
+			Index3D thisIndex(i3D.x < cMin.x ? cMin.x : (i3D.x > cMax.x ? cMax.x : i3D.x),
+				i3D.y < cMin.y ? cMin.y : (i3D.y > cMax.y ? cMax.y : i3D.y),
+				i3D.z < cMin.z ? cMin.z : (i3D.z > cMax.z ? cMax.z : i3D.z));
+			return data[getIndex(thisIndex)];
+		}
+		else {
+			int i = getIndex(i3D);
+			return i == -1 ? defaultValue : data[i];
+		}
 	} 
 	const T& at(int i, int j, int k) const {return at(Index3D(i,j,k));} //!< Returns the value at the specified 3d index or the default value otherwise. Const version. @param[in] i the i index in question. @param[in] j the j index in question. @param[in] k the k index in question.
 
@@ -180,6 +201,18 @@ public:
 		return true;
 	}
 	bool resize(int iSize, int jSize, int kSize, int iOffset=0, int jOffset=0, int kOffset=0){return resize(Index3D(iSize, jSize, kSize), Index3D(iOffset, jOffset, kOffset));} //!< Resize the internal data allocation to new specified sizes and offsets in i j and k. Any data ouside the new range is discarded. The range of allocated values in a given dimension spans from iOffset to iOffset+iSize (and the same for j and k. @param[in] iSize the number of elements in i. @param[in] jSize the number of elements in j. @param[in] kSize the number of elements in k. @param[in] iOffset the offset of allocated i elements. @param[in] jOffset the offset of allocated j elements. @param[in] kOffset the offset of allocated k elements.
+
+	//!< Resize the internal data allocation based on min and max indices. Each element of maxIndices should be equal or greater to the corresponding element in minIndices. Any data ouside the new range is discarded. The range of allocated values in a given dimension includes both the min and max index. @param[in] minIndex The minimum index to allocate. @param[in] maxIndex The maximum index to allocate. 
+	bool resizeToMinMax(Index3D& minIndex, Index3D& maxIndex) {
+		if (maxIndex.x < minIndex.x) maxIndex.x = minIndex.x;
+		if (maxIndex.y < minIndex.y) maxIndex.y = minIndex.y;
+		if (maxIndex.z < minIndex.z) maxIndex.z = minIndex.z;
+
+		return resize(maxIndex - minIndex + Index3D(1,1,1), minIndex);
+	} 
+
+	bool resizeToMinMax(int iMin, int jMin, int kMin, int iMax, int jMax, int kMax) { return resizeToMinMax(Index3D(iMin, jMin, kMin), Index3D(iMax, jMax, kMax)); } //!< Resize the internal data allocation based on min and max indices. Each element of the max indices should be equal or greater to the corresponding element of the min Indices. Any data ouside the new range is discarded. The range of allocated values in a given dimension includes both the min and max index.  @param[in] iMin the minimum element in i. @param[in] jMin the minimum element in j. @param[in] kMin the minimum element in k. @param[in] iMax the maximum element in i. @param[in] jMax the maximum element in j. @param[in] kMax the maximum element in k.
+
 
 	//! Deallocates as much memory as possible by reducing the allocated area to minimum span of existing elements.
 	bool shrink_to_fit(){
@@ -275,6 +308,11 @@ public:
 		}
 		ofile.close();
 	}
+
+	void setEdgeContinue(bool continueEdge) {
+		edgeContinue = continueEdge;
+	}
+
 protected:
 
 	int getIndex(const Index3D& i3D) const { //returns the 1D index anywhere in allocated space or -1 if requested index is unallocated
@@ -310,7 +348,7 @@ protected:
 	std::vector<T> data;
 	Index3D aSize, aOff; //allocated size and offset
 	Index3D cMin, cMax; //current minimum and maximum values in x/y/x currently in 
-
+	bool edgeContinue;
 };
 
 #endif

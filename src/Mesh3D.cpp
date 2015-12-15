@@ -712,8 +712,8 @@ bool CMesh3D::FillCheckTriInts(float y, float z, float pad)
 	z += maxYZ*FLT_EPSILON;
 
 	pad = pad > maxEpsilonChange ? pad : maxEpsilonChange; //always keep enough padding around to do epsilon changes in the ray position
-	bool yStale = abs(y-_lastY) > maxEpsilonChange; //account for small epsilon changes from before
-	bool zStale = abs(z-_lastZ) > maxEpsilonChange; //account for small epsilon changes from before
+	bool yStale = fabs(y-_lastY) > maxEpsilonChange; //account for small epsilon changes from before
+	bool zStale = fabs(z-_lastZ) > maxEpsilonChange; //account for small epsilon changes from before
 	bool padStale = pad > _lastPad; 
 
 	if (yStale || zStale || padStale) {  //recalculate

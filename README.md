@@ -52,5 +52,5 @@ For further usage, please refer to the [user guide](https://github.com/jonhiller
 Compiling Voxelyze
 --------
 
-The Voxelyze code is structured as a library and compiles on windows and linux. An included Visual Studio project compiles Voxelyze to a static *.lib, and the usual "make" can be executed on linux to build a static *.a library.
+The Voxelyze code is structured as a library and compiles on windows and linux. An included Visual Studio project compiles Voxelyze to a static *.lib, and the usual "make all" can be executed on linux to build a static *.a library. In order to build with support for openGL and / or pardiso support, use "make ogl", "make pardiso", or "make ogl_pardiso" respectively.
 

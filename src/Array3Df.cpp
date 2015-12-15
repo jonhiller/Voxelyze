@@ -26,7 +26,7 @@ CArray3Df& CArray3Df::operator=(const CArray3D<float>& rArray)
 	return *this;
 }
 
-bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite){
+bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite) const {
 	w.StartObject();
 	w.Key("spacing");
 	w.Double(aspc);
@@ -67,7 +67,7 @@ bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite){
 	int dataSize = (int)data.size();
 	for (int i=0; i<dataSize; i++){
 		float thisData = data[i];
-		if (abs(thisData)<minMagToWrite) w.Double(0.0);
+		if (fabs(thisData)<minMagToWrite) w.Double(0.0);
 		else w.Double(data[i]);
 	}
 	w.EndArray();
@@ -123,20 +123,26 @@ bool CArray3Df::readJSON(rapidjson::Value& v){
 	return true;
 }
 
-Vec3Df CArray3Df::indexToLocation(const Index3D& index)
+Vec3Df CArray3Df::indexToLocation(const Index3D& index) const
 {
 	return aspc*Vec3Df((float)index.x, (float)index.y, (float)index.z);
 }
 
-Index3D CArray3Df::locationToIndex(Vec3Df& location)
+Index3D CArray3Df::locationToIndex(const Vec3Df& location) const
 {
 	Vec3Df xformed = (location+0.5*Vec3Df(aspc, aspc, aspc))/aspc;
 	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
 }
 
-Vec3Df CArray3Df::locationToContinuousIndex(Vec3Df& location) //returns location, in index scale, but without truncating to integer
+Vec3Df CArray3Df::locationToContinuousIndex(const Vec3Df& location) const //returns location, in index scale, but without truncating to integer
 {
 	return location/aspc;
+}
+
+Index3D CArray3Df::continuousIndexToIndex(const Vec3Df& cIndex) const
+{
+	Vec3Df xformed = cIndex + Vec3Df(0.5, 0.5, 0.5);
+	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
 }
 
 void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
@@ -192,6 +198,14 @@ void CArray3Df::multiplyElements(float multiplyBy)
 	for (int i=0; i<numEl; i++) data[i] *= multiplyBy;
 }
 
+void CArray3Df::addElements(float add)
+{
+	defaultValue += add;
+
+	int numEl = (int)data.size();
+	for (int i = 0; i<numEl; i++) data[i] += add;
+}
+
 void CArray3Df::sqrtElements()
 {
 	if (defaultValue != 0.0f) return;
@@ -202,12 +216,12 @@ void CArray3Df::sqrtElements()
 	}
 }
 
-float CArray3Df::maxMagnitude()
+float CArray3Df::maxMagnitude() const
 {
 	float maxVal = 0;
 	int numEl = (int)data.size();
 	for (int i=0; i<numEl; i++)
-		if (abs(data[i]) > maxVal) maxVal = abs(data[i]);
+		if (fabs(data[i]) > maxVal) maxVal = fabs(data[i]);
 
 	return maxVal;
 }
@@ -306,6 +320,10 @@ void CArray3Df::linearBlur(float radius)
 						for (int n = std::max(min.z, k-fRadI); n <= std::min(max.z, k+fRadI); n++){
 
 							float fac = std::max(0.0f, fRad-(float)sqrt((float)(i-l)*(i-l)+(j-m)*(j-m)+(k-n)*(k-n))); //linear drop-off of weight (fac) from rmin @ centered vox to 0 at fRad and above.
+							
+					//		if (fac > fRad /2) fac = fRad;
+					//		else fac = 0;
+
 							newValue += fac*arrCopy(l,m,n);
 							sum += fac;
 
@@ -319,8 +337,44 @@ void CArray3Df::linearBlur(float radius)
 	}
 }
 
+void CArray3Df::stepBlur(float radius)
+{
+	//	Index3D min = offset(), max = min + size()-Index3D(1,1,1);
+	Index3D min = minAllocated(), max = maxAllocated();
+
+	float fRad = radius; //filtering radius in voxels
+	int fRadI = (int)(1 + fRad); //number of voxels to search up and down.
+
+	CArray3Df arrCopy(*this);
+
+	for (int k = min.z; k <= max.z; k++) {
+		for (int j = min.y; j <= max.y; j++) {
+			for (int i = min.x; i <= max.x; i++) {
+				float sum = 0;
+				float newValue = 0;
+				for (int l = std::max(min.x, i - fRadI); l <= std::min(max.x, i + fRadI); l++) {
+					for (int m = std::max(min.y, j - fRadI); m <= std::min(max.y, j + fRadI); m++) {
+						for (int n = std::max(min.z, k - fRadI); n <= std::min(max.z, k + fRadI); n++) {
+
+							float rad = (float)sqrt((float)(i - l)*(i - l) + (j - m)*(j - m) + (k - n)*(k - n)); 
+							float fac = rad <= radius ? 1.0 : 0.0;
+
+							newValue += fac*arrCopy(l, m, n);
+							sum += fac;
+
+						}
+					}
+				}
+
+				addValue(i, j, k, newValue / sum, false);
+			}
+		}
+	}
+}
+
+
 //sets each existing element of this array (so, after setting spacing and resizing the array) by trilinearly interpolating the same location (accounting for spacing) in sampleFrom
-void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
+void CArray3Df::sampleFromArray(CArray3Df* sampleFrom, interpolateType type)
 {
 	if (sampleFrom->size() == size() && sampleFrom->offset() == offset() && sampleFrom->spacing() == spacing()){
 		*this = *sampleFrom; //if equal, just copy over.
@@ -332,9 +386,10 @@ void CArray3Df::sampleFromArray(CArray3Df* sampleFrom)
 		for (int k=min.z; k<=max.z; k++){
 			for (int j=min.y; j<=max.y; j++){
 				for (int i=min.x; i<=max.x; i++){
-					Vec3Df thisLocation = indexToLocation(Index3D(i,j,k));
+					Index3D thisIndex(i,j,k);
+					Vec3Df thisLocation = indexToLocation(thisIndex);
 					Vec3Df thatContinuousIndex = sampleFrom->locationToContinuousIndex(thisLocation);
-					float interpDens = sampleFrom->interpolateTriLinear(thatContinuousIndex);
+					float interpDens = sampleFrom->interpolate(thatContinuousIndex, type);
 
 					addValue(i,j,k,interpDens,false);
 				}
@@ -356,21 +411,23 @@ void CArray3Df::normalizeLinearKernel(std::vector<float>* kernel)
 void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 {
 	CArray3Df arrCopy(*this);
-	Index3D min = offset(), max = min + size();
+	Index3D min = offset(), max = min + size()-Index3D(1,1,1);
 	int numOut = (int)(kernel->size()-1)/2;
 
 	//apply in X:
 	for (int ak=min.z; ak<=max.z; ak++){
 		for (int aj=min.y; aj<=max.y; aj++){
 			for (int ai=min.x; ai<=max.x; ai++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int ti=-numOut; ti<=numOut; ti++){
 					int thisI = ai+ti;
 					if (thisI >= min.x && thisI <= max.x){
-						acc += (*kernel)[ti+numOut]*arrCopy(thisI, aj, ak);
+						float kern = (*kernel)[ti + numOut];
+						div += kern;
+						acc += kern*arrCopy(thisI, aj, ak);
 					}
 				}
-				addValue(ai, aj, ak, acc, false);
+				addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
@@ -379,14 +436,16 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 	for (int ak=min.z; ak<=max.z; ak++){
 		for (int ai=min.x; ai<=max.x; ai++){
 			for (int aj=min.y; aj<=max.y; aj++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int tj=-numOut; tj<=numOut; tj++){
 					int thisJ = aj+tj;
 					if (thisJ >= min.y && thisJ <= max.y){
-						acc += (*kernel)[tj+numOut]* (*this)(ai, thisJ, ak);
+						float kern = (*kernel)[tj + numOut];
+						div += kern;
+						acc += kern * (*this)(ai, thisJ, ak);
 					}
 				}
-				arrCopy.addValue(ai, aj, ak, acc, false);
+				arrCopy.addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
@@ -395,27 +454,37 @@ void CArray3Df::applyLinearKernel(std::vector<float>* kernel)
 	for (int aj=min.y; aj<=max.y; aj++){
 		for (int ai=min.x; ai<=max.x; ai++){
 			for (int ak=min.z; ak<=max.z; ak++){
-				float acc = 0;
+				float acc = 0, div = 0;
 				for (int tk=-numOut; tk<=numOut; tk++){
 					int thisK = ak+tk;
 					if (thisK >= min.z && thisK <= max.z){
-						acc += (*kernel)[tk+numOut]*arrCopy(ai, aj, thisK);
+						float kern = (*kernel)[tk + numOut];
+						div += kern;
+						acc += kern * arrCopy(ai, aj, thisK);
 					}
 				}
-				addValue(ai, aj, ak, acc, false);
+				addValue(ai, aj, ak, acc/div, false);
 			}
 		}
 	}
 }
 
 
-//simplest of finite difference methods. Provide a gridSpacing value (in real units between grid point) for a quantitaive gradient.
-Vec3Df CArray3Df::arrayGradient(Index3D index)
+//simplest of finite difference methods.
+Vec3Df CArray3Df::arrayGradient(const Index3D& index) const
 {
 	return Vec3Df(
 		(at(index-Index3D(1,0,0)) - at(index+Index3D(1,0,0)))/(2*aspc),
 		(at(index-Index3D(0,1,0)) - at(index+Index3D(0,1,0)))/(2*aspc),
 		(at(index-Index3D(0,0,1)) - at(index+Index3D(0,0,1)))/(2*aspc));
+}
+
+Vec3Df CArray3Df::arrayGradientInterp(const Vec3Df& cIndex, float delta, interpolateType type) const
+{
+	return Vec3Df(
+		(interpolate(cIndex - Vec3Df(delta, 0, 0), type) - interpolate(cIndex + Vec3Df(delta, 0, 0), type)) / (2 * delta * aspc),
+		(interpolate(cIndex - Vec3Df(0, delta, 0), type) - interpolate(cIndex + Vec3Df(0, delta, 0), type)) / (2 * delta * aspc),
+		(interpolate(cIndex - Vec3Df(0, 0, delta), type) - interpolate(cIndex + Vec3Df(0, 0, delta), type)) / (2 * delta * aspc));
 }
 
 void CArray3Df::oversample(int oSample, interpolateType type)
@@ -487,7 +556,7 @@ void CArray3Df::oversample(CArray3Df& in, int oSample, interpolateType type)
 
 //trilinear interpolation
 
-float CArray3Df::interpolate(Vec3Df interpIndex, interpolateType type)
+float CArray3Df::interpolate(const Vec3Df& interpIndex, interpolateType type) const
 {
 	switch (type){
 		case TRILINEAR: return interpolateTriLinear(interpIndex);
@@ -498,7 +567,7 @@ float CArray3Df::interpolate(Vec3Df interpIndex, interpolateType type)
 }
 
 
-float CArray3Df::interpolateTriLinear(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriLinear(const Vec3Df& interpIndex) const
 {
 	int i = floor(interpIndex.x), j = floor(interpIndex.y), k = floor(interpIndex.z);
 	float xp = interpIndex.x - i, yp = interpIndex.y - j, zp = interpIndex.z - k;
@@ -514,7 +583,7 @@ float CArray3Df::interpolateTriLinear(Vec3D<float> interpIndex)
 	return val;
 }
 
-float CArray3Df::interpolateTriLinearAvg(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriLinearAvg(const Vec3Df& interpIndex) const
 {
 	float avgSum = 0;
 	float eps = 0.5f;
@@ -527,7 +596,7 @@ float CArray3Df::interpolateTriLinearAvg(Vec3D<float> interpIndex)
 	return avgSum / 6.0f;
 }
 
-float CArray3Df::interpolateTriCubic(Vec3D<float> interpIndex)
+float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
 {
 	int xi = floor(interpIndex.x), yi = floor(interpIndex.y), zi = floor(interpIndex.z);
 	float dx = interpIndex.x - xi, dy = interpIndex.y - yi, dz = interpIndex.z - zi;

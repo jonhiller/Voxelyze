@@ -12,7 +12,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_LinearSolver.h"
 #include "Voxelyze.h"
 #include "VX_MaterialLink.h"
-#include <iostream>
+
 
 //VERSION 5
 //#define USE_DIRECT
@@ -34,11 +34,7 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	mnum = 1; //Which factorization to use.
 	msglvl = 0; //Print statistical information
 	error = 0; //Initialize error flag
-#ifdef USE_DIRECT
-	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#else
-	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#endif
+
 
 
 	progressTick = 0;
@@ -48,7 +44,15 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	cancelFlag = false;
 
 #ifdef PARDISO_5
+	#ifdef USE_DIRECT
+	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#else
+	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#endif
+
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error); //initialize pardiso
+
+	if (error != 0) std::cout << "Pardiso init error: " << error << "\n";
 #endif
 }
 
@@ -126,9 +130,11 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 	//dparm[0] = 5;
 
 
-	int idum = 0; //Integer dummy var
+
 
 #ifdef PARDISO_5
+	int idum = 0; //Integer dummy var
+
 	updateProgress(0.02f, "Pardiso: Analyzing...");
 	phase = 13;
 #ifndef USE_DIRECT
@@ -153,7 +159,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 //	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &dof, &a[0], &ia[0], &ja[0], &idum, &nrhs, iparm, &msglvl, &b[0], &x[0], &error, dparm);
 
 	if (error != 0){
-		std::cout << "error: " << error << "\n";
+		std::cout << "pardiso error: " << error << "\n";
 
 		Success=false;
 		switch (error){
@@ -216,9 +222,9 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		for (int i=0; i<vCount; i++) {v2i[vx->voxel(i)] = i;}
 
 		ia.resize(dof+1);
-		std::fill(ia.begin(), ia.end(), 0.0); //start with nothing
+		std::fill(ia.begin(), ia.end(), 0); //start with nothing
 		ja.resize(nA);
-		std::fill(ja.begin(), ja.end(), 0.0); //start with nothing
+		std::fill(ja.begin(), ja.end(), 0); //start with nothing
 		a.resize(nA); //optimized set everything to 0
 		std::fill(a.begin(), a.end(), UNUSED); //start with empty
 
@@ -407,7 +413,7 @@ void CVX_LinearSolver::consolidateA() //gets rid of all the zeros for quicker so
 			if (checkPenalty && penaltyElements[penalFactIndex].first == index + shift) {
 				penaltyElements[penalFactIndex].first = index;
 				penalFactIndex++; //found this one! on to the next.
-				if (penalFactIndex == penaltyElements.size()) checkPenalty = false; //stop when we've found the last one.
+				if (penalFactIndex == (int)penaltyElements.size()) checkPenalty = false; //stop when we've found the last one.
 			}
 
 			index++;

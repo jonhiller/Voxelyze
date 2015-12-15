@@ -151,7 +151,7 @@ void blurMaterials(CVoxelyze* pVx, Vec3D<float> mixRadius){ //blurs the specifie
 		CVX_Material* pThisMaterial = NULL;
 		for (int j=0; j<pVx->materialCount(); j++){ //if existing material, find it.
 			if (
-				abs(pVx->material(j)->youngsModulus() - (float)accYoungsMod)/(float)accYoungsMod < FLT_EPSILON){ // &&abs(pVx->material(j)->density() - (float)accDensity)/(float)accDensity < FLT_EPSILON){
+				fabs(pVx->material(j)->youngsModulus() - (float)accYoungsMod)/(float)accYoungsMod < FLT_EPSILON){ // &&abs(pVx->material(j)->density() - (float)accDensity)/(float)accDensity < FLT_EPSILON){
 				pThisMaterial = pVx->material(j);
 				break;
 			}
