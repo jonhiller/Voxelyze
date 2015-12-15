@@ -16,7 +16,8 @@ class CVoxelyze;
 #include <string>
 #include <vector>
 #include <unordered_map>
-
+#include <algorithm>
+#include <iostream>
 
 #ifdef PARDISO_5
 #ifdef _WIN32
@@ -60,7 +61,8 @@ private: //off limits variable and functions (internal)
 	std::unordered_map<CVX_Voxel*, int> v2i;
 	std::vector<int> aToZero; //list of "a" matrix indices to set to zero at the end.
 	std::vector<bool> fixed; //any fixed degrees of freedom
-
+	std::vector<std::pair<int, double>> penaltyElements; //first element of pair is index in A array, and 2nd is penalty value pre-weighting.
+	
 	//Pardiso variables:
 	int mtype; //defines matrix type
 	int nrhs; //number of right-hand side vectors
@@ -72,6 +74,7 @@ private: //off limits variable and functions (internal)
 	//functions
 	void calculateA(); //calculates the a (stiffness) matrix!
 	void addAValue(int row, int column, float value);
+	double maxAValue(); //returns the maximum numerical value in A.
 	void consolidateA(); //gets rid of all the zeros for solving!
 	void applyBX(); //apply forces and fixed boundary conditions
 	void convertTo1Base(); //convert to 1-based indices for pardiso:

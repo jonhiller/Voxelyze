@@ -26,11 +26,12 @@ public:
 	void clear();
 
 	int addVertex(Vec2Df& location); 
-	int vertexCount(){return (int)vertices.size();}
+	int vertexCount() const {return (int)vertices.size();}
 	Vec2Df& vertex(int vertexIndex){return vertices[vertexIndex];}
 
 	bool isInside(Vec2Df* point); //true if inside mesh, false
-	float distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut = 0); //returns disance from closest point on perimeter of polygon. positive for outside, negative for inside.
+	bool isInsideConst(Vec2Df* point) const; //true if inside mesh, false
+	float distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut = 0) const; //returns disance from closest point on perimeter of polygon. positive for outside, negative for inside.
 
 	Vec2Df polyMin() {if (boundsStale) updateBounds(); return boundsMin;}
 	Vec2Df polyMax() {if (boundsStale) updateBounds(); return boundsMax;}
@@ -40,6 +41,7 @@ public:
 	void scale(Vec2Df& s); // scale polygon
 	void rotate(float a); //rotation angle in radians
 
+	void updateAll(); //Updates all internal state in preparation for calls to isInsideConst();
 
 protected:
 
@@ -51,7 +53,7 @@ private:
 	bool boundsStale;
 	void updateBounds(void);
 
-	float minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNormalOut = 0); // Returns minimum distance between point p and a line segment from v1 to v2.
+	float minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNormalOut = 0) const; // Returns minimum distance between point p and a line segment from v1 to v2.
 
 };
 #endif //POLY2D_H

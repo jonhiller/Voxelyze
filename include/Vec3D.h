@@ -103,7 +103,8 @@ public:
 	Vec3D	Max(const Vec3D& s) const		{return Vec3D(x>s.x ? x:s.x, y>s.y ? y:s.y, z>s.z ? z:s.z);} //!< Returns a vector populated by the maximum x, y, and z value of this vector and the specified vector "s". This vector is not modified. @param[in] s Second vector to consider.
 	T		Min() const						{T Min1 = (x<y ? x:y); return (z<Min1 ? z:Min1);} //!< Returns the smallest of x, y, or z of this vector. This vector is not modified.
 	T		Max() const						{T Max1 = (x>y ? x:y); return (z>Max1 ? z:Max1);} //!< Returns the largest of x, y, or z of this vector. This vector is not modified.
-	Vec3D	Scale(const Vec3D& v) const		{return Vec3D(x*v.x, y*v.y, z*v.z);} //!< Returns a vector where each value of this vector is scaled by its respective value in vector "v". This vector is not modified. @param[in] v Vector with scaling values.
+	Vec3D	Scale(const Vec3D& v) const		{ return Vec3D(x*v.x, y*v.y, z*v.z); } //!< Returns a vector where each value of this vector is scaled by its respective value in vector "v". This vector is not modified. @param[in] v Vector with scaling values.
+	Vec3D	Scale(const T l) const			{return Vec3D(x*l, y*l, z*l);} //!< Returns a vector where each value of this vector is scaled by the specified length. This vector is not modified. @param[in] l Scale factor.
 	Vec3D	ScaleInv(const Vec3D& v) const	{return Vec3D(x/v.x, y/v.y, z/v.z);} //!< Returns a vector where each value of this vector is inversely scaled by its respective value in vector "v". This vector is not modified. @param[in] v Vector with scaling values.
 	T		Dist(const Vec3D& v) const		{return sqrt(Dist2(v));} //!< Returns the euclidian distance between this vector and the specified vector "v". This vector is not modified. @param[in] v Vector to compare with.
 	T		Dist2(const Vec3D& v) const		{return (v.x-x)*(v.x-x)+(v.y-y)*(v.y-y)+(v.z-z)*(v.z-z);} //!< Returns the euclidian distance squared between this vector and the specified vector "v". This vector is not modified. @param[in] v Vector to compare with.
@@ -113,6 +114,7 @@ public:
 	Vec3D	ExtractYZ() const				{return Vec3D(0, y, z);}
 	Vec3D	ExtractXZ() const				{return Vec3D(x, 0, z);}
 	Vec3D	Project(const int axis) const	{switch (axis%3){case vec3_X: return ExtractYZ(); case vec3_Y: return ExtractXZ(); default: return ExtractXY();}}
+	Vec3D	ScaleToLength(const T l)		{ return Normalized().Scale(l); } //!< Scales this vector to the length sepcified without changing direction.  @param[in] l length to scale to.
 
 };
 

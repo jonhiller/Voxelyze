@@ -14,12 +14,15 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 CVX_External::CVX_External() 
 {
 	_extRotationQ = 0;
+	mfc = 0;
 	reset();
 }
 
 CVX_External::~CVX_External()
 {
 	if (_extRotationQ) delete _extRotationQ;
+	if (mfc) delete [] mfc;
+
 }
 
 
@@ -30,8 +33,33 @@ CVX_External& CVX_External::operator=(const CVX_External& eIn)
 	extMoment = eIn.extMoment;
 	extTranslation = eIn.extTranslation;
 	extRotation = eIn.extRotation;
+	if (eIn.mfc) {
+		if (!mfc) mfc = new double[6](); //initialize to zero
+		for (int i = 0; i < 6; i++) mfc[i] = eIn.mfc[i];
+	}
+	else if (mfc){
+		delete[] mfc;
+		mfc = 0;
+	}
 	rotationChanged();
 	return *this;
+}
+
+bool CVX_External::operator==(const CVX_External& b)
+{
+	//a bit of work to determin equality of mfc
+	bool mfcEqual = true;
+	if ((!mfc && b.mfc) || (mfc && !b.mfc)) mfcEqual = false;
+	if (mfc && b.mfc) {
+		for (int i = 0; i < 6; i++) {
+			if (mfc[i] != b.mfc[i]) {
+				mfcEqual = false;
+				break;
+			}
+		}
+	}
+
+	return dofFixed == b.dofFixed && extForce == b.extForce && extMoment == b.extMoment && extTranslation == b.extTranslation && extRotation == b.extRotation && mfcEqual;
 }
 
 void CVX_External::reset()
@@ -40,6 +68,8 @@ void CVX_External::reset()
 	extForce = extMoment = Vec3D<float>();
 	extTranslation = Vec3D<double>();
 	extRotation = Vec3D<double>();
+	if (mfc) delete[] mfc;
+	mfc = 0;
 	rotationChanged();
 }
 
@@ -95,6 +125,31 @@ void CVX_External::clearDisplacementAll()
 	extRotation = Vec3D<double>();
 
 	rotationChanged();
+}
+
+void CVX_External::setMfc(double cX, double cY, double cZ, double cRX, double cRY, double cRZ)
+{
+	if (cX == 0 && cY == 0 && cZ == 0 && cRX == 0 && cRY == 0 && cRZ == 0) {
+		clearMfc();
+	}
+	else {
+		if (!mfc) mfc = new double[6];
+
+		mfc[0] = cX;
+		mfc[1] = cY;
+		mfc[2] = cZ;
+		mfc[3] = cRX;
+		mfc[4] = cRY;
+		mfc[5] = cRZ;
+	}
+}
+
+void CVX_External::clearMfc()
+{
+	if (mfc) {
+		delete[] mfc;
+		mfc = 0;
+	}
 }
 
 void CVX_External::rotationChanged()

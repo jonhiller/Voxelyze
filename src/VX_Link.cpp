@@ -90,10 +90,10 @@ Quat3D<double> CVX_Link::orientLink() //updates pos2, angle1, angle2, and smallA
 	//small angle approximation?
 	//smallAngle = false;
 
-	float SmallTurn = (float)((abs(pos2.z)+abs(pos2.y))/pos2.x);
+	float SmallTurn = (float)((fabs(pos2.z)+abs(pos2.y))/pos2.x);
 //	float ExtendPerc = (float)(abs(1-pos2.x/currentRestLength));
 //	float ExtendPerc = (float)(abs(pos2.x/currentRestLength));
-	float ExtendPerc = (float)abs((pos2.x/currentRestLength));
+	float ExtendPerc = (float)fabs((pos2.x/currentRestLength));
 	if (!smallAngle /*&& angle2.IsSmallAngle()*/ && SmallTurn < SA_BOND_BEND_RAD && ExtendPerc < SA_BOND_EXT_PERC){
 		smallAngle = true;
 		setBoolState(LOCAL_VELOCITY_VALID, false);

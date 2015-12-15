@@ -4,15 +4,17 @@
 # This is the directory in which to find subdirectories to install/find headers and libs:
 USER_HOME_PATH = $(HOME)
 
-VOXELYZE_NAME = voxelyze.0.9.92
-VOXELYZE_VERSION = voxelyze.0.9
-VOXELYZE_LIB_NAME = lib$(VOXELYZE_NAME).a
+#VOXELYZE_NAME = voxelyze.0.9.92
+#VOXELYZE_VERSION = voxelyze.0.9
+#VOXELYZE_LIB_NAME = lib$(VOXELYZE_NAME).a
+
+
 VOXELYZE_LIB_VERSION = lib$(VOXELYZE_VERSION).a
 
 CXX=g++
 CC=g++
 INCLUDE= -I./include
-FLAGS = -O3 -std=c++11 -DPARDISO_5=1 -Wall $(INCLUDE)
+
 
 VOXELYZE_SRC = \
 	src/Voxelyze.cpp \
@@ -26,8 +28,9 @@ VOXELYZE_SRC = \
 	src/VX_LinearSolver.cpp \
 	src/Mesh3D.cpp \
 	src/VX_MeshRender.cpp \
-    src/eigen/eigen.cpp \
-    src/Array3Df.cpp
+	src/eigen/eigen.cpp \
+	src/Array3Df.cpp \
+	src/Poly2D.cpp
 VOXELYZE_OBJS = \
 	src/Voxelyze.o \
 	src/VX_Voxel.o \
@@ -40,15 +43,28 @@ VOXELYZE_OBJS = \
 	src/VX_LinearSolver.o \
 	src/Mesh3D.o \
 	src/VX_MeshRender.o \
-    src/eigen/eigen.o \
-    src/Array3Df.o
-		
-	
-.PHONY: clean all
+	src/eigen/eigen.o \
+	src/Array3Df.o \
+	src/Poly2D.o
+
+.PHONY: clean all ogl pardiso ogl_pardiso
 
 #dummy target that builds everything for the library
+all: VOXELYZE_VERSION = voxelyze.0.9.93
+all: FLAGS = -O3 -std=c++11 -Wall $(INCLUDE)
 all: $(VOXELYZE_LIB_VERSION)
-	
+
+ogl: VOXELYZE_VERSION = voxelyze.0.9.93_ogl
+ogl: FLAGS = -O3 -std=c++11 -DUSE_OPEN_GL=1 -Wall $(INCLUDE)
+ogl: $(VOXELYZE_LIB_VERSION)
+
+pardiso: VOXELYZE_VERSION = voxelyze.0.9.93_pardiso
+pardiso: FLAGS = -O3 -std=c++11 -DPARDISO_5=1 -Wall $(INCLUDE)
+pardiso: $(VOXELYZE_LIB_VERSION)
+
+ogl_pardiso: VOXELYZE_VERSION = voxelyze.0.9.93_ogl_pardiso
+ogl_pardiso: FLAGS = -O3 -std=c++11 -DUSE_OPEN_GL=1 -DPARDISO_5=1 -Wall $(INCLUDE)
+ogl_pardiso: $(VOXELYZE_LIB_VERSION)
 
 # Auto sorts out dependencies (but leaves .d files):
 %.o: %.cpp
@@ -64,42 +80,42 @@ $(VOXELYZE_LIB_VERSION):	$(VOXELYZE_OBJS)
 
 
 clean:
-	rm -rf *.o */*.o *.d */*.d lib/$(VOXELYZE_LIB_VERSION)
+	rm -rf *.o */*.o *.d */*.d lib/*.a
 
 
 ##################################################
 
 
-$(USER_HOME_PATH)/include:
-		mkdir $(USER_HOME_PATH)/include
+#$(USER_HOME_PATH)/include:
+#		mkdir $(USER_HOME_PATH)/include
 
-$(USER_HOME_PATH)/lib:
-		mkdir $(USER_HOME_PATH)/lib
-
-
-installusr:     $(USER_HOME_PATH)/include $(USER_HOME_PATH)/lib
-		cp lib/$(VOXELYZE_LIB_VERSION) $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_VERSION)
-		rm -f $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_NAME)
-		ln -s lib/$(VOXELYZE_LIB_VERSION) $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_NAME)
-		rm -rf $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
-		-mkdir $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
-		cp include/*.h $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
-		-mkdir $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
-		cp include/rapidjson/*.h $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
-		rm -f $(USER_HOME_PATH)/include/$(VOXELYZE_NAME)
-		ln -s $(VOXELYZE_VERSION) $(USER_HOME_PATH)/include/$(VOXELYZE_NAME)
+#$(USER_HOME_PATH)/lib:
+#		mkdir $(USER_HOME_PATH)/lib
 
 
+#installusr:     $(USER_HOME_PATH)/include $(USER_HOME_PATH)/lib
+#		cp lib/$(VOXELYZE_LIB_VERSION) $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_VERSION)
+#		rm -f $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_NAME)
+#		ln -s lib/$(VOXELYZE_LIB_VERSION) $(USER_HOME_PATH)/lib/$(VOXELYZE_LIB_NAME)
+#		rm -rf $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
+#		-mkdir $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
+#		cp include/*.h $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)
+#		-mkdir $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
+#		cp include/rapidjson/*.h $(USER_HOME_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
+#		rm -f $(USER_HOME_PATH)/include/$(VOXELYZE_NAME)
+#		ln -s $(VOXELYZE_VERSION) $(USER_HOME_PATH)/include/$(VOXELYZE_NAME)
 
-installglobal:
-		cp lib/$(VOXELYZE_LIB_VERSION) $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_VERSION)
-		rm -f $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_NAME)
-		ln -s lib/$(VOXELYZE_LIB_VERSION) $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_NAME)
-		rm -rf $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
-		-mkdir $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
-		cp include/*.h $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
-		-mkdir $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
-		cp include/rapidjson/*.h $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
-		rm -f $(GLOBAL_PATH)/include/$(VOXELYZE_NAME)
-		ln -s $(VOXELYZE_VERSION) $(GLOBAL_PATH)/include/$(VOXELYZE_NAME)
+
+
+#installglobal:
+#		cp lib/$(VOXELYZE_LIB_VERSION) $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_VERSION)
+#		rm -f $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_NAME)
+#		ln -s lib/$(VOXELYZE_LIB_VERSION) $(GLOBAL_PATH)/lib/$(VOXELYZE_LIB_NAME)
+#		rm -rf $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
+#		-mkdir $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
+#		cp include/*.h $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)
+#		-mkdir $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
+#		cp include/rapidjson/*.h $(GLOBAL_PATH)/include/$(VOXELYZE_VERSION)/rapidjson
+#		rm -f $(GLOBAL_PATH)/include/$(VOXELYZE_NAME)
+#		ln -s $(VOXELYZE_VERSION) $(GLOBAL_PATH)/include/$(VOXELYZE_NAME)
 

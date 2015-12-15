@@ -18,6 +18,8 @@ CPoly2D::CPoly2D(std::vector<float>& coords)
 	for (int i=0; i<(int)coords.size()/2; i++){
 		vertices.push_back(Vec2Df(coords[2*i], coords[2*i+1]));
 	}
+
+	updateAll();
 }
 
 void CPoly2D::clear()
@@ -83,9 +85,19 @@ void CPoly2D::rotate(float a)
 
 }
 
-bool CPoly2D::isInside(Vec2Df* point)
+void CPoly2D::updateAll()
 {
 	if (boundsStale) updateBounds();
+}
+
+bool CPoly2D::isInside(Vec2Df* point)
+{
+	updateAll();
+	return isInsideConst(point);
+}
+
+bool CPoly2D::isInsideConst(Vec2Df* point) const
+{
 	if (point->x < boundsMin.x || point->x > boundsMax.x || point->y < boundsMin.y || point->y > boundsMax.y) return false;
 
 	//adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
@@ -99,7 +111,7 @@ bool CPoly2D::isInside(Vec2Df* point)
 	return (bool)c;
 }
 
-float CPoly2D::distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut)
+float CPoly2D::distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut) const
 {
 	float minDist = FLT_MAX;
 	Vec2Df minGrad;
@@ -115,11 +127,11 @@ float CPoly2D::distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut)
 	}
 
 	if (pNormalOut) *pNormalOut = minGrad;
-	return isInside(point) ? -minDist : minDist;
+	return isInsideConst(point) ? -minDist : minDist;
 }
 
 //adapted from http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment?page=1&tab=votes#tab-top
-float CPoly2D::minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNormalOut)
+float CPoly2D::minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNormalOut) const
 {
 	Vec2Df closestPoint;
 

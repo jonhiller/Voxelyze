@@ -12,7 +12,7 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 #include "VX_LinearSolver.h"
 #include "Voxelyze.h"
 #include "VX_MaterialLink.h"
-#include <iostream>
+
 
 //VERSION 5
 //#define USE_DIRECT
@@ -34,11 +34,7 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	mnum = 1; //Which factorization to use.
 	msglvl = 0; //Print statistical information
 	error = 0; //Initialize error flag
-#ifdef USE_DIRECT
-	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#else
-	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#endif
+
 
 
 	progressTick = 0;
@@ -48,7 +44,15 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	cancelFlag = false;
 
 #ifdef PARDISO_5
+	#ifdef USE_DIRECT
+	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#else
+	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
+#endif
+
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error); //initialize pardiso
+
+	if (error != 0) std::cout << "Pardiso init error: " << error << "\n";
 #endif
 }
 
@@ -126,9 +130,11 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 	//dparm[0] = 5;
 
 
-	int idum = 0; //Integer dummy var
+
 
 #ifdef PARDISO_5
+	int idum = 0; //Integer dummy var
+
 	updateProgress(0.02f, "Pardiso: Analyzing...");
 	phase = 13;
 #ifndef USE_DIRECT
@@ -153,7 +159,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 //	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &dof, &a[0], &ia[0], &ja[0], &idum, &nrhs, iparm, &msglvl, &b[0], &x[0], &error, dparm);
 
 	if (error != 0){
-		std::cout << "error: " << error << "\n";
+		std::cout << "pardiso error: " << error << "\n";
 
 		Success=false;
 		switch (error){
@@ -190,6 +196,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 
 	updateProgress(0.9f, "Processing results...");
 	postResults();
+
 	iteration++;
 	return true;
 }
@@ -198,7 +205,14 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 {
 	int vCount = vx->voxelCount(), lCount = vx->linkCount();
-	int nA = 12*vCount+18*lCount; //approximate number of non-zero elements in A (overestimates by quite a bit!)
+	
+	//count mfc's
+	int mfcCount = 0;
+	for (int i = 0; i < vCount; i++) {
+		if (vx->voxel(i)->externalExists() && vx->voxel(i)->external()->hasMfc()) mfcCount++;
+	}
+
+	int nA = 12*vCount+18*lCount+mfcCount*9; //approximate number of non-zero elements in A (overestimates by quite a bit!). Count from "ALL 3" diagram in header file. mfc multiplier is the upper triangle elements of diagonal blocks that aren't already counted.
 
 	if (iteration == 0){ //stuff that only needs to be done when the structure has changed (besides just stiffnesses. Voxel pointers must remain valid)
 		//build temporary reverse lookup from voxel* to index
@@ -214,35 +228,50 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		a.resize(nA); //optimized set everything to 0
 		std::fill(a.begin(), a.end(), UNUSED); //start with empty
 
+		penaltyElements.clear();
 
-			//std::vector<int> i2List;
-		int i2List[6];
+		int i2List[6]; //list of indices of connected voxels, eventually in ascending order
 
 		int iACounter = 1, jACounter = 0; //first ia always 0
 
 		for (int i=0; i<vCount; i++){ //for each voxel...
 			CVX_Voxel* iv = vx->voxel(i);
+			double* mfcElmts = 0;
+			if (iv->externalExists()) mfcElmts = iv->external()->mfcElements(); //non-null if voxel has multifreedom constraint.
 
 			//populate i2
 			int i2ListSize = 0;
 			for (int j=0; j<6; j++){ //for each possible link
 				if (iv->link((CVX_Voxel::linkDirection)j)){
 					int i2 = v2i[iv->adjacentVoxel((CVX_Voxel::linkDirection)j)];
-					if (i2>i) i2List[i2ListSize++] = i2; // i2List.push_back(i2);
+					if (i2>i) i2List[i2ListSize++] = i2;
 				}
 			}
-			std::sort(i2List,i2List+i2ListSize);
+			std::sort(i2List,i2List+i2ListSize); //ascending order
 
 			for (int j=0; j<6; j++){ //for each degree of freedom of the current voxel
 				int diagAIndex = jACounter; //index in a and ja of the diagonal element
 
 				//diagonal block
-				ja[jACounter++] = 6*i+j; //diagonal element
-				if (j<3){ //2 off-diagonals for first 3 dof, none for the rest
-					ja[jACounter++] = 6*i+blockOff[j][1];
-					ja[jACounter++] = 6*i+blockOff[j][2];
+				if (mfcElmts) { //leave space for every possible element in this block (upper triangle only of course)
+					for (int k = j; k < 6; k++) {
+						double thisMfcValue = mfcElmts[j] * mfcElmts[k];
+						if (thisMfcValue != 0) {
+							penaltyElements.push_back(std::make_pair(jACounter, thisMfcValue)); //save this value for later because we need to multiply by a weight that involves the maximum a element (after compositing everything)
+//							a[jACounter] = thisMfcValue; //a is empty at this points, and none of these will overlap, so don't need to use addAValue() safety function.
+						}
+						ja[jACounter++] = 6 * i + k; //add all into sparse format (could techically be intersection of "All3 and non-zero theMfcValue, but gains minimal.
+
+					}
 				}
-		
+				else { //just the elements in "ALL 3" in header file comments
+					ja[jACounter++] = 6 * i + j; //diagonal element
+					if (j < 3) { //2 off-diagonals for first 3 dof, none for the rest
+						ja[jACounter++] = 6 * i + blockOff[j][1];
+						ja[jACounter++] = 6 * i + blockOff[j][2];
+					}
+				}
+
 				//off-diagonal block(s)
 				//int nI2 = (int)(i2List.size()); //number of other voxels connected to this one
 				for (int m=0; m<i2ListSize; m++){ //was nI2;
@@ -322,8 +351,22 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		addAValue(i2*6+R2, i2*6+C2, val);
 	}
 
-	if (iteration == 0) 
+	//add in penalty elements
+	int penaltyElSize = (int)penaltyElements.size();
+	if (penaltyElSize != 0) { //if there are any penalty elements to add in
+		double maxA = maxAValue(); //get the maximum a value
+		double w = maxA * 1000; //this should should be max 0.1% error. See http://www.colorado.edu/engineering/CAS/courses.d/IFEM.d/IFEM.Ch09.d/IFEM.Ch09.pdf, pg 5 for better idea.
+
+		for (int i = 0; i < penaltyElSize; i++) { //add in all penalties
+			int thisAIndex = penaltyElements[i].first;
+			if (a[thisAIndex] == UNUSED) a[thisAIndex] = w*penaltyElements[i].second;
+			else a[thisAIndex] += w*penaltyElements[i].second;
+		}
+	}
+
+	if (iteration == 0) {
 		consolidateA(); //remove all the zeros
+	}
 }
 
 void CVX_LinearSolver::addAValue(int row, int column, float value) //after ia and ja are populated, set a value in the a matrix. Assumes 0-based indices!
@@ -340,11 +383,22 @@ void CVX_LinearSolver::addAValue(int row, int column, float value) //after ia an
 	else a[curInd]+=value;
 }
 
+double CVX_LinearSolver::maxAValue() {
+	double maxA = -FLT_MAX;
+	int aS = a.size();
+	for (int i = 0; i < aS; i++) {
+		if (a[i] != UNUSED && a[i] > maxA) maxA = a[i];
+	}
+	return maxA;
+}
+
 
 void CVX_LinearSolver::consolidateA() //gets rid of all the zeros for quicker solving! (maybe...). Assumes 1-based arrays!
 {
 	int index = 0; //master index of longer arrays
 	int shift = 0;
+	int penalFactIndex = 0; //march through penaltyElements (guaranteed ascending a indices) to update a indices.
+	bool checkPenalty = penaltyElements.size() != 0;
 
 	for (int i=0; i<dof; i++){ //for each element of ia;
 		ia[i+1] -= shift;
@@ -355,6 +409,12 @@ void CVX_LinearSolver::consolidateA() //gets rid of all the zeros for quicker so
 			}
 			a[index] = a[index+shift];
 			ja[index] = ja[index+shift];
+
+			if (checkPenalty && penaltyElements[penalFactIndex].first == index + shift) {
+				penaltyElements[penalFactIndex].first = index;
+				penalFactIndex++; //found this one! on to the next.
+				if (penalFactIndex == (int)penaltyElements.size()) checkPenalty = false; //stop when we've found the last one.
+			}
 
 			index++;
 		}
@@ -471,12 +531,14 @@ void CVX_LinearSolver::convertFrom1Base()
 void CVX_LinearSolver::postResults() //overwrites state of voxelyze object with the results
 {
 	int vCount = vx->voxelCount();
+
 	for (int i=0; i<vCount; i++){
 		CVX_Voxel* pVox = vx->voxel(i);
 		pVox->pos = pVox->originalPosition() + Vec3D<double>(x[6*i], x[6*i+1], x[6*i+2]);
 		pVox->linMom = Vec3D<double>(0,0,0);
 		pVox->orient = Quat3D<double>(Vec3D<double>(x[6*i+3], x[6*i+4], x[6*i+5]));
 		pVox->angMom = Vec3D<double>(0,0,0);
+
 	}
 
 	int lCount = vx->linkCount();

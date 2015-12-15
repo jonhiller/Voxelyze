@@ -355,7 +355,7 @@ Yield stress is interpreted as identical to failure stress. If failure stress is
 */
 bool CVX_Material::setModelLinear(float youngsModulus, float failureStress)
 {
-	if (youngsModulus<=0){
+	if (youngsModulus<0){
 		error = "Young's modulus must be positive";
 		return false;
 	}
