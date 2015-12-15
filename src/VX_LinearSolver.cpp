@@ -208,9 +208,9 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		for (int i=0; i<vCount; i++) {v2i[vx->voxel(i)] = i;}
 
 		ia.resize(dof+1);
-		std::fill(ia.begin(), ia.end(), 0.0); //start with nothing
+		std::fill(ia.begin(), ia.end(), 0); //start with nothing
 		ja.resize(nA);
-		std::fill(ja.begin(), ja.end(), 0.0); //start with nothing
+		std::fill(ja.begin(), ja.end(), 0); //start with nothing
 		a.resize(nA); //optimized set everything to 0
 		std::fill(a.begin(), a.end(), UNUSED); //start with empty
 
