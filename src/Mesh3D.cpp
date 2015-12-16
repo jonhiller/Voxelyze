@@ -9,14 +9,7 @@ Voxelyze is distributed in the hope that it will be useful, but WITHOUT ANY WARR
 See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 *******************************************************************************/
 
-#include <string>
-#include "Mesh3D.h"
-#include "MeshPolygonize.h"
-#include <unordered_map>
 
-//for file output
-#include <iostream>
-#include <fstream>
 
 #ifdef USE_OPEN_GL
 	#ifdef QT_GUI_LIB
@@ -31,6 +24,15 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 		#endif
 	#endif
 #endif
+
+#include <string>
+#include "Mesh3D.h"
+#include "MeshPolygonize.h"
+#include <unordered_map>
+
+//for file output
+#include <iostream>
+#include <fstream>
 
 #define STL_LABEL_SIZE 80
 
@@ -710,8 +712,8 @@ bool CMesh3D::FillCheckTriInts(float y, float z, float pad)
 	z += maxYZ*FLT_EPSILON;
 
 	pad = pad > maxEpsilonChange ? pad : maxEpsilonChange; //always keep enough padding around to do epsilon changes in the ray position
-	bool yStale = abs(y-_lastY) > maxEpsilonChange; //account for small epsilon changes from before
-	bool zStale = abs(z-_lastZ) > maxEpsilonChange; //account for small epsilon changes from before
+	bool yStale = fabs(y-_lastY) > maxEpsilonChange; //account for small epsilon changes from before
+	bool zStale = fabs(z-_lastZ) > maxEpsilonChange; //account for small epsilon changes from before
 	bool padStale = pad > _lastPad; 
 
 	if (yStale || zStale || padStale) {  //recalculate

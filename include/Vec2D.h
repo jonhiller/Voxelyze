@@ -69,8 +69,8 @@ public:
 	const Vec2D& operator-=(const Vec2D& s)			{x -= s.x; y -= s.y; return *this;} //!< overload subract and set
 	const Vec2D& operator*=(const T f)				{x *= f; y *= f; return *this;} //!< overload multiply and set
 	const Vec2D& operator/=(const T f)				{T Inv = (T)1.0/f; x *= Inv; y *= Inv; return *this;} //!< overload divide and set
-	const T& operator[](const int axis) const		{switch (axis%3){case vec2_X: return x; /*case vec3_Y:*/ default: return y;}} //!< overload index operator. 0 ("vec2_X") is x, 1 ("vec2_Y") is y.
-	T& operator[](const int axis)					{switch (axis%3){case vec2_X: return x; /*case vec3_Y:*/ default: return y;}}  //!< overload  index operator. 0 ("vec2_X") is x, 1 ("vec2_Y") is y.
+	const T& operator[](const int axis) const		{switch (axis%3){case vec2_X: return x; /*case vec2_Y:*/ default: return y;}} //!< overload index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y.
+	T& operator[](const int axis)					{switch (axis%3){case vec2_X: return x; /*case vec2_Y:*/ default: return y;}}  //!< overload  index operator. 0 ("vec3_X") is x, 1 ("vec3_Y") is y.
 
 
 	//Attributes

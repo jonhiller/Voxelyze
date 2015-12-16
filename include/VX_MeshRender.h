@@ -32,9 +32,21 @@ public:
 		STATE_INFO //!< Display a color coded "head map" of the specified CVoxelyze::stateInfoType (displacement, kinetic energy, etc.)
 	};
 
+	//! Defines various criteria to display or hide voxels in the Voxelyze 3D mesh output
+	enum voxelFilter {
+		VF_NONE, //!< Displays all voxels.
+		VF_RANGE_X, //!< Displays or hides voxels based on their X location (in real units, not voxel indices).
+		VF_RANGE_Y, //!< Displays or hides voxels based on their Y location (in real units, not voxel indices).
+		VF_RANGE_Z, //!< Displays or hides voxels based on their Z location (in real units, not voxel indices).
+		VF_STIFFNESS, //!< Displays or hides voxels based on their stiffness (in Pa)
+		VF_STRAIN_ENERGY //!< Displays or hides voxels based on their strain energy (in J)
+	};
+
 	CVX_MeshRender(CVoxelyze* voxelyzeInstance); //!< Initializes this mesh visualization with the specified voxelyze instance. This voxelyze pointer must remain valid for the duration of this object. @param[in] voxelyzeInstance The voxelyze instance to link this mesh object to.
-	void generateMesh(); //!< Generates (or regenerates) this mesh from the linked voxelyze object. This must be called whenever voxels are added or removed in the simulation.
+	void generateMesh(voxelFilter filterType = VF_NONE, float minValue = 0.0f, float maxValue = 1.0f); //!< Generates (or regenerates) this mesh from the linked voxelyze object. This must be manually called whenever voxels are added or removed in the simulation. Selectively hides voxels whose specified voxelFilter value lies outside of the range between minValue and maxValue. After calling this function updateMesh() must be called if non-default updateMesh() arguments are desired. @param[in] filterType The type of value to hide voxels based upon. @param[in] minValue The minimum extent of the desired range in percent [0.0, 1.0] of the current range of this parameter. @param[in] maxValue The maximum extent of the desired range in percent [0.0, 1.0] of the current range of this parameter
 	void updateMesh(viewColoring colorScheme = MATERIAL, CVoxelyze::stateInfoType stateType = CVoxelyze::DISPLACEMENT); //!< Updates the mesh according to the current state of the linked voxelyze object and the coloring scheme specified by the arguments. @param[in] colorScheme The coloring scheme. @param[in] stateType If colorScheme = STATE_INFO, this argument determines the state to color the object according to. Only kinetic energy, strain energy, displacement, and pressure are currently supported.
+
+	//void setVoxelFilter(voxelFilter filterType, float minValue, float maxValue); //!< Selectively hides voxels whose specified voxelFilter value lies outside of the range between minValue and maxValue. After calling this function updateMesh() must be called again to show non-default updateMesh() arguments. @param[in] filterType The type of value to hide voxels based upon. @param[in] minValue The minimum extent of the desired range. @param[in] maxValue The maximum extent of the desired range.
 
 	void glDraw(); //!< Executes openGL drawing commands to draw this mesh in an Open GL window if USE_OPEN_GL is defined.
 
@@ -56,5 +68,9 @@ private:
 	float jetMapB(float val) {if (val>0.5f) return 0.0f; else if (val<0.25f) return 1.0f; else return 2-val*4;}
 
 	float linkMaxColorValue(CVX_Voxel* pV, CVoxelyze::stateInfoType coloring); //for link properties, the max
+
+	bool voxelVisible(CVX_Voxel* pV, voxelFilter filterType, float minValue, float maxValue); //returns true if this voxel meets the criteria for visibility.
+	float currentMinimum(voxelFilter filterType); //returns the minimum value in the simulation for this filter type.
+	float currentMaximum(voxelFilter filterType); //returns the maximum value in the simulation for this filter type.
 };
 #endif
