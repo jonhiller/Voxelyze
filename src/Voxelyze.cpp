@@ -159,7 +159,8 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 			if (!(ext.HasMember("voxelIndices") && ext["voxelIndices"].IsArray())) continue; //invalid external
 
 			bool dof[6] = {false};
-			double disp[6] = { 0 }, mfcs[6] = { 0 };
+			double disp[6] = { 0 };
+			std::vector<std::vector<double>> mfcs;
 			Vec3D<float> force, moment;
 
 			if (ext.HasMember("fixed") && ext["fixed"].IsArray() && ext["fixed"].Size()==6) for (int j=0; j<6; j++){dof[j] = ext["fixed"][j].GetBool();}
@@ -167,14 +168,23 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 			if (ext.HasMember("rotate") && ext["rotate"].IsArray() && ext["rotate"].Size()==3) for (int j=0; j<3; j++){disp[3+j] = ext["rotate"][j].GetDouble();}
 			if (ext.HasMember("force") && ext["force"].IsArray() && ext["force"].Size()==3) for (int j=0; j<3; j++){force[j] = (float)ext["force"][j].GetDouble();}
 			if (ext.HasMember("moment") && ext["moment"].IsArray() && ext["moment"].Size()==3) for (int j=0; j<3; j++){moment[j] = (float)ext["moment"][j].GetDouble();}
-			if (ext.HasMember("mfc") && ext["mfc"].IsArray() && ext["mfc"].Size() == 6) for (int j = 0; j<6; j++) { mfcs[j] = ext["mfc"][j].GetDouble(); }
+			if (ext.HasMember("mfcs") && ext["mfcs"].IsArray()) {
+				int numMfcs = ext["mfcs"].Size();
+				for (int k = 0; k < numMfcs; k++) {
+					if (ext["mfcs"][k].IsArray() && ext["mfcs"][k].Size() == 6) {
+						std::vector<double> loadedVals;
+						for (int j = 0; j < 6; j++) { loadedVals.push_back(ext["mfcs"][k][j].GetDouble()); }
+						mfcs.push_back(loadedVals);
+					}
+				}
+			}
 
 			for (int j=0; j<(int)ext["voxelIndices"].Size(); j++){
 				CVX_External* pE = voxelsList[ext["voxelIndices"][j].GetInt()]->external();
 				for (int k=0; k<6; k++)	if (dof[k]) pE->setDisplacement((dofComponent)(1<<k), disp[k]); //fixed degree of freedom
 				pE->addForce(force);
 				pE->addMoment(moment);
-				pE->setMfc(mfcs[0], mfcs[1], mfcs[2], mfcs[3], mfcs[4], mfcs[5]);
+				for (int k = 0; k < mfcs.size(); k++) pE->addMfc(mfcs[k][0], mfcs[k][1], mfcs[k][2], mfcs[k][3], mfcs[k][4], mfcs[k][5]);
 			}
 		}
 	}
@@ -248,7 +258,17 @@ bool CVoxelyze::writeJSON(rapidjson_Writer& w)
 			if (e->isFixedAnyRotation() && e->rotation() != Vec3D<double>()){w.Key("rotate"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->rotation()[j]); w.EndArray();}
 			if (!e->isFixedAllTranslation() && e->force() != Vec3D<float>()){w.Key("force"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->force()[j]); w.EndArray();}
 			if (!e->isFixedAllRotation() && e->moment() != Vec3D<float>()){w.Key("moment"); w.StartArray(); for (int j=0; j<3; j++) w.Double(e->moment()[j]); w.EndArray();}
-			if (e->hasMfc()) { w.Key("mfc"); double* pMfc = e->mfcElements(); w.StartArray(); for (int j = 0; j < 6; j++) w.Double(pMfc[j]); w.EndArray(); }
+			if (e->mfcCount() != 0) {
+				w.Key("mfcs");
+				w.StartArray();
+				for (int k = 0; k < e->mfcCount(); k++) {
+					double* pMfc = e->mfcElements(k);
+					w.StartArray();
+					for (int j = 0; j < 6; j++) w.Double(pMfc[j]);
+					w.EndArray();
+				}
+				w.EndArray();
+			}
 
 			w.Key("voxelIndices");
 			w.StartArray();

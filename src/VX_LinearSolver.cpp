@@ -203,7 +203,10 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 	//count mfc's
 	int mfcCount = 0;
 	for (int i = 0; i < vCount; i++) {
-		if (vx->voxel(i)->externalExists() && vx->voxel(i)->external()->hasMfc()) mfcCount++;
+		if (vx->voxel(i)->externalExists()) {
+			mfcCount += vx->voxel(i)->external()->mfcCount();
+//			&& vx->voxel(i)->external()->hasMfc()) mfcCount++;
+		}
 	}
 
 	int nA = 12*vCount+18*lCount+mfcCount*9; //approximate number of non-zero elements in A (overestimates by quite a bit!). Count from "ALL 3" diagram in header file. mfc multiplier is the upper triangle elements of diagonal blocks that aren't already counted.
@@ -230,8 +233,12 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 
 		for (int i=0; i<vCount; i++){ //for each voxel...
 			CVX_Voxel* iv = vx->voxel(i);
-			double* mfcElmts = 0;
-			if (iv->externalExists()) mfcElmts = iv->external()->mfcElements(); //non-null if voxel has multifreedom constraint.
+
+			int thisMfcCount = 0;
+			if (iv->externalExists()) thisMfcCount = iv->external()->mfcCount(); //non-null if voxel has multifreedom constraint.
+
+//			double* mfcElmts = 0;
+//			if (iv->externalExists()) mfcElmts = iv->external()->mfcElements(); //non-null if voxel has multifreedom constraint.
 
 			//populate i2
 			int i2ListSize = 0;
@@ -247,9 +254,13 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 				int diagAIndex = jACounter; //index in a and ja of the diagonal element
 
 				//diagonal block
-				if (mfcElmts) { //leave space for every possible element in this block (upper triangle only of course)
+				if (thisMfcCount != 0) { //leave space for every possible element in this block (upper triangle only of course)
 					for (int k = j; k < 6; k++) {
-						double thisMfcValue = mfcElmts[j] * mfcElmts[k];
+						double thisMfcValue = 0.0;
+						for (int m = 0; m < thisMfcCount; m++) {
+							thisMfcValue += (iv->external()->mfcElements(m))[j] * (iv->external()->mfcElements(m))[k];
+						}
+//						 = mfcElmts[j] * mfcElmts[k];
 						if (thisMfcValue != 0) {
 							penaltyElements.push_back(std::make_pair(jACounter, thisMfcValue)); //save this value for later because we need to multiply by a weight that involves the maximum a element (after compositing everything)
 //							a[jACounter] = thisMfcValue; //a is empty at this points, and none of these will overlap, so don't need to use addAValue() safety function.

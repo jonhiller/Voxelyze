@@ -14,14 +14,14 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 CVX_External::CVX_External() 
 {
 	_extRotationQ = 0;
-	mfc = 0;
+	mfcs = 0;
 	reset();
 }
 
 CVX_External::~CVX_External()
 {
 	if (_extRotationQ) delete _extRotationQ;
-	if (mfc) delete [] mfc;
+	if (mfcs) delete mfcs;
 
 }
 
@@ -33,13 +33,21 @@ CVX_External& CVX_External::operator=(const CVX_External& eIn)
 	extMoment = eIn.extMoment;
 	extTranslation = eIn.extTranslation;
 	extRotation = eIn.extRotation;
-	if (eIn.mfc) {
-		if (!mfc) mfc = new double[6](); //initialize to zero
-		for (int i = 0; i < 6; i++) mfc[i] = eIn.mfc[i];
+	if (eIn.mfcs) {
+		if (!mfcs) mfcs = new std::vector<std::vector<double>>; //initialize to zero
+		
+		mfcs = eIn.mfcs;
+		//for (int i = 0; i < eIn.mfcCount(); i++) {
+		//	std::vectdouble* mfcsFrom = eIn.mfcElements(i);
+		//	double thisMfcs[6];
+		//	for (int j = 0; j < 6; j++) thisMfcs[j] = mfcsFrom[j];
+		//	mfcs->push_back(thisMfcs);
+		//}
+
 	}
-	else if (mfc){
-		delete[] mfc;
-		mfc = 0;
+	else if (mfcs){
+		delete[] mfcs;
+		mfcs = 0;
 	}
 	rotationChanged();
 	return *this;
@@ -49,12 +57,20 @@ bool CVX_External::operator==(const CVX_External& b)
 {
 	//a bit of work to determin equality of mfc
 	bool mfcEqual = true;
-	if (!mfc && b.mfc || mfc && !b.mfc) mfcEqual = false;
-	if (mfc && b.mfc) {
-		for (int i = 0; i < 6; i++) {
-			if (mfc[i] != b.mfc[i]) {
-				mfcEqual = false;
-				break;
+	if (!mfcs && b.mfcs || mfcs && !b.mfcs) mfcEqual = false;
+	if (mfcs && b.mfcs) {
+		if (mfcCount() != b.mfcCount()) mfcEqual = false;
+		else { //same count of mfcs
+			for (int i = 0; i < mfcCount(); i++) {
+				double* els = mfcElements(i);
+				double* bels = b.mfcElements(i);
+
+				for (int j = 0; j < 6; j++) {
+					if (els[j] != bels[j]){
+						mfcEqual = false;
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -68,8 +84,8 @@ void CVX_External::reset()
 	extForce = extMoment = Vec3D<float>();
 	extTranslation = Vec3D<double>();
 	extRotation = Vec3D<double>();
-	if (mfc) delete[] mfc;
-	mfc = 0;
+	if (mfcs) delete[] mfcs;
+	mfcs = 0;
 	rotationChanged();
 }
 
@@ -127,29 +143,43 @@ void CVX_External::clearDisplacementAll()
 	rotationChanged();
 }
 
-void CVX_External::setMfc(double cX, double cY, double cZ, double cRX, double cRY, double cRZ)
+void CVX_External::addMfc(double cX, double cY, double cZ, double cRX, double cRY, double cRZ)
 {
-	if (cX == 0 && cY == 0 && cZ == 0 && cRX == 0 && cRY == 0 && cRZ == 0) {
-		clearMfc();
-	}
-	else {
-		if (!mfc) mfc = new double[6];
+	if (!mfcs) mfcs = new std::vector<std::vector<double>>;
 
-		mfc[0] = cX;
-		mfc[1] = cY;
-		mfc[2] = cZ;
-		mfc[3] = cRX;
-		mfc[4] = cRY;
-		mfc[5] = cRZ;
+	std::vector<double> toAdd = { cX, cY, cZ, cRX, cRY, cRZ };
+	mfcs->push_back(toAdd);
+}
+
+int CVX_External::mfcCount() const
+{
+	if (mfcs) return mfcs->size();
+	else return 0;
+}
+
+void CVX_External::removeMfc(int mfcIndex)
+{
+	if (mfcCount() != 0 && mfcIndex < mfcs->size()) {
+		mfcs->erase(mfcs->begin() + mfcIndex);
+		
+		if (mfcs->size() == 0) clearAllMfcs();
 	}
 }
 
-void CVX_External::clearMfc()
+void CVX_External::clearAllMfcs()
 {
-	if (mfc) {
-		delete[] mfc;
-		mfc = 0;
+	if (mfcs) {
+		delete[] mfcs;
+		mfcs = 0;
 	}
+}
+
+double* CVX_External::mfcElements(int mfcIndex) const
+{
+	if (mfcCount() != 0 && mfcIndex < mfcs->size()) {
+		return &((mfcs->at(mfcIndex))[0]); //pointer to first element
+	}
+	else return 0;
 }
 
 void CVX_External::rotationChanged()
