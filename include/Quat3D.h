@@ -90,13 +90,13 @@ public:
 	//utilities
 	const T Length() const {return sqrt(Length2());} //!< Returns the length (magnitude) of the quaternion.
 	const T Length2() const {return (w*w+x*x+y*y+z*z);} //!< Returns the length (magnitude) squared of the quaternion.
-	const T Normalize() {T l = Length(); if (l == 0){w = 1; x = 0; y = 0; z = 0;} else if (l > 0) {T li = 1.0/l; w*=li; x*=li; y*=li; z*=li;} return l;} //!< Normalizes this quaternion. Returns the previous magnitude of this quaternion before normalization. Note: function changes this quaternion.
+	const T Normalize() {T l = Length(); if (l == 0){w = 1; x = 0; y = 0; z = 0;} else if (l > 0) {T li = (T)1.0/l; w*=li; x*=li; y*=li; z*=li;} return l;} //!< Normalizes this quaternion. Returns the previous magnitude of this quaternion before normalization. Note: function changes this quaternion.
 	void NormalizeFast() {T l = sqrt(x*x+y*y+z*z+w*w); if (l!=0) {T li = 1.0/l;	w*=li; x*=li; y*=li; z*=li;} if (w>=1.0){w=1.0; x=0; y=0; z=0;}}  //!< Normalizes this quaternion slightly faster than Normalize() by not returning a value. Note: function changes this quaternion.
 	const Quat3D Inverse() const {T n = w*w + x*x + y*y + z*z; return Quat3D(w/n, -x/n, -y/n, -z/n);} //!< Returns a quaternion that is the inverse of this quaternion. This quaternion is not modified. 
 	const Quat3D Conjugate() const {return Quat3D(w, -x, -y, -z);} //!< Returns a quaternion that is the conjugate of this quaternion. This quaternion is not modified.
 
 	//angle and/or axis calculations
-	const T Angle() const {return 2.0*acos(w>1?1:w);} //!< Returns the angular rotation of this quaternion in radians.
+	const T Angle() const {return (T)2.0*acos(w>1?1:w);} //!< Returns the angular rotation of this quaternion in radians.
 	const T AngleDegrees() const {return Angle()*57.29577951308232;} //!< Returns the angular rotation of this quaternion in degrees.
 	bool IsNegligibleAngle() const {return 2.0*acos(w) < DISCARD_ANGLE_RAD;} //!< Returns true if the angular rotation of this quaternion is likely to be considered negligible.
 	bool IsSmallAngle() const {return w>SMALL_ANGLE_W;} //!< Returns true if the angular rotation of this quaternion is small enough to be a good candidate for small angle approximations.

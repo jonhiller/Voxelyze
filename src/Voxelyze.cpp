@@ -109,7 +109,7 @@ bool CVoxelyze::readJSON(rapidjson::Value& vxl)
 
 	if (!vxl.IsObject()) {return false;}
 
-	if (!vxl.HasMember("voxelSize") || !vxl["voxelSize"].IsDouble()) {return false;}
+	if (!vxl.HasMember("voxelSize") || !vxl["voxelSize"].IsNumber()) {return false;}
 	voxSize = vxl["voxelSize"].GetDouble();
 
 	if(vxl.HasMember("gravityAcceleration"))
@@ -283,11 +283,11 @@ bool CVoxelyze::writeJSON(rapidjson_Writer& w)
 	return true;
 }
 
-bool CVoxelyze::doLinearSolve() //linearizes at current point and solves
+bool CVoxelyze::doLinearSolve(bool structureUnchanged) //linearizes at current point and solves
 {
 	if (!pSolver) pSolver = new CVX_LinearSolver(this);
 
-	pSolver->solve(true); //do smart structure changed...
+	pSolver->solve(structureUnchanged); //do smart structure changed...
 
 
 

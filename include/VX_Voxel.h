@@ -129,7 +129,7 @@ public:
 	double transverseArea(CVX_Link::linkAxis axis); //!< Returns the transverse area of this voxel with respect to the specified axis. This would normally be called only internally, but can be used to calculate the correct relationship between force and stress for this voxel if Poisson's ratio is non-zero.
 	double transverseStrainSum(CVX_Link::linkAxis axis); //!< Returns the sum of the current strain of this voxel in the two mutually perpindicular axes to the specified axis. This would normally be called only internally, but can be used to correctly calculate stress for this voxel if Poisson's ratio is non-zero.
 
-	float dampingMultiplier() {return 2.0*mat->_sqrtMass*mat->zetaInternal/previousDt;} //!< Returns the damping multiplier for this voxel. This would normally be called only internally for the internal damping calculations.
+	float dampingMultiplier() {return 2.0f*mat->_sqrtMass*mat->zetaInternal/previousDt;} //!< Returns the damping multiplier for this voxel. This would normally be called only internally for the internal damping calculations.
 
 	//a couple global convenience functions to have wherever the link enums are used
 	static inline CVX_Link::linkAxis toAxis(linkDirection direction) {return (CVX_Link::linkAxis)((int)direction/2);} //!< Returns the link axis of the specified link direction.

@@ -80,7 +80,7 @@ void CVX_Material::writeJSON(rapidjson_Writer& w)
 	w.StartObject();
 
 	if (linear){
-		w.Key("youngsModulus");	w.Double((double)E);
+		w.Key("youngsModulus");	w.Float((double)E);
 		if (epsilonFail != -1){ w.Key("epsilonFail");	w.Double((double)epsilonFail);}
 	}
 	else {
@@ -124,9 +124,9 @@ void CVX_Material::writeJSON(rapidjson_Writer& w)
 bool CVX_Material::readJSON(rapidjson::Value& m)
 {
 	clear();
-	if (m.HasMember("youngsModulus") && m["youngsModulus"].IsDouble()){
+	if (m.HasMember("youngsModulus") && m["youngsModulus"].IsNumber()){
 		float failStress = -1.0f;
-		if (m.HasMember("epsilonFail") && m["epsilonFail"].IsDouble()){
+		if (m.HasMember("epsilonFail") && m["epsilonFail"].IsNumber()){
 			failStress = m["epsilonFail"].GetDouble()*m["youngsModulus"].GetDouble();
 		}
 		setModelLinear(m["youngsModulus"].GetDouble(), failStress);
@@ -142,19 +142,19 @@ bool CVX_Material::readJSON(rapidjson::Value& m)
 	}
 	else return false; //no valid model
 
-	if (m.HasMember("density") && m["density"].IsDouble())						rho = m["density"].GetDouble();
+	if (m.HasMember("density") && m["density"].IsNumber())						rho = m["density"].GetDouble();
 	if (m.HasMember("name") && m["name"].IsString())							myName = std::string(m["name"].GetString());
 	if (m.HasMember("red") && m["red"].IsInt())									r = m["red"].GetInt();
 	if (m.HasMember("green") && m["green"].IsInt())								g = m["green"].GetInt();
 	if (m.HasMember("blue") && m["blue"].IsInt())								b = m["blue"].GetInt();
 	if (m.HasMember("alpha") && m["alpha"].IsInt())								a = m["alpha"].GetInt();
-	if (m.HasMember("poissonsRatio") && m["poissonsRatio"].IsDouble())			nu = m["poissonsRatio"].GetDouble();
-	if (m.HasMember("CTE") && m["CTE"].IsDouble())								alphaCTE = m["CTE"].GetDouble();
-	if (m.HasMember("staticFriction") && m["staticFriction"].IsDouble())		muStatic = m["staticFriction"].GetDouble();
-	if (m.HasMember("kineticFriction") && m["kineticFriction"].IsDouble())		muKinetic = m["kineticFriction"].GetDouble();
-	if (m.HasMember("internalDamping") && m["internalDamping"].IsDouble())		zetaInternal = m["internalDamping"].GetDouble();
-	if (m.HasMember("globalDamping") && m["globalDamping"].IsDouble())			zetaGlobal = m["globalDamping"].GetDouble();
-	if (m.HasMember("collisionDamping") && m["collisionDamping"].IsDouble())	zetaCollision = m["collisionDamping"].GetDouble();
+	if (m.HasMember("poissonsRatio") && m["poissonsRatio"].IsNumber())			nu = m["poissonsRatio"].GetDouble();
+	if (m.HasMember("CTE") && m["CTE"].IsNumber())								alphaCTE = m["CTE"].GetDouble();
+	if (m.HasMember("staticFriction") && m["staticFriction"].IsNumber())		muStatic = m["staticFriction"].GetDouble();
+	if (m.HasMember("kineticFriction") && m["kineticFriction"].IsNumber())		muKinetic = m["kineticFriction"].GetDouble();
+	if (m.HasMember("internalDamping") && m["internalDamping"].IsNumber())		zetaInternal = m["internalDamping"].GetDouble();
+	if (m.HasMember("globalDamping") && m["globalDamping"].IsNumber())			zetaGlobal = m["globalDamping"].GetDouble();
+	if (m.HasMember("collisionDamping") && m["collisionDamping"].IsNumber())	zetaCollision = m["collisionDamping"].GetDouble();
 	if (m.HasMember("externalScaleFactor") && m["externalScaleFactor"].IsArray() && m["externalScaleFactor"].Size()==3){
 		for (int i=0; i<3; i++) extScale[i] = m["externalScaleFactor"][i].GetDouble();
 	}

@@ -19,7 +19,7 @@ CPoly2D::CPoly2D(std::vector<float>& coords)
 		vertices.push_back(Vec2Df(coords[2*i], coords[2*i+1]));
 	}
 
-	updateAll();
+    boundsStale = true;
 }
 
 void CPoly2D::clear()
@@ -38,7 +38,7 @@ int CPoly2D::addVertex(Vec2Df& location){
 	return vertexCount()-1; //returns index
 }
 
-void CPoly2D::updateBounds(void)
+void CPoly2D::updateBounds(void) const
 {
 	boundsStale = false;
 	if (vertices.size() == 0) {
@@ -85,53 +85,55 @@ void CPoly2D::rotate(float a)
 
 }
 
-void CPoly2D::updateAll()
-{
-	if (boundsStale) updateBounds();
-}
 
-bool CPoly2D::isInside(Vec2Df* point)
+bool CPoly2D::isInside(const Vec2Df &point) const
 {
-	updateAll();
-	return isInsideConst(point);
-}
+    if (boundsStale) updateBounds();
 
-bool CPoly2D::isInsideConst(Vec2Df* point) const
-{
-	if (point->x < boundsMin.x || point->x > boundsMax.x || point->y < boundsMin.y || point->y > boundsMax.y) return false;
+	if (point.x < boundsMin.x || point.x > boundsMax.x || point.y < boundsMin.y || point.y > boundsMax.y) return false;
 
 	//adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 	int vCount = vertexCount();
 
 	int i, j, c = 0;
 	for (i = 0, j = vCount-1; i < vCount; j = i++) {
-		if ( ((vertices[i].y > point->y) != (vertices[j].y > point->y)) && (point->x < (vertices[j].x - vertices[i].x) * (point->y - vertices[i].y) / (vertices[j].y-vertices[i].y) + vertices[i].x))
+		if ( ((vertices[i].y > point.y) != (vertices[j].y > point.y)) && (point.x < (vertices[j].x - vertices[i].x) * (point.y - vertices[i].y) / (vertices[j].y-vertices[i].y) + vertices[i].x))
 			c = !c;
 	}
-	return (bool)c;
+    return c % 2 == 1;
 }
 
-float CPoly2D::distanceFromEdge(Vec2Df* point, Vec2Df* pNormalOut) const
+float CPoly2D::distanceFromEdge(const Vec2Df &point, const bool ignoreYAxisSegments, Vec2Df* pEdgePointOut) const
 {
-	float minDist = FLT_MAX;
+    if (boundsStale) updateBounds();
+
+	float minDist2 = FLT_MAX;
 	Vec2Df minGrad;
+    Vec2Df closestPoint;
 	int vCount = vertexCount();
 	for (int p1=0; p1<vCount; p1++){
 		int p2 = p1+1;
 		if (p2 == vCount) p2 = 0;
-		const float thisMinDist = minDistanceSegment(vertices[p1], vertices[p2], *point, pNormalOut);
-		if (thisMinDist<minDist){
-			if (pNormalOut) minGrad = *pNormalOut;
-			minDist = thisMinDist;
+
+        if (ignoreYAxisSegments && vertices[p1].x == 0 && vertices[p2].x == 0)
+            continue;
+
+        Vec2Df thisClosestPoint;
+		const float thisMinDist2 = minDistance2Segment(vertices[p1], vertices[p2], point, &thisClosestPoint);
+		if (thisMinDist2 < minDist2){
+			closestPoint = thisClosestPoint;
+			minDist2 = thisMinDist2;
 		}
 	}
 
-	if (pNormalOut) *pNormalOut = minGrad;
-	return isInsideConst(point) ? -minDist : minDist;
+    if (pEdgePointOut) *pEdgePointOut = closestPoint;
+
+	return isInside(point) ? -sqrt(minDist2) : sqrt(minDist2);
 }
 
+
 //adapted from http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment?page=1&tab=votes#tab-top
-float CPoly2D::minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNormalOut) const
+float CPoly2D::minDistance2Segment(const Vec2Df &v1, const Vec2Df &v2, const Vec2Df &p, Vec2Df* pEdgePointOut) const
 {
 	Vec2Df closestPoint;
 
@@ -147,10 +149,8 @@ float CPoly2D::minDistanceSegment(Vec2Df v1, Vec2Df v2, Vec2Df p, Vec2Df* pNorma
 		else closestPoint = v1 + t * (v2 - v1);  // Projection falls on the segment
 	}
 
-	if (pNormalOut){
-		*pNormalOut = (p-closestPoint);
-		pNormalOut->NormalizeFast();
-	}
-	return p.Dist(closestPoint);
+    if (pEdgePointOut) *pEdgePointOut = closestPoint;
+
+	return p.Dist2(closestPoint);
 }
 

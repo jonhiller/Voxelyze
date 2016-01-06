@@ -79,10 +79,10 @@ bool CArray3Df::writeJSON(rapidjson_Writer& w, float minMagToWrite) const {
 bool CArray3Df::readJSON(rapidjson::Value& v){
 	clear();
 
-	if (v.HasMember("spacing") && v["spacing"].IsDouble()) aspc = (float) v["spacing"].GetDouble();
+	if (v.HasMember("spacing") && v["spacing"].IsNumber()) aspc = (float) v["spacing"].GetDouble();
 	else return false;
 
-	if (v.HasMember("defaultValue") && v["defaultValue"].IsDouble()) defaultValue = (float) v["defaultValue"].GetDouble();
+	if (v.HasMember("defaultValue") && v["defaultValue"].IsNumber()) defaultValue = (float) v["defaultValue"].GetDouble();
 	else return false;
 
 	if (v.HasMember("size") && v["size"].IsArray() && v["size"].Size() == 3){
@@ -357,7 +357,7 @@ void CArray3Df::stepBlur(float radius)
 						for (int n = std::max(min.z, k - fRadI); n <= std::min(max.z, k + fRadI); n++) {
 
 							float rad = (float)sqrt((float)(i - l)*(i - l) + (j - m)*(j - m) + (k - n)*(k - n)); 
-							float fac = rad <= radius ? 1.0 : 0.0;
+							float fac = rad <= radius ? 1.0f : 0.0f;
 
 							newValue += fac*arrCopy(l, m, n);
 							sum += fac;
@@ -576,7 +576,7 @@ float CArray3Df::interpolateNearestNeighbor(const Vec3Df& interpIndex) const
 
 float CArray3Df::interpolateTriLinear(const Vec3Df& interpIndex) const
 {
-	int i = floor(interpIndex.x), j = floor(interpIndex.y), k = floor(interpIndex.z);
+	int i = (int)floor(interpIndex.x), j = (int)floor(interpIndex.y), k = (int)floor(interpIndex.z);
 	float xp = interpIndex.x - i, yp = interpIndex.y - j, zp = interpIndex.z - k;
 
 	float val = 	(*this)(i,j,k) *		(1-xp) *	(1-yp) *	(1-zp)	+
@@ -619,7 +619,7 @@ float CArray3Df::interpolateTriLinearAvg2(const Vec3Df& interpIndex) const
 
 float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
 {
-	int xi = floor(interpIndex.x), yi = floor(interpIndex.y), zi = floor(interpIndex.z);
+	int xi = (int)floor(interpIndex.x), yi = (int)floor(interpIndex.y), zi = (int)floor(interpIndex.z);
 	float dx = interpIndex.x - xi, dy = interpIndex.y - yi, dz = interpIndex.z - zi;
 
 		float x[64] = {
@@ -725,7 +725,7 @@ float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
 		}
 		dzpow *= dz;
 	}
-	return result;
+	return (float)result;
 }
 
 const int CArray3Df::_C[64][64] = {

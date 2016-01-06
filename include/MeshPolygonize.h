@@ -452,9 +452,13 @@ static void polygoniseCube(Vec3D<float>* points, float* vals, float iso, CMesh3D
 		}
 	}
 
-	for (int i=0; triTable[cubeIndex][i]!=-1; i+=3) {
-		pMeshOut->addTriangle(vertList[triTable[cubeIndex][i]], vertList[triTable[cubeIndex][i+1]], vertList[triTable[cubeIndex][i+2]]);
-	}
+#pragma omp critical(addingTriangle)
+{
+    for (int i = 0; triTable[cubeIndex][i] != -1; i += 3) {
+        pMeshOut->addTriangle(vertList[triTable[cubeIndex][i]], vertList[triTable[cubeIndex][i + 1]], vertList[triTable[cubeIndex][i + 2]]);
+    }
+}
+
 }
 
 static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3Df& values, float iso, float (*density)(Vec3D<float>&, Vec3D<float>*) = 0)
@@ -464,10 +468,12 @@ static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 	Index3D minInds = values.minIndices()-Index3D(1,1,1), maxInds = values.maxIndices()+Index3D(1,1,1);
 //	Index3D minInds = values.minIndices(), maxInds = values.maxIndices();
 
-	Vec3D<float> points[8];
-	float vals[8];
 
+
+#pragma omp parallel for schedule(dynamic)
 	for (int iz=minInds.z; iz<maxInds.z; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
+        Vec3D<float> points[8];
+        float vals[8];
 		for (int ix=minInds.x; ix<maxInds.x; ix++){ 
 			for (int iy=minInds.y; iy<maxInds.y; iy++){
 				//Vec3D<float> minCorner(scale*ix, scale*iy, scale*iz);

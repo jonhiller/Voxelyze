@@ -52,7 +52,7 @@ public:
 	template <typename U> Vec3D<T> operator=(const Vec3D<U>& s)				{x = s.x; y = s.y; z = s.z; return *this; } //!< equals operator for different template types
 	template <typename U> const Vec3D<T> operator+(const Vec3D<U>& s)		{return Vec3D<T>(x+s.x, y+s.y, z+s.z);} //!< addition operator for different template types
 	template <typename U> const Vec3D<T> operator-(const Vec3D<U>& s)		{return Vec3D<T>(x-s.x, y-s.y, z-s.z);} //!< subtraction operator for different template types
-	template <typename U> const Vec3D<T> operator*(const U& f) const		{return Vec3D<T>(f*x, f*y, f*z);} //!< multiplication operator for different template types
+	template <typename U> const Vec3D<T> operator*(const U& f) const		{return Vec3D<T>((T)f*x, (T)f*y, (T)f*z);} //!< multiplication operator for different template types
 	template <typename U> const friend Vec3D<T> operator*(const U f, const Vec3D<T>& v) {return v*f;} //!< multiplication operator for different template types with number first. Therefore must be a friend because scalar value comes first.
 	template <typename U> const Vec3D<T>& operator+=(const Vec3D<U>& s)		{x += s.x; y += s.y; z += s.z; return *this;} //!< add and set for different template types
 	template <typename U> const Vec3D<T>& operator-=(const Vec3D<U>& s)		{x -= s.x; y -= s.y; z -= s.z; return *this;} //!< subract and set for different template types
@@ -65,8 +65,8 @@ public:
 	const Vec3D operator*(const T &f) const			{return Vec3D(f*x, f*y, f*z);} //!< overload multiplication.
 	const friend Vec3D operator*(const T f, const Vec3D& v) {return v*f;} //!< overload multiplication with number first.
 	const Vec3D operator/(const T &f) const			{T Inv = (T)1.0/f; return Vec3D(Inv*x, Inv*y, Inv*z);} //!< overload division.
-	bool operator==(const Vec3D& v)					{return (x==v.x && y==v.y && z==v.z);} //!< overload is equal.
-	bool operator!=(const Vec3D& v)					{return !(*this==v);} //!< overload is not equal.
+	bool operator==(const Vec3D& v)	const			{return (x==v.x && y==v.y && z==v.z);} //!< overload is equal.
+	bool operator!=(const Vec3D& v)	const			{return !(*this==v);} //!< overload is not equal.
 	const Vec3D& operator+=(const Vec3D& s)			{x += s.x; y += s.y; z += s.z; return *this;} //!< overload add and set
 	const Vec3D& operator-=(const Vec3D& s)			{x -= s.x; y -= s.y; z -= s.z; return *this;} //!< overload subract and set
 	const Vec3D& operator*=(const T f)				{x *= f; y *= f; z *= f; return *this;} //!< overload multiply and set

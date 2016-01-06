@@ -50,7 +50,7 @@ public:
 	template <typename U> Vec2D<T> operator=(const Vec2D<U>& s)				{x = s.x; y = s.y; return *this; } //!< equals operator for different template types
 	template <typename U> const Vec2D<T> operator+(const Vec2D<U>& s)		{return Vec2D<T>(x+s.x, y+s.y);} //!< addition operator for different template types
 	template <typename U> const Vec2D<T> operator-(const Vec2D<U>& s)		{return Vec2D<T>(x-s.x, y-s.y);} //!< subtraction operator for different template types
-	template <typename U> const Vec2D<T> operator*(const U& f) const		{return Vec2D<T>(f*x, f*y);} //!< multiplication operator for different template types
+	template <typename U> const Vec2D<T> operator*(const U& f) const		{return Vec2D<T>((T)f*x, (T)f*y);} //!< multiplication operator for different template types
 	template <typename U> const friend Vec2D<T> operator*(const U f, const Vec2D<T>& v) {return v*f;} //!< multiplication operator for different template types with number first. Therefore must be a friend because scalar value comes first.
 	template <typename U> const Vec2D<T>& operator+=(const Vec2D<U>& s)		{x += s.x; y += s.y; return *this;} //!< add and set for different template types
 	template <typename U> const Vec2D<T>& operator-=(const Vec2D<U>& s)		{x -= s.x; y -= s.y; return *this;} //!< subract and set for different template types

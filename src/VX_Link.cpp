@@ -193,6 +193,8 @@ void CVX_Link::updateForces()
 						pos2.x*forcePos.x + pos2.y*forcePos.y + pos2.z*forcePos.z + 
 						angle2v.x*momentPos.x + angle2v.y*momentPos.y + angle2v.z*momentPos.z));
 
+	//shear
+
 	//local damping:
 	if (isLocalVelocityValid()){ //if we don't have the basis for a good damping calculation, don't do any damping.
 		float sqA1=mat->_sqA1, sqA2xIp=mat->_sqA2xIp,sqB1=mat->_sqB1, sqB2xFMp=mat->_sqB2xFMp, sqB3xIp=mat->_sqB3xIp;

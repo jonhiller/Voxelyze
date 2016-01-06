@@ -53,7 +53,7 @@ public:
 	Vec3Df indexToLocation(const Index3D& index) const;
 	Index3D locationToIndex(const Vec3Df& location) const; //returns nearest (normal rounding)
 	Vec3Df locationToContinuousIndex(const Vec3Df& location) const; //returns location, in index scale, but without truncating to integer
-	Vec3Df indexToContinuousIndex(const Index3D& index) const { return Vec3Df(index.x, index.y, index.z); }
+	Vec3Df indexToContinuousIndex(const Index3D& index) const { return Vec3Df((float)index.x, (float)index.y, (float)index.z); }
 	Index3D continuousIndexToIndex(const Vec3Df& cIndex) const;
 
 	void gaussianBlur(float sigma = 1.0f, float extent = 3.0f);
