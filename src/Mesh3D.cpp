@@ -191,7 +191,7 @@ void CMesh3D::calcFaceNormals() //called to update the face normals...
 //assumes triangle normals are accurate! (and that coincident vertices are merged)
 void CMesh3D::splitVerticesByAngle(float seamAngleDegrees)
 {
-	float seamAngleRad = seamAngleDegrees*3.1415926/180.0f;
+	float seamAngleRad = seamAngleDegrees*3.1415926f/180.0f;
 	useFaceNormals();
 
 	std::vector<int> oldTriangles = triangles;

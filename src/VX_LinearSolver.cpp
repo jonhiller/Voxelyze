@@ -95,10 +95,10 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 	iparm[9] = 0; // 8 = default for sym. ind. matrics. (eps pivot)
 	iparm[10] = 0; // don't use non-symmmetric scaling
 	iparm[11] = 0; // don't transpose
-	iparm[12] = 0; // don't use non-symettric matchings
+	iparm[12] = 0; // don't use non-symmetric matchings
 	iparm[17] = 0; //flag to calculate non-zeros in LU (-1 to calculate, 0 to not)
 	iparm[18] = 0; //flag to calculate gflops (-1 to calculate, 0 to not) <-----------
-	iparm[20] = 1; // 1= better pivoting for symettric
+	iparm[20] = 1; // 1= better pivoting for symmetric
 	iparm[23] = 0; // 1=2 level parallel
 	iparm[24] = 1; // do parallel solve
 	iparm[25] = 0; // do forward/backward solve with L/U
@@ -396,7 +396,7 @@ void CVX_LinearSolver::addAValue(int row, int column, float value) //after ia an
 
 double CVX_LinearSolver::maxAValue() {
 	double maxA = -FLT_MAX;
-	int aS = a.size();
+	int aS = (int)a.size();
 	for (int i = 0; i < aS; i++) {
 		if (a[i] != UNUSED && a[i] > maxA) maxA = a[i];
 	}

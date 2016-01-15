@@ -22,9 +22,21 @@ CPoly2D::CPoly2D(std::vector<float>& coords)
     boundsStale = true;
 }
 
+CPoly2D& CPoly2D::operator=(const CPoly2D& p)
+{ 
+    vertices = p.vertices;
+    ignoreSegmentsForClosestPoint = p.ignoreSegmentsForClosestPoint;
+    boundsMin = p.boundsMin;
+    boundsMax = p.boundsMax;
+    boundsStale = p.boundsStale; 
+    return *this;
+}
+
+
 void CPoly2D::clear()
 {
 	vertices.clear();
+    ignoreSegmentsForClosestPoint.clear();
 
 	boundsMin = Vec2Df(0,0);
 	boundsMax = Vec2Df(0,0);
@@ -40,7 +52,6 @@ int CPoly2D::addVertex(Vec2Df& location){
 
 void CPoly2D::updateBounds(void) const
 {
-	boundsStale = false;
 	if (vertices.size() == 0) {
 		boundsMin = Vec2Df();
 		boundsMax = Vec2Df();
@@ -49,10 +60,12 @@ void CPoly2D::updateBounds(void) const
 		boundsMin = boundsMax = vertices[0];
 	
 		for (int i=0; i<(int)vertices.size(); i++) {
-			boundsMin = boundsMin.Min(vertices[i]);
-			boundsMax = boundsMax.Max(vertices[i]);
+            boundsMin = boundsMin.Min(vertices[i]);
+            boundsMax = boundsMax.Max(vertices[i]);
 		}
 	}
+    boundsStale = false;
+
 }
 
 
@@ -98,12 +111,12 @@ bool CPoly2D::isInside(const Vec2Df &point) const
 	int i, j, c = 0;
 	for (i = 0, j = vCount-1; i < vCount; j = i++) {
 		if ( ((vertices[i].y > point.y) != (vertices[j].y > point.y)) && (point.x < (vertices[j].x - vertices[i].x) * (point.y - vertices[i].y) / (vertices[j].y-vertices[i].y) + vertices[i].x))
-			c = !c;
+			c++;
 	}
     return c % 2 == 1;
 }
 
-float CPoly2D::distanceFromEdge(const Vec2Df &point, const bool ignoreYAxisSegments, Vec2Df* pEdgePointOut) const
+float CPoly2D::distanceFromEdge(const Vec2Df &point, Vec2Df* pEdgePointOut) const
 {
     if (boundsStale) updateBounds();
 
@@ -112,14 +125,14 @@ float CPoly2D::distanceFromEdge(const Vec2Df &point, const bool ignoreYAxisSegme
     Vec2Df closestPoint;
 	int vCount = vertexCount();
 	for (int p1=0; p1<vCount; p1++){
+        if (ignoreSegmentsForClosestPoint.size() > p1 && ignoreSegmentsForClosestPoint[p1]) continue;
+
 		int p2 = p1+1;
 		if (p2 == vCount) p2 = 0;
-
-        if (ignoreYAxisSegments && vertices[p1].x == 0 && vertices[p2].x == 0)
-            continue;
-
+        
         Vec2Df thisClosestPoint;
 		const float thisMinDist2 = minDistance2Segment(vertices[p1], vertices[p2], point, &thisClosestPoint);
+
 		if (thisMinDist2 < minDist2){
 			closestPoint = thisClosestPoint;
 			minDist2 = thisMinDist2;
@@ -128,7 +141,8 @@ float CPoly2D::distanceFromEdge(const Vec2Df &point, const bool ignoreYAxisSegme
 
     if (pEdgePointOut) *pEdgePointOut = closestPoint;
 
-	return isInside(point) ? -sqrt(minDist2) : sqrt(minDist2);
+    const float minDist = sqrt(minDist2);
+	return isInside(point) ? -minDist : minDist;
 }
 
 
@@ -153,4 +167,3 @@ float CPoly2D::minDistance2Segment(const Vec2Df &v1, const Vec2Df &v2, const Vec
 
 	return p.Dist2(closestPoint);
 }
-

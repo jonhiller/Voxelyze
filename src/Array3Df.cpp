@@ -131,7 +131,7 @@ Vec3Df CArray3Df::indexToLocation(const Index3D& index) const
 Index3D CArray3Df::locationToIndex(const Vec3Df& location) const
 {
 	Vec3Df xformed = (location+0.5*Vec3Df(aspc, aspc, aspc))/aspc;
-	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
+	return Index3D((int)floorf(xformed.x), (int)floorf(xformed.y), (int)floorf(xformed.z));
 }
 
 Vec3Df CArray3Df::locationToContinuousIndex(const Vec3Df& location) const //returns location, in index scale, but without truncating to integer
@@ -142,7 +142,7 @@ Vec3Df CArray3Df::locationToContinuousIndex(const Vec3Df& location) const //retu
 Index3D CArray3Df::continuousIndexToIndex(const Vec3Df& cIndex) const
 {
 	Vec3Df xformed = cIndex + Vec3Df(0.5, 0.5, 0.5);
-	return Index3D((int)xformed.x, (int)xformed.y, (int)xformed.z);
+	return Index3D((int)floorf(xformed.x), (int)floorf(xformed.y), (int)floorf(xformed.z));
 }
 
 void CArray3Df::multiplyElements(CArray3Df& multiplyBy)
@@ -571,12 +571,12 @@ float CArray3Df::interpolate(const Vec3Df& interpIndex, interpolateType type) co
 
 float CArray3Df::interpolateNearestNeighbor(const Vec3Df& interpIndex) const
 {
-	return at((int)floor(interpIndex.x + 0.5f), (int)floor(interpIndex.y + 0.5f), (int)floor(interpIndex.z + 0.5f));
+	return at((int)floorf(interpIndex.x + 0.5f), (int)floorf(interpIndex.y + 0.5f), (int)floorf(interpIndex.z + 0.5f));
 }
 
 float CArray3Df::interpolateTriLinear(const Vec3Df& interpIndex) const
 {
-	int i = (int)floor(interpIndex.x), j = (int)floor(interpIndex.y), k = (int)floor(interpIndex.z);
+	int i = (int)floorf(interpIndex.x), j = (int)floorf(interpIndex.y), k = (int)floorf(interpIndex.z);
 	float xp = interpIndex.x - i, yp = interpIndex.y - j, zp = interpIndex.z - k;
 
 	float val = 	(*this)(i,j,k) *		(1-xp) *	(1-yp) *	(1-zp)	+
@@ -619,7 +619,7 @@ float CArray3Df::interpolateTriLinearAvg2(const Vec3Df& interpIndex) const
 
 float CArray3Df::interpolateTriCubic(const Vec3Df& interpIndex) const
 {
-	int xi = (int)floor(interpIndex.x), yi = (int)floor(interpIndex.y), zi = (int)floor(interpIndex.z);
+	int xi = (int)floorf(interpIndex.x), yi = (int)floorf(interpIndex.y), zi = (int)floorf(interpIndex.z);
 	float dx = interpIndex.x - xi, dy = interpIndex.y - yi, dz = interpIndex.z - zi;
 
 		float x[64] = {

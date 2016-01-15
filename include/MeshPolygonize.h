@@ -468,13 +468,22 @@ static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 	Index3D minInds = values.minIndices()-Index3D(1,1,1), maxInds = values.maxIndices()+Index3D(1,1,1);
 //	Index3D minInds = values.minIndices(), maxInds = values.maxIndices();
 
-
+    //all this to give openMP enough options to balance.
+    const int zElementCount = maxInds.z - minInds.z;
+    const int xElementCount = maxInds.x - minInds.x;
+    const int xzElementCount = xElementCount*zElementCount;
 
 #pragma omp parallel for schedule(dynamic)
-	for (int iz=minInds.z; iz<maxInds.z; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
-        Vec3D<float> points[8];
-        float vals[8];
-		for (int ix=minInds.x; ix<maxInds.x; ix++){ 
+    for (int ixz = 0; ixz<xzElementCount; ixz++) { //the padding ensures we cap ends (assumes default value of array is less than iso)
+        int ix = ixz % xElementCount + minInds.x;
+        int iz = ixz / xElementCount + minInds.z;
+
+
+ //   for (int iz=minInds.z; iz<maxInds.z; iz++){ //the padding ensures we cap ends (assumes default value of array is less than iso)
+//		for (int ix=minInds.x; ix<maxInds.x; ix++){ 
+
+            Vec3D<float> points[8];
+            float vals[8];
 			for (int iy=minInds.y; iy<maxInds.y; iy++){
 				//Vec3D<float> minCorner(scale*ix, scale*iy, scale*iz);
 				//polygoniseCube2(minCorner, scale, iso, pMeshOut, 2, density);
@@ -487,7 +496,7 @@ static void meshFrom3dArrayMC(CMesh3D* pMeshOut, CArray3Df& values, float iso, f
 
 				polygoniseCube(points, vals, iso, pMeshOut, density);
 			}
-		}
+	//	}
 	}
 }
 
