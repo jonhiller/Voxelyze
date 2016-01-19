@@ -746,12 +746,17 @@ bool CMesh3D::FillTriInts(float y, float z, float padding)
 		float hitPointX = 0;
 		IntersectionType intersect = IntersectXRay(TriLine[i], y, z, hitPointX);
 
-		for (int j=0; j<(int)TriInts.size(); j++) {if (TriInts[j] == hitPointX)
-			return false;}
-		if (intersect == IT_INSIDE)
-			TriInts.push_back(hitPointX);
+
+        if (intersect == IT_INSIDE) {
+            for (int j = 0; j < (int)TriInts.size(); j++) {
+                if (TriInts[j] == hitPointX)
+                    return false;
+            }
+            TriInts.push_back(hitPointX);
+        }
 		else if (intersect == IT_EDGE)
 			return false; //try again...
+
 	}
 	if (TriInts.size() %2 ==1)
 		return false; //should never be an odd number of intersections
@@ -805,12 +810,12 @@ CMesh3D::IntersectionType CMesh3D::IntersectXRay(const int TriangleIndex, const 
 	if ((vA.y>y && vB.y>y && vC.y>y) || (vA.y<y && vB.y<y && vC.y<y)) return IT_OUTSIDE;
 	if ((vA.z>z && vB.z>z && vC.z>z) || (vA.z<z && vB.z<z && vC.z<z)) return IT_OUTSIDE;
 
-	float v0y = vC.y-vA.y; //u
-	float v0z = vC.z-vA.z;
-	float v1y = vB.y-vA.y; //v
-	float v1z = vB.z-vA.z;
-	float v2y = y-vA.y;
-	float v2z = z-vA.z;
+    double v0y = vC.y-vA.y; //u
+    double v0z = vC.z-vA.z;
+    double v1y = vB.y-vA.y; //v
+    double v1z = vB.z-vA.z;
+    double v2y = y-vA.y;
+    double v2z = z-vA.z;
 
 	//without these as double precision, nearly degenerate triangles can produce false hits...
 	double dot00=v0y*v0y+v0z*v0z;
