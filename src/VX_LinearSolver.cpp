@@ -15,7 +15,6 @@ See <http://www.opensource.org/licenses/lgpl-3.0.html> for license details.
 
 
 //VERSION 5
-//#define USE_DIRECT
 #define UNUSED FLT_MAX
 
 //some static info to reference in the algorithms
@@ -44,14 +43,8 @@ CVX_LinearSolver::CVX_LinearSolver(CVoxelyze* voxelyze)
 	cancelFlag = false;
 
 #ifdef PARDISO_5
-	#ifdef USE_DIRECT
 	int solver = 0; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#else
-	int solver = 1; //0 = use default (non-iterative) Pardiso solver, 1=iterative
-#endif
-
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error); //initialize pardiso
-
 	if (error != 0) std::cout << "Pardiso init error: " << error << "\n";
 #endif
 }
@@ -80,10 +73,10 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 
 	if (dof == 0){ errorMsg = "No free degrees of freedom found. Aborting.\n"; return false;}
 
-		
-#ifdef USE_DIRECT
-	iparm[0] = 0;
-#else
+//#define USE_DIRECT	
+//#ifdef USE_DIRECT
+//	iparm[0] = 0;
+//#else
 	for (int i=0; i<64; i++) iparm[i] = 0;
 	iparm[0] = 1; //1 = don't use any defaults
 	iparm[1] = 2; //2 = use METIS
@@ -114,7 +107,7 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 	iparm[37] = 0; // 0 = default
 	iparm[50] = 0; // 0 = openmp, 1=open mp/mpi <-------------------
 	iparm[51] = 0; // 1 = for openmp - numer of copute nodes
-#endif
+//#endif
 
 
 	//if iterative
@@ -137,16 +130,10 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 
 	updateProgress(0.02f, "Pardiso: Analyzing...");
 	phase = 13;
-#ifndef USE_DIRECT
 	if (iteration != 0){
-	//	std::cout << "only phase 2/3 \n";
 		phase = 23;
 		iparm[3] = 12;
 	}
-#endif
-	//	std::cout << msglvl << "\n";
-	//for (int i=0; i<64; i++) std::cout << i << " " << iparm[i] << "\n";
-
 
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &dof, &a[0], &ia[0], &ja[0], &idum, &nrhs, iparm, &msglvl, &b[0], &x[0], &error, dparm);
 
@@ -196,6 +183,9 @@ bool CVX_LinearSolver::solve(bool structureUnchanged) //formulates and solves sy
 
 	updateProgress(0.9f, "Processing results...");
 	postResults();
+
+    //tmp
+    //OutputAElements("tmpVoxelyze.txt");
 
 	iteration++;
 	return true;
@@ -306,6 +296,9 @@ void CVX_LinearSolver::calculateA() //calculates the big stiffness matrix!
 		int i1 = v2i[pL->voxel(true)];
 		int i2 = v2i[pL->voxel(false)];
 		if (i1>i2) {int tmp=i1; i1=i2; i2=tmp;} //swap to keep i1 lower than i2
+
+        if (i1 == 0)
+            int stop = 0;
 
 		int ax = (int)pL->axis;
 
@@ -603,3 +596,21 @@ void CVX_LinearSolver::OutputMatrices()
 }
 
 
+void CVX_LinearSolver::OutputAElements(const char* filePath)
+{
+    std::ofstream ofile(filePath);
+
+    int jaCount = 0;
+    for (int i = 0; i<(int)ia.size() - 1; i++) { //row
+        int colCount = 0;
+        while (colCount < dof) {
+            if (jaCount + 1 < ia[i + 1] && colCount + 1 == ja[jaCount]) {
+                if (a[jaCount] != 0) ofile << i << "\t" << colCount << "\t" << a[jaCount] << "\n";
+                jaCount++;
+            }
+            colCount++;
+        }
+    }
+
+    ofile.close();
+}

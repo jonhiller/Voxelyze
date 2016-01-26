@@ -81,6 +81,7 @@ private: //off limits variable and functions (internal)
 	void convertFrom1Base(); //convert to 0-based indices for pardiso:
 	void postResults(); //overwrites state of voxelyze object with the results
 	void OutputMatrices(); //for debugging small system only!!
+    void OutputAElements(const char* filePath);
 
 	void updateProgress(float percent, std::string message) {progressTick=(int)(percent*100), progressMsg = message;} //percent 0-1.0
 };

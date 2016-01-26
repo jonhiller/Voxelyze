@@ -634,7 +634,7 @@ void CVoxelyze::removeLink(int xIndex, int yIndex, int zIndex, CVX_Voxel::linkDi
 
 void CVoxelyze::updateLink(CVX_Link* pLink)
 {
-	pLink->mat = combinedMaterial(pLink->pVNeg->material(), pLink->pVNeg->material()); //finds it if it exists, or creates it if it doesn't
+	pLink->mat = combinedMaterial(pLink->pVNeg->material(), pLink->pVPos->material()); //finds it if it exists, or creates it if it doesn't
 	pLink->reset();
 
 
